@@ -118,6 +118,11 @@ AVOID RenderTargetViewListDX11::Set(DepthStencilViewDX11 * pView) const
 		D3D11DeviceContext()->OMSetRenderTargets(m_numViews, m_ppViews, nullptr);
 }
 
+AVOID RenderTargetViewListDX11::SetOneView(const AUINT8 index)
+{
+	D3D11DeviceContext()->OMSetRenderTargets(1, &m_ppViews[index], nullptr);
+}
+
 AVOID RenderTargetViewListDX11::Clear(const AREAL * bgColor)
 {
 	AUINT8 i;

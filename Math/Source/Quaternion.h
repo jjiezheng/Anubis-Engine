@@ -45,33 +45,71 @@
 //====================================================================================
 
 #include "Defines.h"
+#include "Mat4x4.h"
 
 namespace Anubis
 {
 	//typedef __m128	Quaternion;
 	struct Quaternion
 	{
+		/**								==
+				Static methods
+		==								**/
+		ASTATIC Quaternion Identity()
+		{
+			Quaternion q;
+			q = Quaternion(0, 0, 0, 1);
+
+			return q;
+		}
+
 		//data
 		Vec	m_q;
-
+		
+		Quaternion();
 		Quaternion(const AREAL x, const AREAL y, const AREAL z, const AREAL w);
+		Quaternion(const Vec & v);
 
 		// ==================
 		//	Operators
 		// ==================
-		Quaternion operator+(const Quaternion & q) const;
-		Quaternion operator-(const Quaternion & q) const;
-		Quaternion operator*(const Quaternion & q) const; 
-		Quaternion operator*(const AREAL s) const;
+		Quaternion & operator+(const Quaternion & q) const;
+		Quaternion & operator-(const Quaternion & q) const;
+		//Quaternion operator*(const Quaternion & q) const; 
+		Quaternion & operator*(const AREAL s) const
+		{
+			Quaternion res = *this;
+			res.m_q = res.m_q * s;
+
+			return res;
+		}
+
+		Quaternion & operator/(const AREAL s) const
+		{
+			Quaternion res = *this;
+			res.m_q = res.m_q / s;
+
+			return res;
+		}
+
+		// ==================
+		//  Accessors
+		// ==================
+		AREAL GetX() const { return m_q.x; }
+		AREAL GetY() const { return m_q.y; }
+		AREAL GetZ() const { return m_q.z; }
+		AREAL GetW() const { return m_q.w; }
+		Vec & GetAxis() const { return Vector(m_q.x, m_q.y, m_q.z, 0.0f); }
+		AREAL GetAngle() const { return m_q.w; }
 
 		// ==================
 		//  Methods
 		// ==================
-		Quaternion Conjugate() const;
-		Quaternion Inverse() const;
-		Quaternion Normalize();
+		Quaternion & Normalize();
 		AREAL Norm() const;
 		AREAL Dot(Quaternion & q) const;
+
+		Mat4x4 ToMat4x4() const;
 	};
 
 }; //Anubis

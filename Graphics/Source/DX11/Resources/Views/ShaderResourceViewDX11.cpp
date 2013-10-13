@@ -64,6 +64,18 @@ ABOOL ShaderResourceViewParamsDX11::InitForTexture2D(	AUINT8 format,
 	return true;
 }
 
+ABOOL ShaderResourceViewParamsDX11::InitForCubeTexture(	AUINT8 format,
+													    AUINT16 miplevels,
+														AUINT16 mostdetailedmip )
+{
+	Format = static_cast<DXGI_FORMAT>(format);
+	TextureCube.MipLevels = miplevels;
+	TextureCube.MostDetailedMip = mostdetailedmip;
+	ViewDimension = D3D11_SRV_DIMENSION_TEXTURECUBE;
+
+	return true;
+}
+
 ABOOL ShaderResourceViewDX11::CreateFromFile(LPCWSTR fileName)
 {
 	HRESULT hr = D3DX11CreateShaderResourceViewFromFile(D3D11Device(), fileName, nullptr, nullptr, &m_pView, nullptr);

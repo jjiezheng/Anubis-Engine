@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Actor>
+  <Transform>
+    <Position x="10" y="0" z="0" />
+    <Orientation axisx="0" axisy="0" axisz="1" degrees="0.0" />
+  </Transform>
+  <PhysicsComponent>
+    <CharacterComponent height="1.8" width="0.8" depth="0.6" mass="80">
+		<Force newtons="10" />
+		<MaxSlope degrees="60" />
+	</CharacterComponent>
+  </PhysicsComponent>
+  <GraphicsComponent>
+    <BoxComponent x="0.4" y="0.8" z="0.3">
+		<Material>Bricks</Material>
+	</BoxComponent>
+  </GraphicsComponent>
+</Actor>

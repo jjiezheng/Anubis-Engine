@@ -121,6 +121,8 @@ AVOID Engine::InitializeWindow(HINSTANCE hInstance, AINT32 showWnd, AINT32 width
 	//show and update window
 	ShowWindow(m_hwnd, showWnd);
 	UpdateWindow(m_hwnd);
+
+	ShowCursor(false);
 }
 
 AVOID Engine::InitializeGame(Game * pGame)

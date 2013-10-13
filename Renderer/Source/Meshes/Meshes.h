@@ -75,6 +75,12 @@ namespace Anubis
 
 		ShaderBunch*	m_pShaders;
 
+		// ************************************
+		//	Some material mesh properties
+		// ************************************
+		ABOOL m_bReflective;
+		TextureCube*	m_pEM;
+
 	public:
 		//Constructor and destructor
 		Mesh();
@@ -82,10 +88,11 @@ namespace Anubis
 
 		/**	Initialization **/
 		//AVIRTUAL ABOOL VInitialize(ASTRING fileName) = 0;
-		AVIRTUAL AVOID VSetMaterial(AWSTRING diffuseFileName, AWSTRING normalFileName,
-									AWSTRING specularFileName,AWSTRING heightFileName);
+		AVIRTUAL AVOID VSetMaterial(AWSTRING materialName);
 		AVOID SetWorldTransform(const Mat4x4 & transform);
 		AINLINE Mat4x4 GetWorldTransform() const { return m_worldTransform; }
+
+		AVOID SetEnvironmentalMap(const ASTRING texResourceName);
 
 		//Shaders
 		//AVIRTUAL AVOID VSetVertexShader		(AWSTRING fileName, ASTRING shaderName);
@@ -98,8 +105,14 @@ namespace Anubis
 		AVIRTUAL AVOID VPreRender(Renderer *pRenderer, const Mat4x4 & view, const Mat4x4 & viewprojection);		//change pipeline state if needed
 		AVIRTUAL AVOID VRender(Renderer * pRenderer);		//render the mesh
 		AVIRTUAL AVOID VPostRender(Renderer * pRenderer);			//restore previous pipeline state if needed
+
+		AVOID SetPositionBuffer();
+		AVOID SetTexCoordsBuffer();
+		AVOID SetNormalsBuffer();
+		AVOID SetMaterial();
 	
 		AVOID GenerateShadowMap();
+		AVIRTUAL AVOID VGenerateEnvironmentalMap() {}
 	};
 
 	//useful typedefs
@@ -174,6 +187,8 @@ namespace Anubis
 		/** Rendering methods **/
 		AVOID VPreRender(Renderer *pRenderer, const Mat4x4 & view, const Mat4x4 & viewprojection);		//change pipeline state if needed
 		AVOID VRender(Renderer * pRenderer);		//render the mesh
+
+		AVOID SetIndexBuffer();
 	
 		AVOID GenerateShadowMap();
 	};

@@ -243,3 +243,18 @@ AWSTRING Anubis::s2ws(const ASTRING & s)
 	MultiByteToWideChar(CP_ACP, 0, s.c_str(), slength, &r[0], len);
     return r;
 }
+
+//AVOID Anubis::AddToFileName(ASTRING & str, ACHAR* addMe)
+//{
+//	ACHAR *pSep = const_cast<ACHAR*>(strchr(str.c_str(), '.'));
+	//assert(pSep);
+
+//	ACHAR* pFormat = "";
+//	strcpy(pFormat, pSep);
+
+//	strcpy(pSep, addMe);
+//}
+
+//AVOID Anubis::AddToFileName(AWSTRING & str, AWCHAR* addMe)
+//{
+//}

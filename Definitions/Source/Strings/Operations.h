@@ -66,4 +66,10 @@ namespace Anubis
 
 	ASTRING ws2s(const AWSTRING & s);
 	AWSTRING s2ws(const ASTRING &s);
+
+	//*************************************//
+	//		Useful methods for strings
+	//*************************************//
+	ASTRING ConvertToFileName(ASTRING & str, ACHAR* addMe);
+	AWSTRING ConvertToFileName(AWSTRING & str, AWCHAR* addMe);
 }; //Anubis

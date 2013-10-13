@@ -51,6 +51,10 @@
 
 #include "../../Math/Source/Interpolation.h"
 
+#include "Resource.h"
+#include "ResourceCache.h"
+#include "../Resources/MeshResource.h"
+
 using namespace Anubis;
 
 const AINT8 DeferredRenderer::s_i8SSAOKernelSize = 20;
@@ -81,6 +85,10 @@ DeferredRenderer::DeferredRenderer() : Renderer()
 
 	m_pVelocityMapShaders = new ShaderBunch();
 	m_pMotionBlurShaders = new ShaderBunch();
+
+	m_pSkyTexture = new TextureCube();
+	m_pSkySRV = new ShaderResourceView();
+	m_pSkyShaders = new ShaderBunch();
 
 	m_pSRVtoRTVShaders = new ShaderBunch();
 }
@@ -114,6 +122,11 @@ DeferredRenderer::~DeferredRenderer()
 	SAFE_DELETE(m_pVelocityMapShaders);
 	SAFE_DELETE(m_pMotionBlurShaders);
 	SAFE_DELETE(m_pMotionBlurLayout);
+
+	SAFE_DELETE(m_pSkySRV);
+	SAFE_DELETE(m_pSkyTexture); 
+	SAFE_DELETE(m_pSkyShaders);
+	SAFE_DELETE(m_pSkyLayout);
 
 	SAFE_DELETE(m_pLayout);
 	SAFE_DELETE(m_pMatrixBuffer);
@@ -306,6 +319,43 @@ ABOOL DeferredRenderer::VInitialize(HWND hWnd, AUINT32 width, AUINT32 height)
 	RenderTargetViewParams rtvSSAOParams;
 	rtvSSAOParams.InitForTexture2D(tex2DParams.Format, 0);
 	m_pSSAOTexture->CreateRenderTargetView(&m_pSSAORTV->m_pView, &rtvSSAOParams);
+
+	///////////////////////////////////////////////
+	//Initialize sky resources
+	///////////////////////////////////////////////
+	tex2DParams.InitCubeTexture(1024, 1024, 1, TEX_R8G8B8A8_UNORM, true, false, false, false, 1, 0,
+		1, true, false, false);
+	//m_pSkyTexture->CreateFromFile(L"church_cubemap.dds");
+	m_pSkyTexture->CreateFromFile(L"space_cubemap.dds");
+
+	ShaderResourceViewParams srvSkyParams;
+	srvSkyParams.InitForCubeTexture(TEX_R8G8B8A8_UNORM, 1, 0);
+	m_pSkyTexture->CreateShaderResourceView(&m_pSkySRV->m_pView, &srvSkyParams);
+
+	m_pSkyLayout = new INPUT_LAYOUT();
+	//m_pSkyLayout[0].SemanticName = "POSITION";					//m_pSkyLayout[1].SemanticName = "TEXCOORD";
+	//m_pSkyLayout[0].SemanticIndex = 0;							//m_pSkyLayout[1].SemanticIndex = 0;
+	//m_pSkyLayout[0].Format = TEX_R32G32B32_FLOAT;				//m_pSkyLayout[1].Format = TEX_R32G32_FLOAT;
+	//m_pSkyLayout[0].InputSlot = 0;								//m_pSkyLayout[1].InputSlot = 1;
+	//m_pSkyLayout[0].AlignedByteOffset = 0;						//m_pSkyLayout[1].AlignedByteOffset = 0;
+	//m_pSkyLayout[0].InputSlotClass = IA_PER_VERTEX_DATA;		//m_pSkyLayout[1].InputSlotClass = IA_PER_VERTEX_DATA;
+	//m_pSkyLayout[0].InstanceDataStepRate = 0;					//m_pSkyLayout[1].InstanceDataStepRate = 0;
+	m_pSkyLayout->SemanticName		=	"POSITION";
+	m_pSkyLayout->SemanticIndex	=	0;
+	m_pSkyLayout->Format			=	TEX_R32G32B32_FLOAT;
+	m_pSkyLayout->InputSlot		=	0;
+	m_pSkyLayout->AlignedByteOffset =	0;
+	m_pSkyLayout->InputSlotClass	=	IA_PER_VERTEX_DATA;
+	m_pSkyLayout->InstanceDataStepRate =	0;
+
+	m_pSkyShaders->VSetVertexShader(L"Source\\Shaders\\SkyBox.hlsl", "SkyBox_VS", m_pSkyLayout, 1, TOPOLOGY_TRIANGLELIST);
+	m_pSkyShaders->VSetPixelShader(L"Source\\Shaders\\SkyBox.hlsl", "SkyBox_PS");
+
+	Resource meshResource("sphere.obj");
+	shared_ptr<ResHandle> pMeshes = Anubis::SafeGetHandle(&meshResource);
+	std::shared_ptr<MeshResourceExtraData> pData = static_pointer_cast<MeshResourceExtraData>(pMeshes->GetExtra());
+
+	m_pSphereMesh = pData->m_pMeshes[0];
 
 	///////////////////////////////////////////////
 	//Initialize data for blurring
@@ -576,6 +626,7 @@ AVOID DeferredRenderer::PrepareForLightPass(CameraPtr pCamera)
 
 	//set shader resources
 	m_pSSAOBlurredSRV->Set(6, ST_Pixel);
+	m_pDepthSRV->Set(8, ST_Pixel);
 
 	//set blending functionality
 	//this->BlendLightPass()->Set(nullptr);
@@ -615,6 +666,8 @@ AVOID DeferredRenderer::VRender()
 		Mat4x4 projection	= pCamera->GetProjection();
 		Mat4x4 viewProj		= view * projection; //calculate view * projection matrix
 
+		VRenderSky(pCamera, viewProj);
+
 		//	Rendering to g-buffer
 		m_gbuffer.BindForWriting(m_pDepthDSV);
 
@@ -648,7 +701,7 @@ AVOID DeferredRenderer::VRender()
 		// ========================================= //
 		//		Generate velocity map				 //
 		// ========================================= //
-		VGenerateVelocityMap(pCamera, this, viewProj);
+		//VGenerateVelocityMap(pCamera, this, viewProj);
 
 		//clear meshes queue
 		m_queue.Clear();
@@ -660,7 +713,7 @@ AVOID DeferredRenderer::VRender()
 			for (LightList::iterator lit = m_lights.begin(); lit != m_lights.end(); lit++)
 			{
 				Light* pLight = (*lit);
-				for (int i =0; i < 5; i++)
+				for (int i =0; i < 1; i++)
 				{
 					FilterImage(pLight->GetVarianceShadowMapSRV(), pLight->GetVarianceShadowUAV(), pLight->GetTempSRV(), pLight->GetTempUAV(), SCREEN_WIDTH, SCREEN_HEIGHT, FT_Gaussian);
 				}
@@ -708,8 +761,8 @@ AVOID DeferredRenderer::VRender()
 		}
 		this->NoBlending()->Set(nullptr);
 
-		VApplyMotionBlur();
-		//CopyPostProcessingToBackBuffer();
+		//VApplyMotionBlur();
+		CopyPostProcessingToBackBuffer();
 
 		//clean lights
 		while(!m_lights.empty())
@@ -740,7 +793,7 @@ AVOID DeferredRenderer::VApplyMotionBlur()
 	Draw(6, 0);
 
 	UnbindShaderResourceViews(0, 1, ST_Pixel);
-	AREAL bgColor[4] = { 1.0f, 0.0f, 1.0f, 1.0f };
+	AREAL bgColor[4] = { 1.0f, 1.0f, 1.0f, 1.0f };
 	ClearRenderTargetView(bgColor, m_pTempRTV); 
 
 	AREAL velColor[4] = { 0.0f, 0.0f, 0.0f, 1.0f };
@@ -758,4 +811,38 @@ AVOID DeferredRenderer::CopyPostProcessingToBackBuffer()
 	UnbindShaderResourceViews(0, 1, ST_Pixel);
 	AREAL bgColor[4] = { 1.0f, 0.0f, 1.0f, 1.0f };
 	ClearRenderTargetView(bgColor, m_pTempRTV); 
+}
+
+AVOID DeferredRenderer::VRenderSky(CameraPtr pCamera, const Mat4x4 & viewproj)
+{
+	//m_pTempRTV->Set();
+	m_gbuffer.BindRenderTarget(3);
+	//
+
+	m_pSkyShaders->VBind();
+//m_pVelocityMapShaders->VBind();
+
+	Mat4x4 trans;
+	trans.CreateTranslation(pCamera->GetPosition());
+
+	Mat4x4 worldViewProj = trans * viewproj;
+	worldViewProj.Transpose();
+
+	m_pcbWVP->UpdateSubresource(0, nullptr, &worldViewProj, 0, 0);
+	m_pcbWVP->Set(0, ST_Vertex);
+
+	m_pSphereMesh->SetPositionBuffer();
+	m_pSphereMesh->SetIndexBuffer();
+
+	this->NoCullingStandardRasterizer()->Set();
+	this->m_pDepthDisableStencilDisable->Set(0xFF);
+
+	//m_pSphereMesh->VPreRender(this, pCamera->GetView(), pCamera->GetViewProjection());
+	m_pSkySRV->Set(0, ST_Pixel);
+	m_pSphereMesh->VRender(this);
+	//m_pVertices->Set(0, 0);
+	//Draw(6, 0);
+
+	UnbindRenderTargetViews(1);
+	UnbindShaderResourceViews(0, 1, ST_Pixel);
 }

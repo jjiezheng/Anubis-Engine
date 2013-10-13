@@ -49,6 +49,7 @@
 
 namespace Anubis
 {
+	class Entity;
 	class Camera
 	{
 	protected:
@@ -94,6 +95,10 @@ namespace Anubis
 		=============================== **/
 		AVOID UpdateTransforms();
 
+		//Target camera is following
+		Entity* m_pTarget;
+		ABOOL m_bHasTarget;
+
 	public:
 
 		//Constructor and destructor
@@ -116,6 +121,11 @@ namespace Anubis
 		AINLINE AVOID SetPitch		(const AREAL pitch)	 { m_pitch = pitch; }
 		AINLINE AVOID SetYaw		(const AREAL yaw)	 { m_yaw = yaw; }
 
+		AINLINE AVOID SetTarget		(Entity* pTarget)
+			{
+				m_bHasTarget = pTarget != NULL ? true : false;
+				m_pTarget = pTarget;
+			}
 		/*==
 				Accessors
 								==*/
@@ -147,6 +157,9 @@ namespace Anubis
 
 		AINLINE AINT32	GetViewportWidth()	const { return m_viewport.Width; }
 		AINLINE AINT32	GetViewportHeight()	const { return m_viewport.Height; }
+
+		AINLINE Entity* GetTarget()			const { return m_pTarget; }
+		AINLINE ABOOL	HasTarget()			const { return m_bHasTarget; }
 
 		/*==
 				Methods

@@ -95,7 +95,7 @@ namespace Anubis
 		Texture2DPtr	m_pGeometryNormalTex;
 
 		/***
-			== ShaderResource View
+			== ShaderResource Views
 									***/
 		/* ShaderResourceView &	m_pPosSRV;
 		ShaderResourceView &	m_pNormalSRV;
@@ -104,7 +104,7 @@ namespace Anubis
 		ShaderResourceViewList	m_SRVList;
 
 		/***
-			== UnorderedAccess View
+			== RenderTarget Views
 									***/
 		/*RenderTargetView &	m_pPosRTV;
 		RenderTargetView &	m_pNormalRTV;
@@ -112,13 +112,18 @@ namespace Anubis
 		RenderTargetView &	m_pSpecularRTV; */
 		RenderTargetViewList	m_RTVList;
 
+		/***
+			== DepthStencil View
+									***/
+		DepthStencilView*	m_pDepthStencilView;
+
 	public:
 
 		/***
 			Constructor, Destructor
 		***/
 		GBufferOne();
-		~GBufferOne()	{}
+		~GBufferOne();
 
 		/***
 			Initilize
@@ -136,6 +141,8 @@ namespace Anubis
 		AVIRTUAL AVOID BindDepthTex(AUINT16 slot, ShaderType shaderType) const;
 		AVIRTUAL AVOID BindDiffuseTex(AUINT16 slot, ShaderType shaderType) const;
 		AVIRTUAL AVOID BindSpecularTex(AUINT16 slot, ShaderType shaderType) const;
+
+		AVIRTUAL AVOID BindRenderTarget(const AUINT8 index);
 
 		/***
 			Unbind buffer resources from the pipeline

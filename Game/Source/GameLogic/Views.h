@@ -74,14 +74,17 @@ namespace Anubis
 	class PlayerView : public IView
 	{
 	protected:
-		IMouseHandler*		m_pMouseHandler;
-		IKeyboardHandler*	m_pKeyboardHandler;  
-		MovementController*	m_pController;
+		//IMouseHandler*		m_pMouseHandler;
+		//IKeyboardHandler*	m_pKeyboardHandler;  
+		//MovementController*	m_pController;
+		shared_ptr<IMouseHandler>		m_pMouseHandler;
+		shared_ptr<IKeyboardHandler>	m_pKeyboardHandler;  
+		shared_ptr<MovementController>	m_pController;
 
 	public:
 		PlayerView();
 		AVIRTUAL ~PlayerView() {
-			SAFE_DELETE(m_pController);
+			//SAFE_DELETE(m_pController);
 			}
 
 		AVIRTUAL ABOOL		VInit();
@@ -116,13 +119,23 @@ namespace Anubis
 		AVIRTUAL ABOOL VHasCamera() const { return m_bHasCamera; }
 
 		//Mutators
-		AVOID SetMouseHandler(IMouseHandler* pHandler)		 { m_pMouseHandler = pHandler; }
-		AVOID SetKeyboardHandler(IKeyboardHandler* pHandler) { m_pKeyboardHandler = pHandler; }
-		AVOID SetController(MovementController* pController) { m_pController = pController; }
+		//AVOID SetMouseHandler(IMouseHandler* pHandler)		 { m_pMouseHandler = pHandler; }
+		//AVOID SetKeyboardHandler(IKeyboardHandler* pHandler) { m_pKeyboardHandler = pHandler; }
+		//AVOID SetController(MovementController* pController) { m_pController = pController; }
+
+		AVOID SetMouseHandler(shared_ptr<IMouseHandler> pHandler)		 { m_pMouseHandler = pHandler; }
+		AVOID SetKeyboardHandler(shared_ptr<IKeyboardHandler> pHandler)  { m_pKeyboardHandler = pHandler; }
+		AVOID SetController(shared_ptr<MovementController> pController)  { m_pController = pController; }
+
+		//Accessors
+		shared_ptr<MovementController> GetController() const { return m_pController; }
 	};
 
 	//typedefs
 	typedef shared_ptr<IView>	ViewPtr;
 	typedef vector<ViewPtr>		Views;
+
+	typedef shared_ptr<PlayerView> PlayerViewPtr;
+	typedef vector<PlayerViewPtr> PlayerViews;
 
 }; //Anubis

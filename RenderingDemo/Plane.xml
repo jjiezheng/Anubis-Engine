@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Actor>
+  <Transform>
+    <Position x="0" y="-15" z="0" />
+    <Orientation axisx="1" axisy="0" axisz="0" degrees="0.0" />
+  </Transform>
+  <PhysicsComponent>
+    <PlaneComponent x="60" y="0" z="60" mass="0">
+		<Density>aluminum</Density>
+		<Material>Normal</Material>
+		<Type>Static</Type>
+	</PlaneComponent>
+  </PhysicsComponent>
+  <GraphicsComponent>
+    <PlaneComponent x="60" y="0" z="60">
+		<Material>paint</Material>
+	</PlaneComponent>
+  </GraphicsComponent>
+</Actor>

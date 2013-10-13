@@ -47,6 +47,7 @@
 #include "Views.h"
 
 #include "../../../Graphics/Source/Final/General.h"
+#include "../Entities/Entity.h"
 
 using namespace Anubis;
 
@@ -95,23 +96,37 @@ AVOID PlayerView::VUpdate(AUINT32 const deltaMilliseconds)
 	//Update only if we have camera
 	if (m_bHasCamera)
 	{
-		//Update camera's position
-		Vec vel = m_pController->VGetTargetVelocity();
-		m_pCamera->SetPosition(m_pCamera->GetPosition() + vel);
+		if (!m_pCamera->HasTarget())
+		{
+			//Update camera's position
+			Vec vel = m_pController->VGetTargetVelocity();
+			m_pCamera->SetPosition(m_pCamera->GetPosition() + vel);
 
-		//Update camera's orientation
-		AREAL yaw = m_pController->VGetTargetYaw();
-		m_pCamera->SetYaw(yaw);
+			//Update camera's orientation
+			AREAL yaw = m_pController->VGetTargetYaw();
+			m_pCamera->SetYaw(yaw);
 
-		AREAL roll = m_pController->VGetTargetRoll();
-		m_pCamera->SetRoll(roll);
+			AREAL roll = m_pController->VGetTargetRoll();
+			m_pCamera->SetRoll(roll);
 
-		AREAL pitch = m_pController->VGetTargetPitch();
-		m_pCamera->SetPitch(pitch);
+			AREAL pitch = m_pController->VGetTargetPitch();
+			m_pCamera->SetPitch(pitch);
 
-		m_pCamera->VUpdate(deltaMilliseconds);
+			m_pCamera->VUpdate(deltaMilliseconds);
 
-		m_pController->VSetTargetDirection(m_pCamera->GetDir());
+			m_pController->VSetTargetDirection(m_pCamera->GetDir());
+		}
+		else
+		{
+			Entity* pTarget = m_pCamera->GetTarget();
+			Vec offset = Vector(0.0, 3.0f, -6.5f, 0.0f);
+			Mat4x4 rot;
+			rot.CreateRotationY(m_pController->VGetTargetYaw());
+			offset = offset * rot;
+			m_pCamera->SetPosition(pTarget->GetCurrentTransform().GetPosition() + offset);
+			m_pCamera->SetYaw(m_pController->VGetTargetYaw());
+			m_pCamera->VUpdate(deltaMilliseconds);
+		}
 	}
 }
 

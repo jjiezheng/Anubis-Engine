@@ -35,15 +35,15 @@ AVOID ShadowTestState::VInitialize( Game * pGame, AUINTPTR uptrData)
 	plane_params.VCreateRepresentation(m_pScene, pPlane); 
 	plane_params.VCreatePhysicalBody(g_pEngine->GetPhysics(), pPlane); 
 
-	BoxEntityResource & box_params = BoxEntityResource();
-	box_params.VLoad("Resources\\JSON\\box1_params.json");
-	EntityPtr pBox = pGame->VAddEntity(box_params.VCreateEntity(pGame));
-	box_params.VCreateRepresentation(m_pScene, pBox);
-	box_params.VCreatePhysicalBody(g_pEngine->GetPhysics(), pBox); 
+	//BoxEntityResource & box_params = BoxEntityResource();
+	//box_params.VLoad("Resources\\JSON\\box1_params.json");
+	//EntityPtr pBox = pGame->VAddEntity(box_params.VCreateEntity(pGame));
+	//box_params.VCreateRepresentation(m_pScene, pBox);
+	//box_params.VCreatePhysicalBody(g_pEngine->GetPhysics(), pBox); 
 
 
 	//create resource
-	ObstacleEntityResource & obstacle_params = ObstacleEntityResource("Hawkgirl_B.obj", Vector(0.0f, 0.0f, 0.0f, 1.0f));
+	ObstacleEntityResource & obstacle_params = ObstacleEntityResource("H1.obj", Vector(0.0f, 0.0f, 0.0f, 1.0f));
 	//ObstacleEntityResource & obstacle_params = ObstacleEntityResource("Chest.obj", Vector(0.0f, 0.0f, 0.0f, 1.0f));
 	EntityPtr pObstacle = pGame->VAddEntity(obstacle_params.VCreateEntity(pGame));
 	obstacle_params.VCreateRepresentation(m_pScene, pObstacle); 
@@ -84,14 +84,15 @@ AVOID ShadowTestState::VUpdate( Game * pGame, AREAL64 r64Time, AREAL64 r64Elapse
 	Vec trans = Vector(40.0f*Cos(r64Time), 8, 40.0f*Sin(r64Time), 1);
 	//Vec trans = Vector(-15, -2.0f, -8.0f, 1);
 	Mat4x4 tr;
-	tr.CreateTranslation(trans);
+	//tr.CreateTranslation(trans);
+	tr.CreateTranslation(Vector(10.0f, 30.0f, -5.0f, 1.0f));
 
 	SpotLightEntity* pLight = static_cast<SpotLightEntity*>(&*m_pLight);
 	pLight->SetCurrentTransform(tr, r64Time);
 
 	Vec dir = Normalize(Vector(0.0f, 0.0f, 0.0f, 1.0f) - trans);
-	pLight->SetDirection(dir);
-	//pLight->SetDirection( Vector(0.4f, -0.5f, 0.8f, 2.0f) );
+	//pLight->SetDirection(dir);
+	pLight->SetDirection( Vector(0.0f, -0.8f, 1.0f, 2.0f) );
 }
 
 //Render State

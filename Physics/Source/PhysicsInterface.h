@@ -53,6 +53,7 @@ namespace Anubis
 	//******************************************
 	// Represents Interface to hold game physics
 	//******************************************
+	class Quaternion;
 	class IPhysics
 	{
 	public:
@@ -73,9 +74,12 @@ namespace Anubis
 		///////////////////////////////////////
 		/*** Add objects to the simulation ***/
 		///////////////////////////////////////
-		AVIRTUAL AVOID VAddBox(EntityPtr pEntity, Vec & pos, Vec & dimensions, AREAL r32Mass, ASTRING & physMat, ABOOL isStatic) = 0;
-		AVIRTUAL AVOID VAddPlane(EntityPtr pEntity, Vec & pos, Vec & halfDimensions, AREAL r32Mass, ASTRING & physMat, ABOOL isStatic) = 0;
+		AVIRTUAL AVOID VAddBox(EntityPtr pEntity, Vec & pos, Quaternion & rot, Vec & dimensions, AREAL r32Mass, ASTRING & physMat, ABOOL isStatic) = 0;
+		AVIRTUAL AVOID VAddPlane(EntityPtr pEntity, Vec & pos, Quaternion & rot, Vec & halfDimensions, AREAL r32Mass, ASTRING & physMat, ABOOL isStatic) = 0;
+		AVIRTUAL AVOID VAddSphere(EntityPtr pEntity, Vec & pos, Quaternion & rot, AREAL r32Radius, AREAL r32Mass, ASTRING & physMat, ABOOL isStatic) = 0;
 		//TODO:Add more shapes!!!
+
+		AVIRTUAL AVOID VAddCharacter(EntityPtr pEntity, Vec & pos, Quaternion & rot, const Vec & dim, const AREAL mass, const AREAL maxForce, const AREAL maxSlope) = 0;
 
 		/////////////////////////////////////
 		/*** Apply actions to the bodies ***/

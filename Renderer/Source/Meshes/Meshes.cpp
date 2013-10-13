@@ -72,10 +72,9 @@ Mesh::~Mesh()
 	SAFE_DELETE(m_pVertices);
 }
 
-AVOID Mesh::VSetMaterial(	AWSTRING diffuseFileName, AWSTRING normalFileName,
-							AWSTRING specularFileName,AWSTRING heightFileName)
+AVOID Mesh::VSetMaterial(	AWSTRING materialName )
 {
-	m_pMaterial->VInitialize(diffuseFileName, normalFileName, specularFileName, heightFileName);
+	m_pMaterial->VInitialize(materialName);
 }
 
 AVOID Mesh::SetWorldTransform(const Mat4x4 & transform)
@@ -143,6 +142,26 @@ AVOID Mesh::VPostRender(Renderer * pRenderer)
 	m_pMaterial->Unbind();
 }
 
+AVOID Mesh::SetPositionBuffer()
+{
+	m_pVertices->Set(0, 0);
+}
+
+AVOID Mesh::SetTexCoordsBuffer()
+{
+	m_pTexCoords->Set(1, 0);
+}
+
+AVOID Mesh::SetNormalsBuffer()
+{
+	m_pNormals->Set(2, 0);
+}
+
+AVOID Mesh::SetMaterial()
+{
+	m_pMaterial->Set(0);
+}
+
 //////////////////////////////////////////////
 //Indexed mesh
 IndexedMesh::~IndexedMesh()
@@ -155,6 +174,11 @@ AVOID IndexedMesh::VPreRender(Renderer *pRenderer, const Mat4x4 & view, const Ma
 	Mesh::VPreRender(pRenderer, view, viewprojection);
 
 	//set index buffer
+	m_pIndexBuffer->Set(0);
+}
+
+AVOID IndexedMesh::SetIndexBuffer()
+{
 	m_pIndexBuffer->Set(0);
 }
 

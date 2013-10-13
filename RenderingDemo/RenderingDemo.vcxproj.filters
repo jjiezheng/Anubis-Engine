@@ -1,0 +1,62 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="Source\winmain.cpp" />
+    <ClCompile Include="Source\RenderingDemo_pch.cpp" />
+    <ClCompile Include="Source\Game\States\BoxTestState.cpp">
+      <Filter>Game\States</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Game\RenderingDemo.cpp">
+      <Filter>Game</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Game\DemoStateFactory.cpp">
+      <Filter>Game</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Source\RenderingDemo_pch.h" />
+    <ClInclude Include="Source\Game\RenderingDemo.h">
+      <Filter>Game</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Game\States\BoxTestState.h">
+      <Filter>Game\States</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Game\DemoStateFactory.h">
+      <Filter>Game</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Game">
+      <UniqueIdentifier>{ee901d14-2985-4938-ae33-4d1ca6ec3cec}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Game\States">
+      <UniqueIdentifier>{438cd934-cd54-4d8f-89c0-546c68352e37}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resources">
+      <UniqueIdentifier>{61cc0c77-6ac7-4825-b2cf-279d032df825}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resources\Entities">
+      <UniqueIdentifier>{47a85a15-807e-465c-8119-53f4ef771af6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shaders">
+      <UniqueIdentifier>{89e073a9-aba4-4b6d-b527-28732500035c}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Entities\BoxEntity.xml">
+      <Filter>Resources\Entities</Filter>
+    </None>
+    <None Include="Source\Shaders\SkyBox.hlsl">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="Shaders\CubeShadowMap_VS.hlsl">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="CubeShadowMap_GS.hlsl">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="CubeShadowMap_PS.hlsl">
+      <Filter>Shaders</Filter>
+    </None>
+  </ItemGroup>
+</Project>

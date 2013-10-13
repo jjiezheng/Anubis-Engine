@@ -110,3 +110,28 @@ ABOOL Texture2DParams::Init(AUINT32 width,
 
 	return true;
 } 
+
+ABOOL Texture2DParams::InitCubeTexture(AUINT32 width,
+							AUINT32 height,
+							AUINT16 arraySize,
+							AUINT8  format,
+							ABOOL	shaderResource,
+							ABOOL	unorderedAccess,
+							ABOOL	renderTarget,
+							ABOOL   depthStencil,
+							AUINT16 sampleCount,
+							AUINT16 sampleQuality,
+							AUINT16 miplevels,
+							ABOOL	gpuWrite,
+							ABOOL	cpuRead,
+							ABOOL	cpuWrite,
+							ABOOL	bGenerateMipMaps)
+{
+	ABOOL res = Init(width, height, arraySize, format, shaderResource, unorderedAccess, renderTarget, depthStencil, sampleCount, sampleQuality,
+		miplevels, gpuWrite, cpuRead, cpuWrite, bGenerateMipMaps);
+
+	if (!res) return false;
+
+	MiscFlags |= D3D11_RESOURCE_MISC_TEXTURECUBE;
+	return true;
+} 

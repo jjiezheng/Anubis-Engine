@@ -69,6 +69,12 @@
     <ClInclude Include="Source\Resources\ShaderResource.h">
       <Filter>Resources</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Meshes\BoxMesh.h">
+      <Filter>Meshes</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Meshes\PlaneMesh.h">
+      <Filter>Meshes</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Renderer.cpp" />
@@ -109,6 +115,12 @@
     </ClCompile>
     <ClCompile Include="Source\Resources\MeshResource.cpp">
       <Filter>Resources</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Meshes\BoxMesh.cpp">
+      <Filter>Meshes</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Meshes\PlaneMesh.cpp">
+      <Filter>Meshes</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

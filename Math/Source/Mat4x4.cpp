@@ -264,6 +264,11 @@ AREAL Mat4x4::GetElement(const AUINT8 row, const AUINT8 col) const
 	if (col == 3) return getw(rows[row]);
 }
 
+Vec Mat4x4::GetPosition() const
+{
+	return Vector(rows[3].x, rows[3].y, rows[3].z, 1.0f);
+}
+
 ///////////////////////////////////////////
 //Operators
 ///////////////////////////////////////////

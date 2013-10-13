@@ -63,8 +63,9 @@ namespace Anubis
 			 ====================== ***/
 
 		Texture2D * m_pDiffuseTex;
-		Texture2D * m_pNormalTex;
 		Texture2D * m_pSpecularTex;
+		Texture2D * m_pSmoothnessTex;
+		Texture2D * m_pNormalTex;
 		Texture2D * m_pHeightTex;
 
 		/*** =========================
@@ -72,45 +73,49 @@ namespace Anubis
 		     ========================= ***/
 
 		ShaderResourceView * m_pDiffuseSRV;
-		ShaderResourceView * m_pNormalSRV;
 		ShaderResourceView * m_pSpecularSRV;
+		ShaderResourceView * m_pSmoothnessSRV;
+		ShaderResourceView * m_pNormalSRV;
 		ShaderResourceView * m_pHeightSRV;
 
 		// ===== Specific rendering data ===== //
 		
 		//remember the slot to which we bound resource view
 		AINT32	m_i32DiffuseSlot;
-		AINT32	m_i32NormalSlot;
 		AINT32	m_i32SpecularSlot;
+		AINT32	m_i32SmoothnessSlot;
+		AINT32	m_i32NormalSlot;
 		AINT32	m_i32HeightSlot;
 
 	public:
 		Material();
 		~Material();
 
-		AVIRTUAL ABOOL VInitialize(AWSTRING diffuseFileName, AWSTRING normalFileName, AWSTRING specularFileName,
-			AWSTRING heightFileName);
+		AVIRTUAL ABOOL VInitialize(AWSTRING materialName);
 
-		ABOOL SetDiffuseTexture	(AWSTRING diffuseFileName);
-		ABOOL SetNormalTexture	(AWSTRING normalFileName);
-		ABOOL SetSpecularTexture(AWSTRING specularFileName);
-		ABOOL SetHeightTexture	(AWSTRING heightFileName);
+		ABOOL SetDiffuseTexture		(AWSTRING diffuseFileName);
+		ABOOL SetSpecularTexture	(AWSTRING specularFileName);
+		ABOOL SetSmoothnessTexture	(AWSTRING smoothnessFileName);
+		ABOOL SetNormalTexture		(AWSTRING normalFileName);
+		ABOOL SetHeightTexture		(AWSTRING heightFileName);
 
 		// ===== Bind material to the pipeline ===== //
 
 		AVOID BindDiffuse	(const AUINT16 slot);
-		AVOID BindNormal	(const AUINT16 slot);
 		AVOID BindSpecular	(const AUINT16 slot);
+		AVOID BindSmoothness(const AUINT16 slot);
+		AVOID BindNormal	(const AUINT16 slot);
 		AVOID BindHeight	(const AUINT16 slot);
 
 		AVOID Set(const AUINT16 slot); //always bind to the pixel shader
 
 		// ===== Unbind material form the pipeline ===== //
 
-		AVOID UnbindDiffuse	(const AUINT16 slot);
-		AVOID UnbindNormal	(const AUINT16 slot);
-		AVOID UnbindSpecular(const AUINT16 slot);
-		AVOID UnbindHeight	(const AUINT16 slot);
+		AVOID UnbindDiffuse		(const AUINT16 slot);
+		AVOID UnbindSpecular	(const AUINT16 slot);
+		AVOID UnbindSmoothness	(const AUINT16 slot);
+		AVOID UnbindNormal		(const AUINT16 slot);
+		AVOID UnbindHeight		(const AUINT16 slot);
 
 		AVOID Unbind(); //always unbind from the pixel shader
 	};

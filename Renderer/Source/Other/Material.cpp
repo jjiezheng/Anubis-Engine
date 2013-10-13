@@ -50,51 +50,72 @@
 
 using namespace Anubis;
 
-Material::Material() :	m_i32DiffuseSlot(-1), m_i32NormalSlot(-1),
-						m_i32SpecularSlot(-1), m_i32HeightSlot(-1)
+Material::Material() :	m_i32DiffuseSlot(-1), m_i32SpecularSlot(-1), m_i32SmoothnessSlot(-1),
+						m_i32NormalSlot(-1),  m_i32HeightSlot(-1)
 {
-	m_pDiffuseTex = nullptr;
-	m_pNormalTex = nullptr;
-	m_pSpecularTex = nullptr;
-	m_pHeightTex = nullptr;
+	m_pDiffuseTex		= nullptr;
+	m_pSpecularTex		= nullptr;
+	m_pSmoothnessTex	= nullptr;
+	m_pNormalTex		= nullptr;
+	m_pHeightTex		= nullptr;
 
 	m_pDiffuseSRV	= new ShaderResourceView();
-	m_pNormalSRV	= new ShaderResourceView();
 	m_pSpecularSRV	= new ShaderResourceView();
-	m_pHeightSRV	= new ShaderResourceView();;
+	m_pSmoothnessSRV= new ShaderResourceView();
+	m_pNormalSRV	= new ShaderResourceView();
+	m_pHeightSRV	= new ShaderResourceView();
 }
 
 Material::~Material()
 {
 	SAFE_DELETE(m_pHeightSRV);
-	SAFE_DELETE(m_pSpecularSRV);
 	SAFE_DELETE(m_pNormalSRV);
+	SAFE_DELETE(m_pSmoothnessSRV);
+	SAFE_DELETE(m_pSpecularSRV);
 	SAFE_DELETE(m_pDiffuseSRV);
 
 	SAFE_DELETE(m_pHeightTex);
-	SAFE_DELETE(m_pSpecularTex);
 	SAFE_DELETE(m_pNormalTex);
+	SAFE_DELETE(m_pSmoothnessTex);
+	SAFE_DELETE(m_pSpecularTex);
 	SAFE_DELETE(m_pDiffuseTex);
 }
 
-ABOOL Material::VInitialize(AWSTRING diffuseFileName, AWSTRING normalFileName,
-							AWSTRING specularFileName,AWSTRING heightFileName)
+ABOOL Material::VInitialize(AWSTRING materialFileName)
 {
+	//AWSTRING diffuseFileName = AddToFileFormat(materialFileName, L"_d");
+	//AWSTRING specularFileName = AddToFileFormat(materialFileName, L"_s");
+	//AWSTRING smoothnessFileName = AddToFileFormat(materialFileName, L"_g");
+	//AWSTRING normalFileName = AddToFileFormat(materialFileName, L"_n");
+	//AWSTRING heightFileName = AddToFileFormat(materialFileName, L"_h");
+
+	AWSTRING diffuseFileName = materialFileName + L"_d.png";
+	AWSTRING specularFileName = materialFileName + L"_s.png";
+	AWSTRING smoothnessFileName = materialFileName + L"_g.png";
+	AWSTRING normalFileName = materialFileName + L"_n.png";
+	AWSTRING heightFileName = materialFileName + L"_h.png";
+
 	if (!m_pDiffuseSRV->CreateFromFile(diffuseFileName.c_str()))
 	{
 		assert(0 && "Error loading material diffuse texture!");
 		return false;
 	}
 
-	if (!m_pNormalSRV->CreateFromFile(normalFileName.c_str()))
-	{
-		assert(0 && "Error loading material normal map!");
-		return false;
-	}
-
 	if (!m_pSpecularSRV->CreateFromFile(specularFileName.c_str()))
 	{
 		assert(0 && "Error loading material specular map!");
+		return false;
+	}
+
+	if (!m_pSmoothnessSRV->CreateFromFile(smoothnessFileName.c_str()))
+	{
+		assert(0 && "Error loading material smoothness map!");
+		return false;
+	}
+
+	if (!m_pNormalSRV->CreateFromFile(normalFileName.c_str()))
+	{
+		assert(0 && "Error loading material normal map!");
 		return false;
 	}
 
@@ -116,20 +137,29 @@ ABOOL Material::SetDiffuseTexture(AWSTRING diffuseFileName)
 	}
 }
 
-ABOOL Material::SetNormalTexture(AWSTRING normalFileName)
-{
-	if (!m_pNormalSRV->CreateFromFile(normalFileName.c_str()))
-	{
-		assert(0 && "Error loading material normal map!");
-		return false;
-	}
-}
-
 ABOOL Material::SetSpecularTexture(AWSTRING specularFileName)
 {
 	if (!m_pSpecularSRV->CreateFromFile(specularFileName.c_str()))
 	{
 		assert(0 && "Error loading material specular map!");
+		return false;
+	}
+}
+
+ABOOL Material::SetSmoothnessTexture(AWSTRING smoothnessFileName)
+{
+	if (!m_pSmoothnessSRV->CreateFromFile(smoothnessFileName.c_str()))
+	{
+		assert(0 && "Error loading material smoothness map!");
+		return false;
+	}
+}
+
+ABOOL Material::SetNormalTexture(AWSTRING normalFileName)
+{
+	if (!m_pNormalSRV->CreateFromFile(normalFileName.c_str()))
+	{
+		assert(0 && "Error loading material normal map!");
 		return false;
 	}
 }
@@ -149,16 +179,22 @@ AVOID Material::BindDiffuse	(AUINT16 slot)
 	m_i32DiffuseSlot = slot;
 }
 
-AVOID Material::BindNormal	(AUINT16 slot)
-{
-	m_pNormalSRV->Set(slot, PIXEL_SHADER);
-	m_i32NormalSlot = slot;
-}
-
 AVOID Material::BindSpecular	(AUINT16 slot)
 {
 	m_pSpecularSRV->Set(slot, PIXEL_SHADER);
 	m_i32SpecularSlot = slot;
+}
+
+AVOID Material::BindSmoothness	(AUINT16 slot)
+{
+	m_pSmoothnessSRV->Set(slot, PIXEL_SHADER);
+	m_i32SpecularSlot = slot;
+}
+
+AVOID Material::BindNormal	(AUINT16 slot)
+{
+	m_pNormalSRV->Set(slot, PIXEL_SHADER);
+	m_i32NormalSlot = slot;
 }
 
 AVOID Material::BindHeight	(AUINT16 slot)
@@ -176,13 +212,17 @@ AVOID Material::Set(AUINT16 slot)
 	m_pDiffuseSRV->Set(slot, PIXEL_SHADER);
 	m_i32DiffuseSlot = slot++;
 
-	//bind normal
-	m_pNormalSRV->Set(slot, PIXEL_SHADER);
-	m_i32NormalSlot = slot++;
-
 	//bind specular
 	m_pSpecularSRV->Set(slot, PIXEL_SHADER);
 	m_i32SpecularSlot = slot++;
+
+	//bind specular
+	m_pSmoothnessSRV->Set(slot, PIXEL_SHADER);
+	m_i32SmoothnessSlot = slot++;
+
+	//bind normal
+	m_pNormalSRV->Set(slot, PIXEL_SHADER);
+	m_i32NormalSlot = slot++;
 
 	//bind height
 	m_pHeightSRV->Set(slot, PIXEL_SHADER);
@@ -195,16 +235,22 @@ AVOID Material::UnbindDiffuse	(const AUINT16 slot)
 	m_i32DiffuseSlot = -1;
 }
 
-AVOID Material::UnbindNormal	(const AUINT16 slot)
-{
-	UnbindShaderResourceViews(m_i32NormalSlot, 1, PIXEL_SHADER);
-	m_i32NormalSlot = -1;
-}
-
 AVOID Material::UnbindSpecular	(const AUINT16 slot)
 {
 	UnbindShaderResourceViews(m_i32SpecularSlot, 1, PIXEL_SHADER);
 	m_i32SpecularSlot = -1;
+}
+
+AVOID Material::UnbindSmoothness	(const AUINT16 slot)
+{
+	UnbindShaderResourceViews(m_i32SmoothnessSlot, 1, PIXEL_SHADER);
+	m_i32SmoothnessSlot = -1;
+}
+
+AVOID Material::UnbindNormal	(const AUINT16 slot)
+{
+	UnbindShaderResourceViews(m_i32NormalSlot, 1, PIXEL_SHADER);
+	m_i32NormalSlot = -1;
 }
 
 AVOID Material::UnbindHeight	(const AUINT16 slot)
@@ -215,6 +261,6 @@ AVOID Material::UnbindHeight	(const AUINT16 slot)
 
 AVOID Material::Unbind()
 {
-	UnbindShaderResourceViews(m_i32DiffuseSlot, 4, PIXEL_SHADER);
-	m_i32DiffuseSlot = m_i32NormalSlot = m_i32SpecularSlot = m_i32HeightSlot = -1;
+	UnbindShaderResourceViews(m_i32DiffuseSlot, 5, PIXEL_SHADER);
+	m_i32DiffuseSlot = m_i32SpecularSlot = m_i32SmoothnessSlot = m_i32NormalSlot = m_i32HeightSlot = -1;
 }

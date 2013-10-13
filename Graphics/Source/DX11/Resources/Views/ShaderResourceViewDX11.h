@@ -53,6 +53,9 @@ namespace Anubis
 		ABOOL InitForTexture2D( AUINT8 format,
 								AUINT16 miplevels, 
 								AUINT16 mostdetailedmip);
+		ABOOL InitForCubeTexture(	AUINT8 format,
+									AUINT16 miplevels,
+									AUINT16 mostdetailedmip );
 	};
 
 	class ShaderResourceViewDX11

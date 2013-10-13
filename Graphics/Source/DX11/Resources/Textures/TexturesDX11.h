@@ -240,6 +240,74 @@ namespace Anubis
 		ID3D11Texture2D*	m_pTexture;
 	};
 
+	class TextureCubeDX11 : public TextureDX11
+	{
+	public:
+		//Constructor
+		TextureCubeDX11() : TextureDX11() 
+		{
+			m_pTexture = NULL;
+		}
+
+		AVIRTUAL ABOOL Create(const D3D11_TEXTURE2D_DESC* pParams);
+		AVIRTUAL ABOOL CreateFromFile(LPCWSTR fileName);
+
+		//TextureDX11 Implementation
+
+		/****
+			==========================================
+				Shader Resource View Creation
+			==========================================
+													 ****/
+		AVIRTUAL ABOOL CreateShaderResourceView(ShaderResourceViewDX11 & view, 
+			const ShaderResourceViewParamsDX11 * params)	const;
+
+		AVIRTUAL ABOOL CreateShaderResourceView(ID3D11ShaderResourceView** ppView, 
+			const ShaderResourceViewParamsDX11 * params)	const;
+
+		/****
+			==========================================
+				Unordered Access View Creation
+			==========================================
+													 ****/
+
+		AVIRTUAL ABOOL CreateUnorderedAccessView(UnorderedAccessViewDX11 & view,
+			const UnorderedAccessViewParamsDX11 * params)	const;
+
+		AVIRTUAL ABOOL CreateUnorderedAccessView(ID3D11UnorderedAccessView** ppView,
+			const UnorderedAccessViewParamsDX11 * params)	const;
+
+		/****
+			==========================================
+				Render Target View Creation
+			==========================================
+													 ****/
+
+		AVIRTUAL ABOOL CreateRenderTargetView(RenderTargetViewDX11 & view, 
+			const RenderTargetViewParamsDX11 * params)		const;
+
+		AVIRTUAL ABOOL CreateRenderTargetView(ID3D11RenderTargetView** ppView, 
+			const RenderTargetViewParamsDX11 * params)		const;
+
+		/****
+			==========================================
+				Depth Stencil View Creation
+			==========================================
+													 ****/
+
+		AVIRTUAL ABOOL CreateDepthStencilView(DepthStencilViewDX11 & view, 
+			const DepthStencilViewParamsDX11 * params)		const;
+
+		AVIRTUAL ABOOL CreateDepthStencilView(ID3D11DepthStencilView** ppView, 
+			const DepthStencilViewParamsDX11 * params)		const;
+
+		//ResourceDX11 Implementation
+		AVIRTUAL ID3D11Resource* GetResourcePointer() const { return m_pTexture; }
+
+	protected:
+		ID3D11Texture2D*	m_pTexture;
+	};
+
 	class Texture3DDX11 : public TextureDX11
 	{
 	public:

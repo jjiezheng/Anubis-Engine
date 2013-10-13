@@ -19,7 +19,9 @@
     <ClInclude Include="Source\Lights\Light.h" />
     <ClInclude Include="Source\Lights\PointLight.h" />
     <ClInclude Include="Source\Lights\SpotLight.h" />
+    <ClInclude Include="Source\Meshes\BoxMesh.h" />
     <ClInclude Include="Source\Meshes\Meshes.h" />
+    <ClInclude Include="Source\Meshes\PlaneMesh.h" />
     <ClInclude Include="Source\Other\Material.h" />
     <ClInclude Include="Source\Other\ShaderBunch.h" />
     <ClInclude Include="Source\Renderer.h" />
@@ -40,7 +42,9 @@
     <ClCompile Include="Source\Lights\Light.cpp" />
     <ClCompile Include="Source\Lights\PointLight.cpp" />
     <ClCompile Include="Source\Lights\SpotLight.cpp" />
+    <ClCompile Include="Source\Meshes\BoxMesh.cpp" />
     <ClCompile Include="Source\Meshes\Meshes.cpp" />
+    <ClCompile Include="Source\Meshes\PlaneMesh.cpp" />
     <ClCompile Include="Source\Other\Material.cpp" />
     <ClCompile Include="Source\Other\ShaderBunch.cpp" />
     <ClCompile Include="Source\Renderer.cpp" />
@@ -118,7 +122,7 @@
       <SDLCheck>true</SDLCheck>
       <PrecompiledHeaderFile>Renderer_pch.h</PrecompiledHeaderFile>
       <PrecompiledHeaderOutputFile>Renderer_pch.pch</PrecompiledHeaderOutputFile>
-      <AdditionalIncludeDirectories>D:\Program Files %28x86%29\Microsoft DirectX SDK %28June 2010%29\Include;$(SolutionDir)Definitions\Source;$(SolutionDir)Graphics\Source;../../ThirdParty/Assimp/include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)Scene\Source;D:\Program Files %28x86%29\Microsoft DirectX SDK %28June 2010%29\Include;$(SolutionDir)Definitions\Source;$(SolutionDir)Graphics\Source;../../ThirdParty/Assimp/include;$(SolutionDir)Renderer\Source;$(SolutionDir)ResourceManager\Source</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -141,7 +145,7 @@
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;RENDERER_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeaderFile>Renderer_pch.h</PrecompiledHeaderFile>
       <PrecompiledHeaderOutputFile>Renderer_pch.pch</PrecompiledHeaderOutputFile>
-      <AdditionalIncludeDirectories>D:\Program Files %28x86%29\Microsoft DirectX SDK %28June 2010%29\Include;$(SolutionDir)Definitions\Source;$(SolutionDir)Graphics\Source;../../ThirdParty/Assimp/include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)Scene\Source;D:\Program Files %28x86%29\Microsoft DirectX SDK %28June 2010%29\Include;$(SolutionDir)Definitions\Source;$(SolutionDir)Graphics\Source;../../ThirdParty/Assimp/include;$(SolutionDir)Renderer\Source;$(SolutionDir)ResourceManager\Source</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>

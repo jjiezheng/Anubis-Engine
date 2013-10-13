@@ -36,5 +36,8 @@
     <Filter Include="Representations">
       <UniqueIdentifier>{0b088bb6-cbe7-44d7-811f-5e0a63a3a30d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Representations\Custom">
+      <UniqueIdentifier>{52d820d0-dbdd-4e6e-8b9c-d5713ea42230}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
 </Project>

@@ -120,6 +120,14 @@ namespace Anubis
 		ShaderBunch*	m_pVarianceShadowsShaders;
 
 		////////////////////////////////////
+		//Sky rendering
+		TextureCube*	m_pSkyTexture;
+		ShaderResourceView* m_pSkySRV;
+		INPUT_LAYOUT*	m_pSkyLayout;
+		ShaderBunch* m_pSkyShaders;
+		shared_ptr<IndexedMesh> m_pSphereMesh;
+
+		////////////////////////////////////
 		//Motion Blur
 		INPUT_LAYOUT*	m_pMotionBlurLayout;
 		ShaderBunch*	m_pVelocityMapShaders;
@@ -153,6 +161,9 @@ namespace Anubis
 
 		/***	Shadows	***/
 		AVOID VGenerateShadowMaps();
+
+		/***	Sky rendering	 ***/
+		AVOID VRenderSky(CameraPtr pCamera, const Mat4x4 & viewproj);
 
 		/***	Post-processing ***/
 		//Motion blur

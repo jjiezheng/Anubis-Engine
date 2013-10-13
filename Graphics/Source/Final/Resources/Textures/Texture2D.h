@@ -75,6 +75,22 @@ namespace Anubis
 							ABOOL	cpuRead,
 							ABOOL	cpuWrite,
 							ABOOL	bGenerateMipMaps = false);
+
+		ABOOL InitCubeTexture(AUINT32 width,
+							AUINT32 height,
+							AUINT16 arraySize,
+							AUINT8  format,
+							ABOOL	shaderResource,
+							ABOOL	unorderedAccess,
+							ABOOL	renderTarget,
+							ABOOL   depthStencil,
+							AUINT16 sampleCount,
+							AUINT16 sampleQuality,
+							AUINT16 miplevels,
+							ABOOL	gpuWrite,
+							ABOOL	cpuRead,
+							ABOOL	cpuWrite,
+							ABOOL	bGenerateMipMaps = false);
 	};
 
 	class Texture2D : public
@@ -85,8 +101,18 @@ namespace Anubis
 		public:
 			Texture2D() : Texture2DDX11() {}
 		};
+
+	class TextureCube : public
+		#ifdef ADX11_API
+			TextureCubeDX11
+		#endif
+		{
+		public:
+			TextureCube() : TextureCubeDX11() {}
+		};
 	
 	//typedefs
 	typedef shared_ptr<Texture2D> Texture2DPtr;
+	typedef shared_ptr<TextureCube> TextureCubePtr;
 
 }; //Anubis

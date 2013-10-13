@@ -1,0 +1,54 @@
+<Transform>
+    <Position x="0" y="3" z="-5" />
+    <Orientation axisx="0" axisy="1" axisz="0" degrees="0" />
+</Transform>
+  <!-- Physics components -->
+<BoxComponent x="" y="" z="" mass="100">
+	<Density>water</Density>
+	<Material>Normal</Material>
+	<Type>Rigid</Type>
+</BoxComponent>
+
+<PlaneComponent x="" y="" z="">
+	<Density>water</Density>
+	<Material>Normal</Material>
+	<Type>Static</Type>
+</PlaneComponent>
+
+<SphereComponent radius="" mass="">
+	<Density>water</Density>
+	<Material>Normal</Material>
+	<Type>Rigid</Type>
+</SphereComponent>
+
+<CharacterComponent height="" width="" depth="" mass="">
+	<Force newtons="" />
+	<MaxSlope degrees="" /></CharacterComponent>
+
+<!-- Graphics components -->
+<BoxComponent x="" y="" z="">
+	<Material>MaterialName</Material>
+	<Position x="" y="" z=""/>
+	<Orientation axisx="" axisy="" axisz="" degrees="" />
+</BoxComponent>
+
+<PlaneComponent x="" y="" z="">
+	<Material>MaterialName</Material>
+	<Position x="" y="" z=""/>
+	<Orientation axisx="" axisy="" axisz="" degrees="" />
+</PlaneComponent>
+
+<MeshComponent file="">
+	<Position x="" y="" z=""/>
+	<Orientation axisx="" axisy="" axisz="" degrees="" />
+</MeshComponent>
+
+<SpotLightComponent range="30" innerAngle="30" outerAngle="70" >
+		<Color r="1.0" g="1.0" b="1.0" />
+		<Position x="" y="" z="" />
+		<Direction x="0.0" y="0.0" z="1.0" /></SpotLightComponent>
+	
+<PointLightComponent range="30" >
+	<Color r="1.0" g="1.0" b="1.0" />
+	<Position x="" y="" z="" /></PointLightComponent>
+	

@@ -47,6 +47,8 @@
 #include "../../Math/Source/Mat4x4.h"
 #include "Representations\Representation.h"
 
+#include "../../Input/Source/Controllers.h" 
+
 namespace Anubis
 {
 	//Unique identifier for each game actor
@@ -66,21 +68,19 @@ namespace Anubis
 		//pointer to its representation
 		EntityRepresentation *	m_pRepresentation;
 
+		shared_ptr<MovementController> m_pController;
+
 	public:
 		//constructor
 		Entity(EntityId id) : m_id(id), m_prevWorldMatrix(Mat4x4::Identity()), m_currentWorldMatrix(Mat4x4::Identity()) 
 		{
 			m_pRepresentation = nullptr;
 		}
-		/***** Initializing *****/
-		//AVIRTUAL EntityRepresentationPtr VCreateRepresentation(Scene * pScene) = 0;
-
-		//create its physics model
-		//AVIRTUAL AVOID VCreatePhysicalBody(IPhysics * pPhysics) = 0;
+		AVIRTUAL ~Entity() {}
 
 		/***** Accessors *****/
 		EntityId	GetId() const { return m_id; } //return entity id
-		Mat4x4		GetGurrentTransform() const { return m_currentWorldMatrix; }
+		Mat4x4		GetCurrentTransform() const { return m_currentWorldMatrix; }
 		EntityRepresentation * GetRepresentation() const { return m_pRepresentation; }
 
 		/***** Mutators *****/
@@ -95,9 +95,43 @@ namespace Anubis
 		/***** Updating *****/
 		AVIRTUAL AVOID	VUpdate(AREAL64 r64Time, AREAL64 r64ElapsedTime);
 
+		shared_ptr<MovementController> GetController() const { return m_pController; }
+		AVOID SetController( shared_ptr<MovementController> pController )
+		{
+			m_pController = pController;
+		}
+
 	private:
 		//AVIRTUAL AVOID VPreUpdate(AREAL64 r64Time, AREAL64 r64ElapsedTime);
 		//AVIRTUAL AVOID VPostUpdate(AREAL64 r64Time, AREAL64 r64ElapsedTime);
+	};
+
+	class ActorEntity : public Entity
+	{
+	protected:
+		//Pointer to entity controller
+		//MovementController* m_pController;
+		//shared_ptr<MovementController> m_pController;
+
+	public:
+
+		//Don't forget to free memory
+		AVIRTUAL ~ActorEntity()
+		{
+			//SAFE_DELETE(m_pController);
+		}
+
+		//New set of accessor and mutator for character controller
+		//MovementController * GetController() const { return m_pController; }
+		//AVOID SetController( MovementController* pController )
+		//{
+		//	m_pController = pController;
+		//}
+	//	shared_ptr<MovementController> GetController() const { return m_pController; }
+		//AVOID SetController( shared_ptr<MovementController> pController )
+		//{
+		//	m_pController = pController;
+		//}
 	};
 
 	//define Entity pointer

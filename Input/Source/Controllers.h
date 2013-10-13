@@ -66,6 +66,8 @@ namespace Anubis
 
 		AVIRTUAL AVOID	VSetTargetDirection(const Vec & vDir) = 0;
 
+		AVIRTUAL ABOOL	VWantToJump() = 0;
+
 		AVIRTUAL AVOID VUpdate(AINT32 const deltaMs) {}
 	};
 
@@ -113,6 +115,150 @@ namespace Anubis
 				m_bKey[key] = false;
 
 				return true;
+			}
+	};
+
+	class PlayerWASDController : public PCPlayerController, public MovementController
+	{
+		protected:
+		AREAL	m_r32TargetYawRot;
+		AREAL	m_r32TargetPitchRot;
+		AREAL	m_r32TargetRollRot;
+		AREAL	m_r32TargetYaw;
+		AREAL	m_r32TargetPitch;
+		AREAL	m_r32TargetRoll;
+
+		Vec		m_vTargetDirection;
+		
+		AREAL	m_r32MaxSpeed;
+		AREAL	m_r32AngularSpeed;
+		AREAL	m_r32CurrentSpeed;
+		AREAL	m_r32TargetSpeed;
+		Vec		m_vTargetVelocity;
+
+		ABOOL	m_bWantToJump;
+
+	public:
+
+		//Contructor
+		PlayerWASDController()
+			{
+				m_r32TargetYaw = 0.0f;
+				m_r32TargetPitch = 0.0f;
+				m_r32TargetRoll = 0.0f;
+
+				m_r32TargetYawRot = 0.0f;
+				m_r32TargetPitchRot = 0.0f;
+				m_r32TargetRollRot = 0.0f;
+
+				m_vTargetDirection = Vector(0.0f, 0.0f, 1.0f, 0.0f);
+
+				m_r32TargetSpeed = 1.0f;
+				m_vTargetVelocity = Vector(0.0f, 0.0f, 0.0f, 0.0f);
+
+				m_bWantToJump = false;
+			}
+
+		// Mouse Handler Implementation //
+		ABOOL VOnMouseMove(const AREAL x, const AREAL y)
+			{
+				/*if (x != m_screenCenter.x() || y != m_screenCenter.y())
+				{
+					m_r32TargetYawRot = (x - m_screenCenter.x());
+					m_r32TargetPitchRot = -(y - m_screenCenter.y());
+
+					m_r32TargetYaw += m_r32TargetYawRot;
+					m_r32TargetPitch += m_r32TargetPitchRot;
+
+					SetCursorPos(m_screenCenter.x(), m_screenCenter.y());
+
+					m_prevMousePos.x = x;
+					m_prevMousePos.y = y;
+				} */
+
+				if (x != m_prevMousePos.x || y != m_prevMousePos.y)
+				{
+					m_r32TargetYawRot = (x - m_prevMousePos.x) * 0.01f;
+					m_r32TargetPitchRot = -(y - m_prevMousePos.y) * 0.01f;
+
+					m_r32TargetYaw += m_r32TargetYawRot;
+					m_r32TargetPitch += m_r32TargetPitchRot;
+
+					//AINT32 res = SetCursorPos(m_screenCenter.x(), m_screenCenter.y());
+
+					m_prevMousePos.x = x;
+					m_prevMousePos.y = y;
+					//m_prevMousePos.x = m_screenCenter.x();
+					//m_prevMousePos.y = m_screenCenter.y();
+				} 
+
+				return true;
+			}
+
+		//Keyboard handler Implementation //
+
+		// Movement controller implementation //
+		AREAL	VGetTargetYaw()			const	{ return m_r32TargetYaw; }
+		AREAL	VGetTargetPitch()		const	{ return m_r32TargetPitch; }
+		AREAL	VGetTargetRoll()		const	{ return m_r32TargetRoll; }
+		AREAL	VGetTargetYawRot()		const	{ return m_r32TargetYawRot; }
+		AREAL	VGetTargetPitchRot()	const	{ return m_r32TargetPitchRot; }
+		AREAL	VGetTargetRollRot()		const	{ return m_r32TargetRollRot; }
+		AREAL	VGetTargetSpeed()		const	{ return m_r32TargetSpeed; }
+		Vec 	VGetTargetVelocity()	const	{ return m_vTargetVelocity; }
+
+		AVOID	VSetTargetDirection(const Vec & vDir) { m_vTargetDirection = vDir; }
+
+		ABOOL	VWantToJump() { return m_bWantToJump; }
+
+		ABOOL VOnKeyDown(Key const key)
+			{
+				m_bKey[key] = true;
+
+				switch (key)
+				{
+					case 'W':
+						m_vTargetVelocity = m_vTargetDirection * m_r32TargetSpeed;
+						break;
+					case 'S':
+						m_vTargetVelocity = -m_vTargetDirection * m_r32TargetSpeed;
+						break;
+					case 'A':
+						{
+							Mat4x4 rot;
+							rot.CreateRotationY(-Pi / 2.0);
+							Vec left = m_vTargetDirection * rot;
+							m_vTargetVelocity = left * m_r32TargetSpeed;
+							break;
+						}
+					case 'D':
+						{
+							Mat4x4 rot;
+							rot.CreateRotationY(Pi / 2.0);
+							Vec right = m_vTargetDirection * rot;
+							m_vTargetVelocity = right * m_r32TargetSpeed;
+							break;
+						}
+					case 'V':
+						{
+							m_bWantToJump = true;
+							break;
+						}
+				}
+
+				return true;
+			}
+
+		AVOID VUpdate(AINT32 const deltaMs)
+			{
+				if (!m_bKey['W'] && !m_bKey['S'] && !m_bKey['A'] && !m_bKey['D'])
+				{
+					m_vTargetVelocity = Vector(0.0f, 0.0f, 0.0f, 0.0f);
+				}
+				if (!m_bKey['V'])
+				{
+					m_bWantToJump = false;
+				}
 			}
 	};
 
@@ -200,6 +346,8 @@ namespace Anubis
 		Vec 	VGetTargetVelocity()	const	{ return m_vTargetVelocity; }
 
 		AVOID	VSetTargetDirection(const Vec & vDir) { m_vTargetDirection = vDir; }
+
+		ABOOL	VWantToJump() { return false; }
 
 		ABOOL VOnKeyDown(Key const key)
 			{

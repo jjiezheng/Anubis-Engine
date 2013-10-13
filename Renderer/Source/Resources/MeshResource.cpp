@@ -873,7 +873,8 @@ ABOOL ObjResourceLoader::ParseObj(ACHAR *pObjStream, size_t bufferLength, shared
 	//											aiProcess_CalcTangentSpace	|
 //												aiProcess_Triangulate		|
 	//											aiProcess_ConvertToLeftHanded);
-	m_pScene = m_Importer.ReadFile(pObjStream, aiProcess_CalcTangentSpace	|
+	m_pScene = m_Importer.ReadFile(pObjStream,  aiProcess_GenSmoothNormals  |
+												aiProcess_CalcTangentSpace	|
 												aiProcess_Triangulate		|
 												aiProcess_ConvertToLeftHanded);
 	if (!m_pScene)
@@ -940,7 +941,7 @@ ABOOL ObjResourceLoader::ParseObj(ACHAR *pObjStream, size_t bufferLength, shared
 		//	pMat->SetNormalTexture(normals);
 		//}
 		//load normal map
-		char* ending = "_norm.png";
+		char* ending = "_n.png";
 		const char* beg = name.C_Str();
 		const char* pSep = strchr(beg, '_');
 		if (pSep)
@@ -953,7 +954,7 @@ ABOOL ObjResourceLoader::ParseObj(ACHAR *pObjStream, size_t bufferLength, shared
 		}
 
 		//load height map
-		ending = "_bump.png";
+		ending = "_h.png";
 		beg = name.C_Str();
 		pSep = strchr(beg, '_');
 		if (pSep)
@@ -966,7 +967,7 @@ ABOOL ObjResourceLoader::ParseObj(ACHAR *pObjStream, size_t bufferLength, shared
 		}
 
 		//load specular map
-		ending = "_spec.png";
+		ending = "_s.png";
 		beg = name.C_Str();
 		pSep = strchr(beg, '_');
 		if (pSep)
@@ -976,6 +977,19 @@ ABOOL ObjResourceLoader::ParseObj(ACHAR *pObjStream, size_t bufferLength, shared
 			AnsiToWideCch(specs, beg, name.length+1);
 			//pMat->m_pHeightMap->CreateFromFile(heights);
 			pMat->SetSpecularTexture(specs);
+		}
+
+		//load glossiness map
+		ending = "_g.png";
+		beg = name.C_Str();
+		pSep = strchr(beg, '_');
+		if (pSep)
+		{
+			strcpy(const_cast<char*>(pSep), ending);
+			wchar_t* smooth = new wchar_t[name.length];
+			AnsiToWideCch(smooth, beg, name.length+1);
+			//pMat->m_pHeightMap->CreateFromFile(heights);
+			pMat->SetSmoothnessTexture(smooth);
 		}
 
 		//push material to the list

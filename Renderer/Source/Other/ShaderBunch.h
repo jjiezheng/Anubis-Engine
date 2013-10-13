@@ -80,4 +80,27 @@ namespace Anubis
 
 		AVIRTUAL AVOID VBind();
 	}; 
+
+	class ShaderBunchVGP
+	{
+	private:
+		VertexShader*	m_pVertrexShader;
+		GeometryShader* m_pGeometryShader;
+		PixelShader*	m_pPixelShader;
+
+	public:
+
+		//constructor
+		ShaderBunchVGP()
+		{
+			m_pVertexShader = nullptr;
+			m_pGeometryShader = nullptr;
+			m_pPixelShader = nullptr;
+		};
+
+		//destructor
+		~ShaderBunch();
+
+
+
 }; //Anubis

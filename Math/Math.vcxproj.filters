@@ -15,6 +15,7 @@
     <ClInclude Include="Source\Macroses.h" />
     <ClInclude Include="Source\Interpolation.h" />
     <ClInclude Include="Source\Standard.h" />
+    <ClInclude Include="Source\DualNumbers.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Vectors.cpp" />

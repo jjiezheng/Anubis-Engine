@@ -165,6 +165,16 @@ AVOID Game::VRemoveGameView(ViewPtr pView)
 {
 }
 
+AVOID Game::AddPlayerView(shared_ptr<PlayerView> pView)
+{
+	m_playerViews.push_back(pView);
+}
+
+PlayerViewPtr Game::GetPlayerView(const AINT32 player)
+{
+	return m_playerViews[player];
+}
+
 /**********************************
 ** Rendering methods
 **********************************/

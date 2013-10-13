@@ -197,6 +197,8 @@ namespace Anubis
 							AREAL texWidth, AREAL texHeight, FilterType type);
 		AVIRTUAL AVOID VGenerateShadowMaps() = 0;
 
+		AVIRTUAL AVOID VRenderSky(CameraPtr pCamera, const Mat4x4 & viewproj) = 0;
+
 		//Accessors
 		ABOOL LightningOn() const { return m_bLightningOn; }
 		ABOOL TexturingOn() const { return m_bTexturingOn; }

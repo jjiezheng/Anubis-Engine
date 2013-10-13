@@ -92,6 +92,9 @@ namespace Anubis
 			Bind Shader Resource Views to the pipeline
 		== */
 		AVOID Set(DepthStencilViewDX11 * pView) const;
+		AVOID SetOneView(const AUINT8 index);
+
+		//AVOID Clear(const AREAL * bgColor, const AUINT8 index);
 		AVOID Clear(const AREAL * bgColor);
 		AVOID Clear();
 	};

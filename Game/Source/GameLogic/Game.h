@@ -82,6 +82,7 @@ namespace Anubis
 			Views
 		----------------------- **/
 		Views		m_views;
+		PlayerViews m_playerViews;
 
 	public:
 		//constructor and destructor
@@ -139,5 +140,8 @@ namespace Anubis
 		AVIRTUAL ViewPtr	VAddGameView(shared_ptr<IView> pView);
 		AVIRTUAL AVOID		VRemoveGameView(shared_ptr<IView> pView);
 		const	 Views *	 GetViews() const { return &m_views; }
+
+		AVOID		  AddPlayerView(shared_ptr<PlayerView> pView);
+		PlayerViewPtr GetPlayerView(const AINT32 player);
 	};
 }; //Anubis

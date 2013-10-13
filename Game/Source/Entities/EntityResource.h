@@ -45,15 +45,18 @@
 //====================================================================================
 
 #include "../../../Math/Source/Vectors.h"
+#include "../../../Math/Source/Quaternion.h"
 
 #include "../GameLogic/Game.h"
 #include "PhysicsInterface.h"
+#include "Havok\Havok.h"
 #include "Representations\Representation.h"
+#include "Data\XML\tinyxml.h"
 
 namespace Anubis
 {
 	class Game;
-	struct EntityResource
+	/*struct EntityResource
 	{
 		//position
 		Vec	m_pos;
@@ -84,5 +87,184 @@ namespace Anubis
 
 		/// ***	Copy resource data *** ///
 		AVIRTUAL EntityResource & VCopy() = 0;
+	}; */
+
+
+	struct EntityComponent
+	{
+		AVIRTUAL ASTRING VGetType() const { return "Component"; }
+	};
+	///////////////////////////////////////////////////////////
+	//Graphics Component
+	///////////////////////////////////////////////////////////
+	struct GraphicsComponent : public EntityComponent
+	{
+		AWSTRING m_material;
+	};
+
+	struct GraphicsPlaneComponent : public GraphicsComponent
+	{
+		AVIRTUAL ASTRING VGetType() const { return "Plane"; }
+
+		AREAL m_fXHalfExtent;
+		AREAL m_fYHalfExtent;
+		AREAL m_fZHalfExtent;
+	};
+
+	struct GraphicsBoxComponent : public GraphicsComponent
+	{
+		ASTRING VGetType() const { return "Box"; }
+
+		AREAL m_fXHalfExtent;
+		AREAL m_fYHalfExtent;
+		AREAL m_fZHalfExtent;
+	};
+
+	struct GraphicsSphereComponent : public GraphicsComponent
+	{
+		ASTRING VGetType() const { return "Sphere"; }
+
+		AREAL m_fRadius;
+	};
+
+	struct GraphicsMeshComponent : public GraphicsComponent
+	{
+		ASTRING VGetType() const { return "Mesh"; }
+
+		ASTRING m_filename;
+	};
+
+	struct GraphicsLightComponent : public GraphicsComponent
+	{
+		Vec m_color;
+	};
+
+	struct GraphicsPointLightComponent : public GraphicsLightComponent
+	{
+		ASTRING VGetType() const { return "PointLight"; }
+
+		Vec m_position;
+		AREAL m_range;
+	};
+
+	struct GraphicsDirectionalLightComponent : public GraphicsLightComponent
+	{
+		ASTRING VGetType() const { return "DirectionalLight"; }
+
+		Vec m_direction;
+	};
+
+	struct GraphicsSpotLightComponent : public GraphicsLightComponent
+	{
+		ASTRING VGetType() const { return "SpotLight"; }
+
+		Vec m_direction;
+		Vec m_position;
+
+		AREAL m_innerAngle;
+		AREAL m_outerAngle;
+		AREAL m_range;
+	};
+
+
+	///////////////////////////////////////////////////////////
+	//Physics Component
+	///////////////////////////////////////////////////////////
+	struct PhysicsComponent : public EntityComponent
+	{
+		//Convert to actual values when creating physics model
+		ASTRING m_material;
+		ASTRING	m_density;
+		AREAL	m_mass;
+
+		ABOOL	m_bIsStatic;
+	};
+
+	struct PhysicsPlaneComponent : public PhysicsComponent
+	{
+		AVIRTUAL ASTRING VGetType() const { return "Plane"; }
+
+		AREAL m_fXHalfExtent;
+		AREAL m_fYHalfExtent;
+		AREAL m_fZHalfExtent;
+	};
+
+	struct PhysicsBoxComponent : public PhysicsComponent
+	{
+		ASTRING VGetType() const { return "Box"; }
+
+		AREAL m_fXHalfExtent;
+		AREAL m_fYHalfExtent;
+		AREAL m_fZHalfExtent;
+	};
+
+	struct PhysicsSphereComponent : public PhysicsComponent
+	{
+		ASTRING VGetType() const { return "Sphere"; }
+
+		AREAL m_fRadius;
+	};
+
+	struct PhysicsMeshComponent : public PhysicsComponent
+	{
+		ASTRING VGetType() const { return "Mesh"; }
+
+		ASTRING m_filename;
+	};
+
+	struct PhysicsCharacterComponent : public PhysicsComponent
+	{
+		ASTRING VGetType() const { return "Character"; }
+
+		AREAL m_height;
+		AREAL m_width;
+		AREAL m_depth;
+
+		AREAL m_forceInNewtons;
+		AREAL m_maxSlopeInRadians;
+	};
+
+	struct EntityResource
+	{
+		Vec m_vPos;
+		Quaternion m_qRot;
+
+		////////////////////////////
+		//Entity Components
+		//GraphicsComponent* m_pGraphics;
+		//PhysicsComponent* m_pPhysics;
+
+		typedef vector<GraphicsComponent*> Graphics;
+		typedef vector<PhysicsComponent*> Physics;
+
+		Graphics m_graphics;
+		Physics  m_physics;
+
+		EntityResource(const ACHAR* filename);
+		//AVIRTUAL AVOID VLoad(const ASTRING & filename);
+		AVIRTUAL ~EntityResource();
+
+		//	 =====================	 //
+		//		Factory Pattern		 //
+		//	 =====================	 //
+
+		//create entity
+		AVIRTUAL EntityPtr	VCreateEntity(Game * pGame);
+
+		//create its representation
+		AVIRTUAL AVOID VCreateRepresentation(Scene * pScene, EntityPtr pEntity);
+
+		//create its physics model
+		AVIRTUAL AVOID VCreatePhysicalBody(IPhysics * pPhysics, EntityPtr pEntity);
+
+		/// ***	Copy resource data *** ///
+		//AVIRTUAL EntityResource & VCopy();
+
+	private:
+
+		AVOID InitTransform(TiXmlElement* pComponent);
+		AVOID InitPhysicsComponent(TiXmlElement* pComponent);
+		AVOID InitGraphicsComponent(TiXmlElement* pComponent);
+
 	};
 };

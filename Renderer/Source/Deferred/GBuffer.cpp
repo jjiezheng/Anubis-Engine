@@ -69,6 +69,13 @@ GBufferOne::GBufferOne() :
 	m_pDiffuseTex	= make_shared<Texture2D>(Texture2D());
 	m_pSpecularTex	= make_shared<Texture2D>(Texture2D());	
 	m_pGeometryNormalTex = make_shared<Texture2D>(Texture2D());
+
+	//m_pDepthStencilView = new DepthStencilView();
+}
+
+GBufferOne::~GBufferOne()
+{
+	SAFE_DELETE(m_pDepthStencilView);
 }
 
 ABOOL GBufferOne::VInitialize()
@@ -79,7 +86,9 @@ ABOOL GBufferOne::VInitialize()
 	Texture2DParams * pParams = new Texture2DParams();
 	pParams->Init(SCREEN_WIDTH, SCREEN_HEIGHT, 1, TEX_R32G32B32A32_FLOAT, true, false, 
 		true, false, 1, 0, 1, true, false, false);
-		//==
+	//pParams->Init(SCREEN_WIDTH, SCREEN_HEIGHT, 1, TEX_R8G8B8A8_UNORM, true, false, true, false, 1, 0, 1, true, false, false);
+
+	//==
 	//Create textures
 	//==
 	Texture2D pTex = *m_pPosTex;
@@ -91,9 +100,17 @@ ABOOL GBufferOne::VInitialize()
 	m_pSpecularTex->Create(pParams);
 	m_pGeometryNormalTex->Create(pParams);
 
+	//Texture2DParams * pDepthParams = new Texture2DParams();
+	//pDepthParams->Init(SCREEN_WIDTH, SCREEN_HEIGHT, 1, TEX_R24G8_TYPELESS, true, false, 
+	//	false, true, 1, 0, 1, true, false, false);
+	//m_pDepthTex->Create(pDepthParams);
+
 	//Define properties for shader resource views
 	ShaderResourceViewParams * pSRVParams = new ShaderResourceViewParams();
 	pSRVParams->InitForTexture2D(pParams->Format, 1, 0);
+
+	//ShaderResourceViewParams * pSRVDepthParams = new ShaderResourceViewParams();
+	//pSRVDepthParams->InitForTexture2D(TEX_R32_FLOAT, 1, 0);
 
 	//==
 	//Create Shader Resource Views
@@ -105,7 +122,7 @@ ABOOL GBufferOne::VInitialize()
 	m_pSpecularTex->CreateShaderResourceView(m_SRVList.GetView(4), pSRVParams);
 	m_pGeometryNormalTex->CreateShaderResourceView(m_SRVList.GetView(5), pSRVParams);
 
-	//Define properties for shader resource views
+	//Define properties for render target views
 	RenderTargetViewParams * pRTVParams = new RenderTargetViewParams();
 	pRTVParams->InitForTexture2D(pParams->Format, 0);
 
@@ -118,6 +135,22 @@ ABOOL GBufferOne::VInitialize()
 	m_pDiffuseTex->CreateRenderTargetView(m_RTVList.GetView(3), pRTVParams);
 	m_pSpecularTex->CreateRenderTargetView(m_RTVList.GetView(4), pRTVParams);
 	m_pGeometryNormalTex->CreateRenderTargetView(m_RTVList.GetView(5), pRTVParams);
+
+	//Define properties for depth stencil view
+	//DepthStencilViewParams * pDSVParams = new DepthStencilViewParams();
+	//pDSVParams->InitForTexture2D(TEX_D24_UNORM_S8_UINT, 0);
+	
+	//==
+	//Create Depth Stencil View
+	//==
+//	m_pDepthTex->CreateDepthStencilView(&m_pDepthStencilView->m_pView, pDSVParams);
+
+	SAFE_DELETE(pParams);
+	//SAFE_DELETE(pDepthParams);
+	SAFE_DELETE(pSRVParams);
+	//SAFE_DELETE(pSRVDepthParams);
+	SAFE_DELETE(pRTVParams);
+	//SAFE_DELETE(pDSVParams);
 
 	return 1;
 }
@@ -134,8 +167,13 @@ AVOID GBufferOne::UnbindFromReading(AUINT16 slot) const
 
 AVOID GBufferOne::BindForWriting(DepthStencilView * pView)
 {
-	m_RTVList.Clear(); //clear all render targets
+	//m_RTVList.Clear(); //clear all render targets
 	m_RTVList.Set(pView); //bind them to the pipeline
+}
+
+AVOID GBufferOne::BindRenderTarget(const AUINT8 index)
+{
+	m_RTVList.SetOneView(index);
 }
 
 AVOID GBufferOne::UnbindFromWriting() const

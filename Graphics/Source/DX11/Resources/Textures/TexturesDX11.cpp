@@ -199,6 +199,91 @@ ABOOL Texture2DDX11::Create(const D3D11_TEXTURE2D_DESC* pParams)
 }
 
 ////////////////////////////////////////
+//TextureCube Implementation
+////////////////////////////////////////
+ABOOL TextureCubeDX11::Create(const D3D11_TEXTURE2D_DESC* pParams)
+{
+	HRESULT hr = D3D11Device()->CreateTexture2D(pParams, NULL, &m_pTexture);
+
+	VALID(hr);
+}
+
+ABOOL TextureCubeDX11::CreateFromFile(LPCWSTR filename)
+{
+	D3DX11_IMAGE_LOAD_INFO info;
+	info.MiscFlags = D3D11_RESOURCE_MISC_TEXTURECUBE;
+
+	HRESULT hr = D3DX11CreateTextureFromFile(D3D11Device(), filename, &info, nullptr,
+		(ID3D11Resource**)(&m_pTexture), nullptr);
+
+	VALID(hr);
+}
+
+ABOOL Anubis::TextureCubeDX11::CreateShaderResourceView(ShaderResourceViewDX11 & view, 
+			const ShaderResourceViewParamsDX11 * params)	const
+{
+	HRESULT hr = D3D11Device()->CreateShaderResourceView(m_pTexture, params, &view.m_pView);
+
+	VALID(hr);
+}
+ABOOL Anubis::TextureCubeDX11::CreateShaderResourceView(ID3D11ShaderResourceView** ppView, 
+			const ShaderResourceViewParamsDX11 * params)	const
+{
+	HRESULT hr = D3D11Device()->CreateShaderResourceView(m_pTexture, params, ppView);
+
+	VALID(hr);
+}
+
+
+ABOOL TextureCubeDX11::CreateUnorderedAccessView(UnorderedAccessViewDX11 & view,
+			const UnorderedAccessViewParamsDX11 * params)	const
+{
+	HRESULT hr = D3D11Device()->CreateUnorderedAccessView(m_pTexture, params, &view.m_pView);
+
+	VALID(hr);
+}
+ABOOL TextureCubeDX11::CreateUnorderedAccessView(ID3D11UnorderedAccessView** ppView,
+			const UnorderedAccessViewParamsDX11 * params)	const
+{
+	HRESULT hr = D3D11Device()->CreateUnorderedAccessView(m_pTexture, params, ppView);
+
+	VALID(hr);
+}
+
+
+ABOOL TextureCubeDX11::CreateRenderTargetView(RenderTargetViewDX11 & view, 
+			const RenderTargetViewParamsDX11 * params)		const
+{
+	HRESULT hr = D3D11Device()->CreateRenderTargetView(m_pTexture, params, &view.m_pView);
+	 
+	VALID(hr);
+}
+
+ABOOL TextureCubeDX11::CreateRenderTargetView(ID3D11RenderTargetView** ppView, 
+			const RenderTargetViewParamsDX11 * params)		const
+{
+	HRESULT hr = D3D11Device()->CreateRenderTargetView(m_pTexture, params, ppView);
+	 
+	VALID(hr);
+}
+
+ABOOL TextureCubeDX11::CreateDepthStencilView(DepthStencilViewDX11 & view, 
+			const DepthStencilViewParamsDX11 * params)		const
+{
+	HRESULT hr = D3D11Device()->CreateDepthStencilView(m_pTexture, params, &view.m_pView);
+
+	VALID(hr);
+}
+
+ABOOL TextureCubeDX11::CreateDepthStencilView(ID3D11DepthStencilView** ppView, 
+			const DepthStencilViewParamsDX11 * params)		const
+{
+	HRESULT hr = D3D11Device()->CreateDepthStencilView(m_pTexture, params, ppView);
+
+	VALID(hr);
+}
+
+////////////////////////////////////////
 //Texture3D Implementation
 ////////////////////////////////////////
 ABOOL Texture3DDX11::CreateShaderResourceView(ShaderResourceViewDX11 & view, 

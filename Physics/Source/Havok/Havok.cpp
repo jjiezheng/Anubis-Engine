@@ -52,6 +52,7 @@
 #include "GameMessages.h"
 
 #include "Application\Engine.h"
+#include "../../Input/Source/Controllers.h" 
 
 #undef HK_FEATURE_PRODUCT_AI
 #undef HK_FEATURE_PRODUCT_ANIMATION
@@ -66,6 +67,8 @@
 #define HK_EXCLUDE_FEATURE_RegisterVersionPatches 
 #define HK_EXCLUDE_LIBRARY_hkGeometryUtilities
 
+#define HK_CONFIG_SIMD 1
+
 #include <Common/Base/hkBase.h>
 #include <Common/Base/System/hkBaseSystem.h>
 #include <Common/Base/System/Error/hkDefaultError.h>
@@ -76,13 +79,21 @@
 
 #include <Physics/Dynamics/World/hkpWorld.h>
 #include <Physics/Dynamics/Entity/hkpRigidBody.h>
+
+#include <Physics/Utilities/CharacterControl/CharacterRigidBody/hkpCharacterRigidBody.h>
+#include <Physics/Utilities/CharacterControl/CharacterRigidBody/hkpCharacterRigidBodyListener.h>
+#include <Physics/Utilities/CharacterControl/StateMachine/hkpDefaultCharacterStates.h>
+#include <Physics/Utilities/CharacterControl/StateMachine/hkpCharacterContext.h>
 //#include <Physics/Dynamics/hkpDynamics.h>
 
 #include <Physics/Collide/Dispatch/hkpAgentRegisterUtil.h>
 #include <Physics/Collide/Shape/Convex/Box/hkpBoxShape.h>
 #include <Physics/Collide/Shape/Convex/Sphere/hkpSphereShape.h>
 #include <Physics/Collide/Shape/HeightField/Plane/hkpPlaneShape.h>
+#include <Physics/Collide/Shape/Convex/Capsule/hkpCapsuleShape.h>
 //#include <Physics/Collide/Shape/Convex/Cylinder/hkpCylinderShape.h>
+
+#include <Physics/Dynamics/Constraint/Bilateral/Hinge/hkpHingeConstraintData.h>
 
 #include <Physics/Utilities/Dynamics/Inertia/hkpInertiaTensorComputer.h>
 
@@ -126,13 +137,15 @@ namespace Anubis
 		hkpCollisionDispatcher*	m_pCollisionDispatcher;
 		hkpConstraintInstance*	m_pConstraintDispatcher;
 
+		hkpCharacterContext*	m_pCharacterContext;
+
 		//////////////////////////////////////////////////
 		//Havok memory
 		hkMemoryRouter*			m_pMemoryRouter;
 
 		//////////////////////////////////////////////////
 		//Physical properties
-		typedef std::map<ASTRING, float> Densities;
+		typedef std::map<ASTRING, AREAL> Densities;
 		typedef std::map<ASTRING, PhysicsMaterial> Materials;
 
 		Densities m_densityTable;
@@ -140,6 +153,8 @@ namespace Anubis
 
 		///////////////////////////////////////////////////
 		//Actors
+
+		// ************** Rigid Bodies and Static Objects ************** //
 		typedef std::map<const EntityId, hkpRigidBody*> EntityIdToRigidBody;
 		EntityIdToRigidBody m_entityIdToRigidBody;
 		hkpRigidBody* GetHavokRigidBody(const EntityId entityId) const;
@@ -147,6 +162,15 @@ namespace Anubis
 		typedef std::map<const hkpRigidBody*, EntityId> RigidBodyToEntityId;
 		RigidBodyToEntityId m_rigidBodyToEntityId;
 		EntityId GetEntityId(const hkpRigidBody* pRigidBody) const;
+
+		// **************         Actors                   ************** //
+		typedef std::map<const EntityId, hkpCharacterRigidBody*> EntityIdToCharacterBody;
+		EntityIdToCharacterBody m_entityIdToCharacterBody;
+		hkpCharacterRigidBody* GetHavokCharacterBody(const EntityId entityId) const;
+
+		typedef std::map<const hkpCharacterRigidBody*, EntityId> CharacterBodyToEntityId;
+		CharacterBodyToEntityId m_characterBodyToEntityId;
+		EntityId GetEntityId(const hkpCharacterRigidBody* pRigidBody) const;
 
 	public:
 
@@ -176,9 +200,11 @@ namespace Anubis
 		//AVIRTUAL AVOID VAddShape(EntityPtr pEntity, hkpShape* pShape, AREAL r32Mass, const ASTRING & physicsMaterial, 
 		//	const ABOOL isStatic = false);
 		AVIRTUAL AVOID VAddShape(EntityPtr pEntity, hkpShape * pShape, hkpRigidBodyCinfo & ci);
-		AVIRTUAL AVOID VAddBox(EntityPtr pEntity, Vec & pos, Vec & dimensions, AREAL r32Mass, ASTRING & physMat, ABOOL isStatic = false);
-		AVIRTUAL AVOID VAddPlane(EntityPtr pEntity, Vec & pos, Vec & dimensions, AREAL r32Mass, ASTRING & physMat, ABOOL isStatic = false);
-		//AVIRTUAL AVOID VAddSphere(EntityPtr pEntity, const AREAL radius, 
+		AVIRTUAL AVOID VAddBox(EntityPtr pEntity, Vec & pos, Quaternion & rot, Vec & dimensions, AREAL r32Mass, ASTRING & physMat, ABOOL isStatic = false);
+		AVIRTUAL AVOID VAddPlane(EntityPtr pEntity, Vec & pos, Quaternion & rot, Vec & dimensions, AREAL r32Mass, ASTRING & physMat, ABOOL isStatic = false);
+		AVOID VAddSphere(EntityPtr pEntity, Vec & pos, Quaternion & rot, AREAL r32Radius, AREAL r32Mass, ASTRING & physMat, ABOOL isStatic = false);
+		//AVIRTUAL AVOID VAddSphere(EntityPtr pEntity, const AREAL radius,
+		AVOID VAddCharacter(EntityPtr pEntity, Vec & pos, Quaternion & rot, const Vec & dim, const AREAL mass, const AREAL maxForce, const AREAL maxSlope);
 
 		/////////////////////////////////////
 		//physics modifiers
@@ -197,6 +223,10 @@ namespace Anubis
 		AVIRTUAL AVOID VSetVelocity(const EntityId entityId, const Vec & vel);
 		AVIRTUAL AVOID VSetAngularVelocity(const EntityId entityId, const Vec & angularVel);
 		//AVIRTUAL AVOID VSetTransform(const EntityId entityId, const Mat4x4 & mat);
+
+		/////////////////////////////////////
+		//Character methods
+		AVIRTUAL AVOID CharacterJump(const EntityId entityId);
 	};
 
 };
@@ -213,6 +243,29 @@ static hkVector4 Vec_to_hkVector4( const Vec & vec )
 	return hkVector4(vec.x, vec.y, vec.z, vec.w);
 }
 
+static Quaternion hkQuaternion_to_Quaternion( const hkQuaternion & q )
+{
+	hkVector4 axis;
+	q.getAxis(axis);
+
+	return Quaternion(axis.getComponent(0), axis.getComponent(1), axis.getComponent(2), q.getAngle());
+}
+
+static hkQuaternion Quaternion_to_hkQuaternion( const Quaternion & q )
+{
+	hkQuaternion rot;
+	if (q.GetX() == 0.0f && q.GetY() == 0.0f && q.GetZ() == 0.0f)
+	{
+		//rot = hkQuaternion::getIdentity();
+	}
+	else
+	{
+		rot.setAxisAngle(hkVector4(q.GetX(), q.GetY(), q.GetZ()), q.GetAngle());
+	}
+
+	return rot;
+}
+
 static Anubis::Mat4x4 hkTransform_to_Mat4x4( const hkTransform & mat )
 {
 	/*return Mat4x4(	mat.getElement<0, 0>(), mat.getElement<0, 1>(), mat.getElement<0, 2>(), mat.getElement<0, 3>(),
@@ -220,10 +273,26 @@ static Anubis::Mat4x4 hkTransform_to_Mat4x4( const hkTransform & mat )
 					mat.getElement<2, 0>(), mat.getElement<2, 1>(), mat.getElement<2, 2>(), mat.getElement<2, 3>(),
 					mat.getElement<3, 0>(), mat.getElement<3, 1>(), mat.getElement<3, 2>(), mat.getElement<3, 3>() ); */
 	//hkTransform is column-major, so transpose
-	return Mat4x4(	mat.getElement<0, 0>(), mat.getElement<1, 0>(), mat.getElement<2, 0>(), mat.getElement<3, 0>(),
+	/*return Mat4x4(	mat.getElement<0, 0>(), mat.getElement<1, 0>(), mat.getElement<2, 0>(), mat.getElement<3, 0>(),
 					mat.getElement<0, 1>(), mat.getElement<1, 1>(), mat.getElement<2, 1>(), mat.getElement<3, 1>(),
 					mat.getElement<0, 2>(), mat.getElement<1, 2>(), mat.getElement<2, 2>(), mat.getElement<3, 2>(),
-					mat.getElement<0, 3>(), mat.getElement<1, 3>(), mat.getElement<2, 3>(), mat.getElement<3, 3>() );
+					mat.getElement<0, 3>(), mat.getElement<1, 3>(), mat.getElement<2, 3>(), mat.getElement<3, 3>() ); */
+	Vec trans = hkVector4_to_Vec(mat.getTranslation());
+	hkRotation rot = mat.getRotation();
+	//Vec rot = hkQuaternion_to_Quaternion(mat.getRotation().
+	Mat4x4 transform;
+//	transform.CreateTranslation(trans);
+	for (int i = 0; i < 3; i++)
+	{
+		transform.rows[i].x = rot.getColumn(i).getComponent(0);
+		transform.rows[i].y = rot.getColumn(i).getComponent(1);
+		transform.rows[i].z = rot.getColumn(i).getComponent(2);
+	}
+	transform.rows[3].x = trans.x;
+	transform.rows[3].y = trans.y;
+	transform.rows[3].z = trans.z;
+
+	return transform;
 };
 
 
@@ -277,6 +346,7 @@ HavokPhysics::~HavokPhysics()
 	SAFE_DELETE(m_pBroadPhase);
 	SAFE_DELETE(m_pCollisionDispatcher);
 	SAFE_DELETE(m_pConstraintDispatcher);
+	SAFE_DELETE(m_pCharacterContext);
 }
 
 AVOID HavokPhysics::LoadData()
@@ -346,12 +416,92 @@ ABOOL HavokPhysics::VInit()
 	//register all xollision agents
 	hkpAgentRegisterUtil::registerAllAgents(m_pWorld->getCollisionDispatcher());
 
+	////////////////////////////////////////
+	//Register charactyer state and context
+	hkpCharacterState* pState;
+	hkpCharacterStateManager* pManager = new hkpCharacterStateManager();
+
+	//Character is on the ground
+	pState = new hkpCharacterStateOnGround();
+	pManager->registerState(pState, HK_CHARACTER_ON_GROUND);
+	pState->removeReference();
+
+	//Character is in the air
+	pState = new hkpCharacterStateInAir();
+	pManager->registerState(pState, HK_CHARACTER_IN_AIR);
+	pState->removeReference();
+
+	//Character is jumping
+	pState = new hkpCharacterStateJumping();
+	pManager->registerState(pState, HK_CHARACTER_JUMPING);
+	pState->removeReference();
+
+	//Character is climbing
+	pState = new hkpCharacterStateClimbing();
+	pManager->registerState(pState, HK_CHARACTER_CLIMBING);
+	pState->removeReference();
+
+	m_pCharacterContext = new hkpCharacterContext(pManager, HK_CHARACTER_ON_GROUND);
+	//m_pCharacterContext = new hkpCharacterContext(pManager, HK_CHARACTER_IN_AIR);
+	pManager->removeReference();
+
+	m_pCharacterContext->setCharacterType(hkpCharacterContext::HK_CHARACTER_RIGIDBODY);
+	m_pCharacterContext->setFilterParameters(0.9f, 15.0f, 400.0f);
+
 	return true; 
 }
 		
 //Update simulation
 AVOID HavokPhysics::VUpdate(AREAL deltaSeconds ) 
 {
+	m_pWorld->lock();
+	for (auto it = m_entityIdToCharacterBody.begin(); it != m_entityIdToCharacterBody.end(); it++)
+	{
+		hkpCharacterRigidBody* pCharacter = it->second;
+
+		//Acquire character controller
+		const EntityId id = it->first;
+		EntityPtr pEntity = g_pEngine->m_pGame->VGetEntity(id);
+		shared_ptr<MovementController> pController = g_pEngine->m_pGame->VGetEntity(id)->GetController();
+
+		//Get input for a character
+		hkpCharacterInput input;
+		hkpCharacterOutput output;
+		{
+			//input.m_inputLR = -pController->VGetTargetVelocity().z;
+			//input.m_inputUD = -pController->VGetTargetVelocity().x;
+			input.m_inputLR = pController->VGetTargetVelocity().x;
+			input.m_inputUD = -pController->VGetTargetVelocity().z;
+
+			input.m_forward.set(0, 0, 1);
+			hkQuaternion rot;
+			rot.setAxisAngle(hkVector4(0, 1, 0), pController->VGetTargetYaw());
+			input.m_forward.setRotatedDir(rot, input.m_forward);
+
+			input.m_wantJump = pController->VWantToJump();
+			input.m_atLadder = false;
+
+			input.m_up = hkVector4(0, 1, 0);
+		//	input.m_forward.set(1, 0, 0);
+
+			hkStepInfo si;
+			si.m_deltaTime = deltaSeconds;
+			si.m_invDeltaTime = 1.0f / deltaSeconds;
+			//si.m_endTime = g_pEngine->get
+
+			input.m_stepInfo = si;
+			input.m_characterGravity.set(0, -9.8, 0);
+			input.m_velocity = pCharacter->getRigidBody()->getLinearVelocity();
+			input.m_position = pCharacter->getRigidBody()->getPosition();
+
+			pCharacter->checkSupport(si, input.m_surfaceInfo);
+		}
+
+		m_pCharacterContext->update(input, output);
+
+		pCharacter->setLinearVelocity(output.m_velocity, deltaSeconds);
+	}
+	m_pWorld->unlock();
 	m_pWorld->stepDeltaTime(deltaSeconds);                                               
 }
 
@@ -368,12 +518,29 @@ AVOID HavokPhysics::VSyncData(AREAL64 r64CurrentTime)
 
 		Mat4x4 transform = hkTransform_to_Mat4x4(pRigidBody->getTransform());
 		transform.rows[3].w = 1.0f;
-		if (pEntity->GetGurrentTransform() != transform)
+		if (pEntity->GetCurrentTransform() != transform)
 		{
 			pEntity->SetCurrentTransform(transform, r64CurrentTime);
 			//Anubis::SendGameMessage(Mes_Move_Entity(id, transform));
 		}
 	} 
+
+	//Synchronize character controllers
+	//We use separate cycle as characters may need to synchronize other data
+	for (auto it = m_entityIdToCharacterBody.begin(); it != m_entityIdToCharacterBody.end(); it++)
+	{
+		const EntityId id = it->first;
+		EntityPtr pEntity = g_pEngine->m_pGame->VGetEntity(id);
+
+		hkpCharacterRigidBody* const pCharacter = it->second;
+
+		Mat4x4 transform = hkTransform_to_Mat4x4(pCharacter->getRigidBody()->getTransform());
+		transform.rows[3].w = 1.0f;
+		if (pEntity->GetCurrentTransform() != transform)
+		{
+			pEntity->SetCurrentTransform(transform, r64CurrentTime);
+		}
+	}
 }
 
 AVOID HavokPhysics::VAddShape(EntityPtr pEntity, hkpShape* pShape,  hkpRigidBodyCinfo & ci)
@@ -400,7 +567,55 @@ AVOID HavokPhysics::VAddShape(EntityPtr pEntity, hkpShape* pShape,  hkpRigidBody
 	m_pWorld->unlock();
 }
 
-AVOID HavokPhysics::VAddBox(EntityPtr pEntity, Vec & pos, Vec & halfDimensions, AREAL r32Mass, ASTRING & physMat, ABOOL isStatic)
+AVOID HavokPhysics::VAddCharacter(EntityPtr pEntity, Vec & pos, Quaternion & rot, const Vec & dim, const AREAL mass, const AREAL maxForce, const AREAL maxSlope)
+{
+	//Construct character shape
+	hkVector4 top(0, 0, dim.y / 2.0);
+	hkVector4 bottom(0, 0, -dim.y / 2.0);
+
+	//Use capsule to represent the character shape
+	hkpCapsuleShape* pCapsule = new hkpCapsuleShape(top, bottom, dim.x / 2.0);
+
+	///////////////////////////////////
+	//Set properties
+	hkpCharacterRigidBodyCinfo ci;
+	ci.m_mass = mass;
+	ci.m_shape = pCapsule;
+	ci.m_maxForce = maxForce;
+	ci.m_up = hkVector4(0, 1, 0);
+	ci.m_position = Vec_to_hkVector4(pos);
+	ci.m_maxSlope = maxSlope;
+
+	//ci.m_mass = 100.0f;
+	//ci.m_shape = pCapsule;
+	//ci.m_up = hkVector4(0, 0, 1);
+	//ci.m_position.set(0.0f, 15.0f, 1.5f);
+	//ci.m_maxSlope = HK_REAL_PI / 3.0f;
+
+	///////////////////////////////////
+	//Create character body
+	hkpCharacterRigidBody* pCharacter = new hkpCharacterRigidBody(ci);
+	{
+		//assign listener to the character
+		hkpCharacterRigidBodyListener* pListener = new hkpCharacterRigidBodyListener();
+		pCharacter->setListener(pListener);
+		pListener->removeReference();
+	}
+
+	////////////////////////////////////////////
+	//add rigid body to help game structures
+	m_entityIdToCharacterBody.insert(std::make_pair(pEntity->GetId(), pCharacter));
+	m_characterBodyToEntityId.insert(std::make_pair(pCharacter, pEntity->GetId()));
+
+	//add entity to the world
+	m_pWorld->lock();
+	m_pWorld->addEntity(pCharacter->getRigidBody());
+
+	pCapsule->removeReference();
+	m_pWorld->unlock();
+}
+
+AVOID HavokPhysics::VAddBox(EntityPtr pEntity, Vec & pos, Quaternion & rot, Vec & halfDimensions, AREAL r32Mass, ASTRING & physMat, ABOOL isStatic)
 {
 	hkVector4 halfExtents = Vec_to_hkVector4(halfDimensions);
 	hkpBoxShape* pBoxShape = new hkpBoxShape(halfExtents);
@@ -410,6 +625,13 @@ AVOID HavokPhysics::VAddBox(EntityPtr pEntity, Vec & pos, Vec & halfDimensions, 
 	hkpRigidBodyCinfo ci;
 	ci.m_shape = pBoxShape;
 	ci.m_position = Vec_to_hkVector4(pos);
+	//hkQuaternion rotA;
+	//rotA.setAxisAngle(hkVector4(0.0f, 1.0f, 0.0f), HK_REAL_PI / 4.0f);
+	//ci.m_rotation = rotA;
+	if(!(rot.GetX() == 0 && rot.GetY() == 0 && rot.GetZ() == 0))
+	{
+		ci.m_rotation = Quaternion_to_hkQuaternion(rot);
+	}
 	if (isStatic)
 		ci.m_motionType = hkpMotion::MOTION_FIXED;
 	else
@@ -434,18 +656,24 @@ AVOID HavokPhysics::VAddBox(EntityPtr pEntity, Vec & pos, Vec & halfDimensions, 
 	VAddShape(pEntity, pBoxShape, ci);
 }
 
-AVOID HavokPhysics::VAddPlane(EntityPtr pEntity, Vec & pos, Vec & halfDimensions, AREAL r32Mass, ASTRING & physMat, ABOOL isStatic)
+AVOID HavokPhysics::VAddPlane(EntityPtr pEntity, Vec & pos, Quaternion & rot, Vec & halfDimensions, AREAL r32Mass, ASTRING & physMat, ABOOL isStatic)
 {
 	//hkVector4 halfExtents = Vec_to_hkVector4(halfDimensions);
 	//hkpPlaneShape* pPlaneShape = new hkpPlaneShape(hkVector4(0.0f, 0.0f, 1.0f, 0.0f), Vec_to_hkVector4(pos), halfExtents);
-	hkVector4 halfExtents = hkVector4(halfDimensions.x, 2.0f, halfDimensions.y, 0.0f);
+	hkVector4 halfExtents = hkVector4(halfDimensions.x != 0 ? halfDimensions.x : 0.2f, halfDimensions.y != 0 ? halfDimensions.y : 0.6f,
+		halfDimensions.z != 0 ? halfDimensions.z : 0.2f, 0.0f);
 	hkpBoxShape* pPlaneShape = new hkpBoxShape(halfExtents);
 
 	////////////////////////////////////
 	//Set properties
 	hkpRigidBodyCinfo ci;
 	ci.m_shape = pPlaneShape;
-	ci.m_position = Vec_to_hkVector4(pos);
+	//ci.m_position = Vec_to_hkVector4(pos) - hkVector4(0.0f, -0.2f, 0.0f, 0.0f);
+	ci.m_position = hkVector4(pos.x, pos.y - 0.3f, pos.z, pos.w);
+	if(!(rot.GetX() == 0 && rot.GetY() == 0 && rot.GetZ() == 0))
+	{
+		ci.m_rotation = Quaternion_to_hkQuaternion(rot);
+	}
 	if (isStatic)
 		ci.m_motionType = hkpMotion::MOTION_FIXED;
 	else
@@ -468,6 +696,40 @@ AVOID HavokPhysics::VAddPlane(EntityPtr pEntity, Vec & pos, Vec & halfDimensions
 	VAddShape(pEntity, pPlaneShape, ci);
 }
 
+AVOID HavokPhysics::VAddSphere(EntityPtr pEntity, Vec & pos, Quaternion & rot, AREAL r32Radius, AREAL r32Mass, ASTRING & physMat, ABOOL isStatic)
+{
+	hkpSphereShape* pSphereShape = new hkpSphereShape(r32Radius);
+
+	////////////////////////////////////
+	//Set properties
+	hkpRigidBodyCinfo ci;
+	ci.m_shape = pSphereShape;
+	ci.m_position = Vec_to_hkVector4(pos);
+	if(!(rot.GetX() == 0 && rot.GetY() == 0 && rot.GetZ() == 0))
+	{
+		ci.m_rotation = Quaternion_to_hkQuaternion(rot);
+	}
+	if (isStatic)
+		ci.m_motionType = hkpMotion::MOTION_FIXED;
+	else
+	{
+		//set motion type
+		ci.m_motionType = hkpMotion::MOTION_DYNAMIC;
+
+		//set mass properties
+		hkMassProperties massProperties;
+		hkpInertiaTensorComputer::computeShapeVolumeMassProperties(pSphereShape, r32Mass, massProperties);
+
+		ci.setMassProperties(massProperties);
+	}
+
+	//set material properties
+	PhysicsMaterial material = m_materialTable[physMat];
+	ci.m_friction = material.m_r32Friction;
+	ci.m_restitution = material.m_r32Restitution;
+
+	VAddShape(pEntity, pSphereShape, ci);
+}
 
 /////////////////////////////////////////////////
 //Appliers
@@ -524,6 +786,13 @@ AVOID HavokPhysics::VSetAngularVelocity(const EntityId entityId, const Vec & ang
 {
 	hkpRigidBody* pRigidBody = m_entityIdToRigidBody[entityId];
 	pRigidBody->setAngularVelocity(Vec_to_hkVector4(angularVel));
+}
+
+/////////////////////////////////////////////////
+//Character methods
+/////////////////////////////////////////////////
+AVOID HavokPhysics::CharacterJump(const EntityId entityId)
+{
 }
 
 /////////////////////////////////////////////////////

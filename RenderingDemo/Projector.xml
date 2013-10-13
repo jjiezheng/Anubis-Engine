@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Actor>
+  <Transform>
+    <Position x="0" y="50" z="0" />
+    <Orientation axisx="0" axisy="1" axisz="0" degrees="0" />
+  </Transform>
+  <GraphicsComponent>
+	<BoxComponent x="0.5" y="0.5" z="0.5">
+		<Material>Bricks</Material>
+	</BoxComponent>
+    <SpotLightComponent range="40" innerAngle="0.1" outerAngle="3.4" >
+		<Color r="1.0" g="1.0" b="1.0" />
+		<Direction x="0.0" y="-1.0" z="0.0" />
+	</SpotLightComponent>
+  </GraphicsComponent>
+</Actor>

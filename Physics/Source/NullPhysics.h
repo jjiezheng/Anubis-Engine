@@ -68,9 +68,10 @@ namespace Anubis
 		///////////////////////////////////////
 		/*** Add objects to the simulation ***/
 		///////////////////////////////////////
-		AVIRTUAL AVOID VAddBox(EntityPtr pEntity, Vec & pos, Vec & dimensions, AREAL r32Mass, ASTRING & physMat, ABOOL isStatic) {}
-		AVIRTUAL AVOID VAddPlane(EntityPtr pEntity, Vec & pos, Vec & dimensions, AREAL r32Mass, ASTRING & physMat, ABOOL isStatic) {}
-		//AVIRTUAL AVOID VAddSphere(EntityPtr pEntity, const AREAL radius, 
+		AVIRTUAL AVOID VAddBox(EntityPtr pEntity, Vec & pos, Quaternion & rot, Vec & dimensions, AREAL r32Mass, ASTRING & physMat, ABOOL isStatic) {}
+		AVIRTUAL AVOID VAddPlane(EntityPtr pEntity, Vec & pos, Quaternion & rot,Vec & dimensions, AREAL r32Mass, ASTRING & physMat, ABOOL isStatic) {}
+		AVOID VAddSphere(EntityPtr pEntity, Vec & pos, Quaternion & rot, AREAL r32Radius, AREAL r32Mass, ASTRING & physMat, ABOOL isStatic) {}
+		AVOID VAddCharacter(EntityPtr pEntity, Vec & pos, Quaternion & rot, const Vec & dim, const AREAL mass, const AREAL maxForce, const AREAL maxSlope) {}
 
 		/////////////////////////////////////
 		/*** Apply actions to the bodies ***/

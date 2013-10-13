@@ -179,7 +179,8 @@ AVOID Light::VRender()
 
 AVOID Light::VPostRender(Renderer* pRenderer)
 {
-	UnbindShaderResourceViews(7, 1, ST_Pixel);
+	//UnbindShaderResourceViews(9, 1, ST_Pixel);
+	UnbindShaderResourceViews(0, 9, ST_Pixel);
 	pRenderer->AllDisabledBackCullingRasterizer()->Set();
 }
 

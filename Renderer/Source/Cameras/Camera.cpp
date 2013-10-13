@@ -46,6 +46,8 @@
 #include "Renderer_pch.h"
 #include "Camera.h"
 
+//#include "../../Game/Source/Entities/Entity.h"
+
 using namespace Anubis;
 
 Camera::Camera(	const Frustum & frustum,
@@ -59,6 +61,10 @@ Camera::Camera(	const Frustum & frustum,
 {
 	m_dir = Normalize(dir);
 	m_initialDir = m_dir;
+
+	//target
+	m_bHasTarget = false;
+	m_pTarget = nullptr;
 
 	//initalize matrices
 	UpdateTransforms();

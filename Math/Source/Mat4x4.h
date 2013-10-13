@@ -139,6 +139,7 @@ namespace Anubis
 		Mat4x4 CreateScaling(AREAL x, AREAL y, AREAL z); //more effective
 
 		AREAL  GetElement(const AUINT8 row, const AUINT8 col) const;
+		Vec	   GetPosition() const;
 
 		/**
 				Operations on matrices

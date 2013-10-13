@@ -58,6 +58,9 @@
 
 #include "Anubis.h"
 
+#include "Data\XML\tinyxml.h"
+#include "Data\XML\tinystr.h"
+
 using namespace std;
 
 #define ADX11_API
