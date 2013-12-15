@@ -16,6 +16,7 @@
     <ClCompile Include="Source\DX11\Resources\Buffers\BuffersDX11.cpp" />
     <ClCompile Include="Source\DX11\Resources\Buffers\ConstantBufferDX11.cpp" />
     <ClCompile Include="Source\DX11\Resources\Buffers\IndexBufferDX11.cpp" />
+    <ClCompile Include="Source\DX11\Resources\Buffers\StructuredBufferDX11.cpp" />
     <ClCompile Include="Source\DX11\Resources\Buffers\VertexBufferDX11.cpp" />
     <ClCompile Include="Source\DX11\Resources\Textures\TexturesDX11.cpp" />
     <ClCompile Include="Source\DX11\Resources\Views\DepthStencilViewDX11.cpp" />
@@ -54,6 +55,7 @@
     <ClInclude Include="Source\DX11\Other\BlobDX11.h" />
     <ClInclude Include="Source\DX11\Resources\Buffers\BuffersDX11.h" />
     <ClInclude Include="Source\DX11\Resources\Buffers\ConstantBufferDX11.h" />
+    <ClInclude Include="Source\DX11\Resources\Buffers\StructuredBufferDX11.h" />
     <ClInclude Include="Source\DX11\Resources\Buffers\IndexBufferDX11.h" />
     <ClInclude Include="Source\DX11\Resources\Buffers\VertexBufferDX11.h" />
     <ClInclude Include="Source\DX11\Resources\ResourceDataDX11.h" />

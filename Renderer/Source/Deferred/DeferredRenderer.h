@@ -114,6 +114,7 @@ namespace Anubis
 		//Shadow mapping
 		INPUT_LAYOUT* m_pShadowsLayout;
 		ShaderBunch*	m_pShadowsShaders;
+		ShaderBunchVGP* m_pShadowCubeShaders;
 
 		////////////////////////////////////
 		//Variance shadows
@@ -125,6 +126,7 @@ namespace Anubis
 		ShaderResourceView* m_pSkySRV;
 		INPUT_LAYOUT*	m_pSkyLayout;
 		ShaderBunch* m_pSkyShaders;
+		ShaderBunch* m_pAtmoShaders;
 		shared_ptr<IndexedMesh> m_pSphereMesh;
 
 		////////////////////////////////////
@@ -136,6 +138,12 @@ namespace Anubis
 
 		INPUT_LAYOUT*	m_pSRVtoRTVLayout;
 		ShaderBunch*	m_pSRVtoRTVShaders;
+
+		////////////////////////////////////
+		//Anti-aliasing
+		INPUT_LAYOUT*	m_pNullLayout;
+		VertexBuffer*	m_pFullscreenEmpty;
+		ShaderBunch*	m_pFXAAShaders;
 
 	public:
 		/***		=====		***

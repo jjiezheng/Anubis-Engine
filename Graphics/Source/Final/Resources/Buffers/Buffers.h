@@ -48,7 +48,7 @@
 #include "../../../DX11/Resources/Buffers/VertexBufferDX11.h"
 #include "../../../DX11/Resources/Buffers/IndexBufferDX11.h"
 #include "../../../DX11/Resources/Buffers/ConstantBufferDX11.h"
-//#include "../../../DX11/Resources/Buffers/StructuredBufferDX11.h"
+#include "../../../DX11/Resources/Buffers/StructuredBufferDX11.h"
 
 namespace Anubis
 {
@@ -69,6 +69,13 @@ namespace Anubis
 	class ConstantBuffer : public
 		#ifdef ADX11_API
 			ConstantBufferDX11
+		#endif
+	{
+	};
+
+	class StructuredBuffer : public
+		#ifdef ADX11_API
+			StructuredBufferDX11
 		#endif
 	{
 	};

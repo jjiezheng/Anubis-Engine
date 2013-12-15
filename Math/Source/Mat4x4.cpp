@@ -159,6 +159,16 @@ Mat4x4 Mat4x4::CreateScaling(Vec & scale)
 	return *this;
 }
 
+Mat4x4 Mat4x4::CreateScaling(AREAL x, AREAL y, AREAL z)
+{
+	rows[0] = Vector(x, 0, 0, 0);
+	rows[1] = Vector(0, y, 0, 0);
+	rows[2] = Vector(0, 0, z, 0);
+	rows[3] = Vector(0, 0, 0, 1);
+
+	return *this;
+}
+
 Mat4x4 Mat4x4::CreateRollPitchYaw(AREAL rollInRadians, AREAL pitchInRadians, AREAL yawInRadians)
 {
 	return CreateRotationZ(rollInRadians) * CreateRotationX(pitchInRadians) * CreateRotationY(yawInRadians);
@@ -268,6 +278,7 @@ Vec Mat4x4::GetPosition() const
 {
 	return Vector(rows[3].x, rows[3].y, rows[3].z, 1.0f);
 }
+
 
 ///////////////////////////////////////////
 //Operators

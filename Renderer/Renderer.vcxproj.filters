@@ -25,6 +25,12 @@
     <Filter Include="Resources">
       <UniqueIdentifier>{cdd733a6-e503-462d-b304-ca20fe6e741a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ForwardPlus">
+      <UniqueIdentifier>{35163cbb-cdb8-40dd-bd5c-ea1324f45e17}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Other\Partition">
+      <UniqueIdentifier>{b02edbc6-1ae4-4b8f-a002-e5b7b2424004}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Renderer.h" />
@@ -75,6 +81,12 @@
     <ClInclude Include="Source\Meshes\PlaneMesh.h">
       <Filter>Meshes</Filter>
     </ClInclude>
+    <ClInclude Include="Source\ForwardPlus\ForwardPlusRenderer.h">
+      <Filter>ForwardPlus</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Other\Partition\BVH.h">
+      <Filter>Other\Partition</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Renderer.cpp" />
@@ -121,6 +133,12 @@
     </ClCompile>
     <ClCompile Include="Source\Meshes\PlaneMesh.cpp">
       <Filter>Meshes</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\ForwardPlus\ForwardPlusRenderer.cpp">
+      <Filter>ForwardPlus</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Other\Partition\BVH.cpp">
+      <Filter>Other\Partition</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

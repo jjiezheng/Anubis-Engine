@@ -61,7 +61,7 @@ namespace Anubis
 	class Renderer;
 	class Mesh 
 	{
-	private:
+	protected:
 		Mat4x4			m_objectTransform;
 		Mat4x4			m_worldTransform;
 
@@ -84,7 +84,7 @@ namespace Anubis
 	public:
 		//Constructor and destructor
 		Mesh();
-		~Mesh();
+		AVIRTUAL ~Mesh();
 
 		/**	Initialization **/
 		//AVIRTUAL ABOOL VInitialize(ASTRING fileName) = 0;
@@ -112,48 +112,13 @@ namespace Anubis
 		AVOID SetMaterial();
 	
 		AVOID GenerateShadowMap();
+		AVIRTUAL AVOID VRenderZPass(Renderer* pRenderer, const Mat4x4 & view, const Mat4x4 & viewProj);
 		AVIRTUAL AVOID VGenerateEnvironmentalMap() {}
 	};
 
 	//useful typedefs
 	typedef shared_ptr<Mesh> MeshPtr;
 	typedef vector<MeshPtr> Meshes;
-
-	/*struct Subset
-	{
-		~Subset()
-		{
-			SAFE_DELETE(m_pVerticesBuffer);
-			SAFE_DELETE(m_pTexCoordBuffer);
-			SAFE_DELETE(m_pNormalDataBuffer);
-			SAFE_DELETE(m_pIndexBuffer);
-		}
-
-		VertexBuffer*	m_pVerticesBuffer;
-		VertexBuffer*	m_pTexCoordBuffer;
-		VertexBuffer*	m_pNormalDataBuffer;
-		IndexBuffer*	m_pIndexBuffer;
-
-		std::shared_ptr<Material>	m_pMaterial;
-	}; */
-	/*class ComplexMesh : public Mesh
-	{
-	protected:
-		Subset*	m_pSubsets;
-		AUINT32 m_uNumSubsets;
-
-	public:
-
-		ComplexMesh();
-		~ComplexMesh();
-
-	
-		AVOID VPreRender(Renderer *pRenderer, const Mat4x4 & view, const Mat4x4 & viewprojection);		//change pipeline state if needed
-		AVOID VRender(Renderer * pRenderer);		//render the mesh
-		AVOID VPostRender(Renderer * pRenderer);			//restore previous pipeline state if needed
-	
-		AVOID GenerateShadowMap();
-	}; */
 
 	class IndexedMesh : public Mesh
 	{
@@ -182,7 +147,7 @@ namespace Anubis
 			m_pShaders->VSetVertexShader(L"GBufferShader.hlsl", "VS", layout, 5, TOPOLOGY_TRIANGLELIST);
 			m_pShaders->VSetPixelShader(L"GBufferShader.hlsl", "PS");
 		}
-		~IndexedMesh();
+		virtual ~IndexedMesh();
 
 		/** Rendering methods **/
 		AVOID VPreRender(Renderer *pRenderer, const Mat4x4 & view, const Mat4x4 & viewprojection);		//change pipeline state if needed
@@ -190,7 +155,31 @@ namespace Anubis
 
 		AVOID SetIndexBuffer();
 	
+		AVOID VRenderZPass(Renderer* pRenderer, const Mat4x4 & view, const Mat4x4 & viewProj);
 		AVOID GenerateShadowMap();
+	};
+
+	class ReflectiveMesh : public IndexedMesh
+	{
+		friend class ObjResourceLoader;
+
+	protected:
+		TextureCube*		m_pEnvMap;
+		ShaderResourceView* m_pEnvSRV;
+		RenderTargetView*	m_pEnvRTV;
+
+	public:
+		ReflectiveMesh() : IndexedMesh()
+		{
+			m_pEnvMap = new TextureCube();
+			m_pEnvSRV = new ShaderResourceView();
+			m_pEnvRTV = new RenderTargetView();
+		}
+		virtual ~ReflectiveMesh();
+
+		/** Rendering methods **/
+		AVOID VPreRender(Renderer *pRenderer, const Mat4x4 & view, const Mat4x4 & viewprojection);
+		AVOID VPostRender(Renderer * pRenderer);
 	};
 
 }; //Anubis

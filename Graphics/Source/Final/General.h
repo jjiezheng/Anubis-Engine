@@ -100,6 +100,12 @@ namespace Anubis
 	//--------------------------------------------------------
 	AVOID UnbindRenderTargetViews(AUINT8 numviews);
 
+	//*** Unbind geoemtry shader from the pipeline ***/
+	//----------------------------------------------------
+	//--
+	//----------------------------------------------------
+	AVOID UnbindGeometryShader();
+
 	/**
 		// Global variables
 	**/
@@ -122,7 +128,9 @@ namespace Anubis
 
 
 	AVOID SetRenderTargetView();
+	AVOID SetRenderTargetView(DepthStencilView* pDepthStencilView);
 	AVOID SetDepthStencilView(DepthStencilView * pDepthStencilView);
+	AVOID SetGlobalViewport();
 
 	#ifdef ADX11_API	//directX 11 specific
 		ID3D11Device*			D3D11Device();

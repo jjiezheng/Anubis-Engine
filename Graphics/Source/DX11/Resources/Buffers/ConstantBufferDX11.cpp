@@ -59,8 +59,17 @@ AVOID ConstantBufferDX11::Set(AUINT16 slot, ShaderType type)
 	case ST_Geometry:
 		D3D11DeviceContext()->GSSetConstantBuffers(slot, 1, &m_pBuffer);
 		break;
+	case ST_Hull:
+		D3D11DeviceContext()->HSSetConstantBuffers(slot, 1, &m_pBuffer);
+		break;
+	case ST_Domain:
+		D3D11DeviceContext()->DSSetConstantBuffers(slot, 1, &m_pBuffer);
+		break;
 	case ST_Pixel:
 		D3D11DeviceContext()->PSSetConstantBuffers(slot, 1, &m_pBuffer);
+		break;
+	case ST_Compute:
+		D3D11DeviceContext()->CSSetConstantBuffers(slot, 1, &m_pBuffer);
 		break;
 	default:
 		ASSERT(0);

@@ -10,6 +10,7 @@ namespace Anubis
 	{
 	protected:
 		EntityPtr m_pLight;
+		vector<EntityPtr> m_lights;
 
 	public:
 

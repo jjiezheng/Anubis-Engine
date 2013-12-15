@@ -87,7 +87,7 @@ namespace Anubis
 	/* ======================================
 					Matrices
 	========================================= */
-	Mat4x4 CreateViewMatrixLH(const Vec & pos, const Vec & lookAt, const Vec & up);
+	Mat4x4 CreateViewMatrixLH(const Vec & pos, const Vec & lookDir, const Vec & up);
 	Mat4x4 CreatePerspectiveProjectionLH(	const AREAL fov,	const AREAL aspect,
 											const AREAL nearZ,	const AREAL farZ );
 	Mat4x4 CreateOrthoProjectionLH(	const AREAL width,	const AREAL height,

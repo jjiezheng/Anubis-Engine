@@ -7,6 +7,7 @@ Texture2D	geometryNormalTexture	:	register( t5 );
 Texture2D	ambientOcclusionMap	:	register( t6 );
 Texture2D	shadowMap		:	register( t7 );
 Texture2D	depthMap		:	register( t8 );
+TextureCube shadowCubeMap	:	register( t9 );
 
 SamplerState bilinearSampler : register ( s0 )
 {
@@ -106,7 +107,7 @@ void GetGBufferAtributes( in float2 screenPos, out float3 position, out float3 n
 
 	position	=	positionTexture.Load(sampleCoords).xyz;
 	normal		=	normalTexture.Load(sampleCoords).xyz;
-	normal = normalize(normal);
+	normal		=	normalize(normal);
 	depth		=	depthTexture.Load(sampleCoords).x;
 	diffuse		=	diffuseTexture.Load(sampleCoords).xyz;
 
@@ -300,6 +301,34 @@ float CalcShadowing(in float3 worldPos)
 	}
 }
 
+float CalcShadowingCube(in float3 worldPos, in float3 dir)
+{
+	//convert coordinates to light's post-projection
+	//float4 shadowMapPos = mul(float4(worldPos, 1.0f), lightViewProj);
+	//shadowMapPos /= shadowMapPos.w;
+
+	//get atual depth from light
+	//float lightDepth = shadowMapPos.z;
+	//lightDepth -= 0.001; //bias(to avoid shadow acne)
+
+	//float2 samplingCoords = float2( (shadowMapPos.x + 1.0f) * 0.5f, (shadowMapPos.y - 1.0f) * (-0.5) );
+	float lightDepth = length(dir) / 79.5f  - 0.001;
+	dir = normalize(dir);
+	float shadowMapDepth = shadowCubeMap.Sample(pointSampler, dir);
+
+	//return lightDepth;
+	//return shadowMapDepth;
+
+	if (lightDepth > shadowMapDepth) 
+	{
+		return 0.0f; //shadowed
+	}
+	else
+	{
+		return 1.0f;
+	}
+}
+
 float CalcShadowingPCF16(in float3 worldPos)
 {
 	float2 recipShadowMapSize = float2(1.0f / 1280.0f, 1.0f / 720.0f);
@@ -386,6 +415,62 @@ float CalcShadowingVariance(in float3 worldPos)
 	}
 }
 
+float CalcShadowingVariance(in float3 worldPos, in float3 dir)
+{
+	const float lightVSMEpsilon = 0.0000000001;
+	float2 recipShadowMapSize = float2(1.0f / 1280.0f, 1.0f / 720.0f);
+
+	//Calculate coordinates in light space
+	float4 shadowMapPos = mul(float4(worldPos, 1.0f), lightViewProj);
+	shadowMapPos /= shadowMapPos.w;
+
+	//if it is not visible to the light then just return ambient lighting
+	if (shadowMapPos.x <= -1.0f || shadowMapPos.x >= 1.0f ||
+		shadowMapPos.y <= -1.0f || shadowMapPos.y >= 1.0f ||
+		shadowMapPos.z <= 0.0f  || shadowMapPos.z >= 1.0f )
+	{
+		return 1.0f;
+	}
+
+	//float lightDepth = shadowMapPos.z;
+	float lightDepth = length(dir) / 79.5f;
+	dir = normalize(dir);
+	float2 samplingCoords = float2( (shadowMapPos.x + 1.0f) * 0.5f, (shadowMapPos.y - 1.0f) * (-0.5) );
+	//lightDepth -= 0.0001;
+
+	//Retrieve data
+	//float4 moments = shadowMap.Sample(pointSampler, samplingCoords);
+	float4 moments = shadowCubeMap.Sample(bilinearSampler, dir);
+	//return moments.x;
+
+	//Only lit if depth <= estimated value in shadow map
+	/*float litFactor = (lightDepth <= moments.x);
+	//if (litFactor == 0) return 0.0f;
+	//float litFactor;
+
+	//Calculate moments
+	float E_x = moments.x * moments.x;
+	float E_x2 = moments.y;
+
+	float variance = min(max(E_x2 - E_x, 0.0) , 1.0);
+	float m_d = (moments.x - lightDepth);
+	float p = variance / (variance + m_d * m_d);
+
+	litFactor = max(p, 1.0f);
+	return litFactor; */
+	//float variance = max(0.00000001f, moments.y - moments.x * moments.x);
+	float variance = moments.y - moments.x * moments.x;
+	float diff = lightDepth - moments.x;
+	if (diff >= 0)
+	{
+		return variance / (variance + diff * diff);
+	}
+	else
+	{
+		return 1.0f;
+	}
+}
+
 float3 Uncharted2Tonemap(float3 color)
 {
 	float A = 0.15;
@@ -423,7 +508,15 @@ float4 PS ( float4 screenPos : SV_POSITION ) : SV_Target
 	}
 	else
 	{
-	//return float4(diffuse, 1.0f);
+	
+	float3 dir = position - float3(lightPos.x, lightPos.y, lightPos.z);
+	//dir = normalize(dir);
+	
+	//float cubeDepth = shadowCubeMap.Sample(bilinearSampler, dir).x;
+	//float shadowAtten = CalcShadowingCube(position, dir);
+	float shadowAtten = CalcShadowingVariance(position, dir);
+	//return float4(shadowAtten, shadowAtten, shadowAtten, 1.0f);
+	
 	ambient = diffuse;
 	color += ambient * float3(0.15f, 0.15f, 0.15f);
 
@@ -449,7 +542,7 @@ float4 PS ( float4 screenPos : SV_POSITION ) : SV_Target
 	//						diffuse, specular, specPower);
 	//}
 	//color = CalcLightning(position, normal, depth, diffuse, specular, specPower);
-	color += PhysicallyBasedLightning(position, normal, depth, diffuse, specular, specPower, smoothness);
+	color += shadowAtten*PhysicallyBasedLightning(position, normal, depth, diffuse, specular, specPower, smoothness);
 	float3 hdrcolor = Uncharted2Tonemap(color) / Uncharted2Tonemap(float3(1.0f, 1.0f, 1.0f));
 	//return float4(color, 1.0f)
 	//hdrcolor = pow(color, 1.0 / 2.2);

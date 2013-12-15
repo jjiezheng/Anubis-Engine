@@ -67,6 +67,7 @@ ABOOL Anubis::InitializeGraphics(HWND hwnd, AUINT32 width, AUINT32 height)
 	bufferDesc.Height = height;
 	bufferDesc.RefreshRate.Numerator = 60;
 	bufferDesc.RefreshRate.Denominator = 1;
+	//bufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM_SRGB;
 	bufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
 	//bufferDesc.Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
 	bufferDesc.ScanlineOrdering = DXGI_MODE_SCANLINE_ORDER_UNSPECIFIED;
@@ -78,8 +79,8 @@ ABOOL Anubis::InitializeGraphics(HWND hwnd, AUINT32 width, AUINT32 height)
 	ZeroMemory(&swapChainDesc, sizeof(DXGI_SWAP_CHAIN_DESC)); //zero memory for the structure
 
 	swapChainDesc.BufferDesc = bufferDesc; //set created back buffer
-	swapChainDesc.SampleDesc.Count = 1;
-	swapChainDesc.SampleDesc.Quality = 0;
+	swapChainDesc.SampleDesc.Count = 8;
+	swapChainDesc.SampleDesc.Quality = 1;
 	swapChainDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT; //use back buffer as render target
 	swapChainDesc.BufferCount = 1;
 	swapChainDesc.OutputWindow = hwnd; 
@@ -90,6 +91,7 @@ ABOOL Anubis::InitializeGraphics(HWND hwnd, AUINT32 width, AUINT32 height)
 	//=============================
 	//Create swap chain
 	D3D_FEATURE_LEVEL pLevel = D3D_FEATURE_LEVEL_11_0; //set feature desired feature level
+	//D3D11_CREATE_DEVICE_DEBUG
 	HRESULT hr = D3D11CreateDeviceAndSwapChain(NULL, D3D_DRIVER_TYPE_HARDWARE, NULL, D3D11_CREATE_DEVICE_DEBUG, &pLevel, 1,
 		D3D11_SDK_VERSION, &swapChainDesc, &g_SwapChain, &g_d3d11Device, NULL, &g_d3d11DeviceContext);
 
@@ -183,7 +185,8 @@ AVOID Anubis::UnbindUnorderedAccessViews(AUINT16 slot, AUINT8 numviews)
 #ifdef ADX11_API
 	ID3D11UnorderedAccessView* pNullUAV = NULL;
 
-	D3D11DeviceContext()->CSSetUnorderedAccessViews(slot, numviews, &pNullUAV, nullptr);
+	for (int i = 0; i < numviews; i++)
+		D3D11DeviceContext()->CSSetUnorderedAccessViews(slot+i, 1, &pNullUAV, nullptr);
 #endif
 }
 
@@ -193,6 +196,14 @@ AVOID Anubis::UnbindRenderTargetViews(AUINT8 numviews)
 	ID3D11RenderTargetView* pNullRTV = NULL;
 	for (int i = 0; i < numviews; i++)
 		D3D11DeviceContext()->OMSetRenderTargets(1, &pNullRTV, NULL);
+#endif
+}
+
+AVOID Anubis::UnbindGeometryShader()
+{
+#ifdef ADX11_API
+	ID3D11GeometryShader* pNullShader = nullptr;
+	D3D11DeviceContext()->GSSetShader(pNullShader, nullptr, 0);
 #endif
 }
 
@@ -265,6 +276,17 @@ AVOID Anubis::SetRenderTargetView()
 #endif
 }
 
+AVOID Anubis::SetRenderTargetView(DepthStencilView* pDSV)
+{
+#ifdef ADX11_API
+	#ifdef DXUT11_FW
+		DXUTGetD3D11DeviceContext()->OMSetRenderTargets( 1, DXUTGetD3D11RenderTargetView(), &pDSV->m_pView );
+	#else
+		g_d3d11DeviceContext->OMSetRenderTargets( 1, &g_pRenderTargetView->m_pView, pDSV->m_pView );
+	#endif
+#endif
+}
+
 AVOID Anubis::SetDepthStencilView(DepthStencilView* pDSV)
 {
 #ifdef ADX11_API
@@ -274,6 +296,11 @@ AVOID Anubis::SetDepthStencilView(DepthStencilView* pDSV)
 		g_d3d11DeviceContext->OMSetRenderTargets(0, nullptr, pDSV->m_pView);
 	#endif
 #endif
+}
+
+AVOID Anubis::SetGlobalViewport()
+{
+	g_pViewport->Set();
 }
 
 /**

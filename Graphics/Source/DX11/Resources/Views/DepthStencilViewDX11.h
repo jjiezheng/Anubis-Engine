@@ -51,7 +51,13 @@ namespace Anubis
 	public:
 		DepthStencilViewParamsDX11() { ZeroMemory(this, sizeof(DepthStencilViewParamsDX11)); }
 		ABOOL InitForTexture2D( AUINT8 format,
-								AUINT16 mipslice);
+								AUINT16 mipslice,
+								ABOOL multiSampled);
+
+		ABOOL InitForTexture2DArray( AUINT32 arraySize,
+									 AUINT8 format, 
+									 AUINT32 firstArraySlice,
+									 AUINT16 mipslice);
 	};
 
 	class DepthStencilViewDX11

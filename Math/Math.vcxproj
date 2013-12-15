@@ -86,6 +86,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="Source\DualNumbers.h" />
+    <ClInclude Include="Source\Geometry\BBox.h" />
     <ClInclude Include="Source\Interpolation.h" />
     <ClInclude Include="Source\Macroses.h" />
     <ClInclude Include="Source\Geometry\Frustum.h" />

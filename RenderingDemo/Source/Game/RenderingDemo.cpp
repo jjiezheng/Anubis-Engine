@@ -17,7 +17,7 @@ ABOOL RenderingDemo::VInitialize()
 	//frustum.Init(Pi / 2.0, 1280.0 / 720.0, 0.1, 100.0);
 	frustum.Init( 0.25f * 3.14f, (AREAL)SCREEN_WIDTH / (AREAL)SCREEN_HEIGHT, 1.0f, VIEW_DISTANCE);
 	Viewport & viewport = Viewport();
-	viewport.Init(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, 0.01f, 500.0f);
+	viewport.Init(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, 1.0f, 500.0f);
 	/*CameraPtr pCamera = make_shared<Camera>(Camera(frustum, Vector(0.0f, 0.0f, -70.0, 1.0f),
 		Vector(0.0f, 0.0f, 1.0f, 0.0f),
 		Vector(0.0f, 1.0f, 0.0f, 0.0f),

@@ -82,26 +82,26 @@ ABOOL Light::VInitialize(INPUT_LAYOUT * pLayout)
 
 	//create shader resource and render target view for the texture
 	ShaderResourceViewParams srvParams;
-	srvParams.InitForTexture2D(DXGI_FORMAT_R32_FLOAT, 0, 0);
+	srvParams.InitForTexture2D(DXGI_FORMAT_R32_FLOAT, 0, 0, false);
 	m_pShadowMapTex->CreateShaderResourceView(&m_pShadowMapSRV->m_pView, &srvParams);
 
 	DepthStencilViewParams dsvParams;
-	dsvParams.InitForTexture2D(DXGI_FORMAT_D32_FLOAT, 0);
+	dsvParams.InitForTexture2D(DXGI_FORMAT_D32_FLOAT, 0, false);
 	if (!m_pShadowMapTex->CreateDepthStencilView(&m_pShadowMapDSV->m_pView, &dsvParams))	return false;
 
-	/*** Initialize texture for varianbce shadow mapping ***/
+	/*** Initialize texture for variance shadow mapping ***/
 	tex2DParams.Init(SCREEN_WIDTH, SCREEN_HEIGHT, 1, DXGI_FORMAT_R32G32B32A32_FLOAT, true, true, true, false,
 		1, 0, 8, true, false, false, true);
 	m_pVarianceShadowTex->Create(&tex2DParams);
 	m_pTempTexture->Create(&tex2DParams);
 
 	//create shadow resource view
-	srvParams.InitForTexture2D(DXGI_FORMAT_R32G32B32A32_FLOAT, 8, 0);
+	srvParams.InitForTexture2D(DXGI_FORMAT_R32G32B32A32_FLOAT, 8, 0, false);
 	m_pVarianceShadowTex->CreateShaderResourceView(&m_pVarianceShadowSRV->m_pView, &srvParams);
 	m_pTempTexture->CreateShaderResourceView(&m_pTempSRV->m_pView, &srvParams);
 
 	RenderTargetViewParams rtvParams;
-	rtvParams.InitForTexture2D(DXGI_FORMAT_R32G32B32A32_FLOAT, 0);
+	rtvParams.InitForTexture2D(DXGI_FORMAT_R32G32B32A32_FLOAT, 0, false);
 	m_pVarianceShadowTex->CreateRenderTargetView(&m_pVarianceShadowRTV->m_pView, &rtvParams);
 
 	UnorderedAccessViewParams uavParams;
@@ -117,6 +117,7 @@ ABOOL Light::VInitialize(INPUT_LAYOUT * pLayout)
 AVOID Light::SetWorldTransform(const Mat4x4 & transform)
 {
 	m_worldTransform = transform;
+	//this->m_pData->m_pos = this->m_pData->m_pos * transform.GetPosition();
 }
 
 AVOID Light::VPreRender(Renderer *pRenderer)
@@ -124,7 +125,7 @@ AVOID Light::VPreRender(Renderer *pRenderer)
 	//set shadow map
 	if (pRenderer->m_bVarianceShadows)
 	{
-		D3D11DeviceContext()->GenerateMips(m_pVarianceShadowSRV->m_pView);
+		//D3D11DeviceContext()->GenerateMips(m_pVarianceShadowSRV->m_pView);
 		m_pVarianceShadowSRV->Set(7, ST_Pixel);
 	}
 	else
@@ -153,6 +154,7 @@ AVOID Light::VPreRender(Renderer *pRenderer)
 	else
 	{
 		lightBuffer.pos = m_pData->m_pos * m_worldTransform;
+		//lightBuffer.pos = m_pData->m_pos;
 	}
 	lightBuffer.dir = m_pData->m_dir;
 	lightBuffer.view = m_view;
@@ -240,7 +242,7 @@ AVOID Light::VPrepareToGenerateShadowMap(const Mat4x4 & world, Renderer * pRende
 	pRenderer->m_pcbCameraPos->Set(0, ST_Pixel);
 }
 
-AVOID Light::ClearShadowMap()
+AVOID Light::VClearShadowMap()
 {
 	AREAL bgColor[4] = { 1.0f, 1.0f, 1.0f, 1.0f };
 	ClearDepthStencilView(true, false, 1.0f, 0xFF, m_pShadowMapDSV);

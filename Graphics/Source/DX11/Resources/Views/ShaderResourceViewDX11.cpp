@@ -54,12 +54,16 @@ using namespace Anubis;
 ******************************************/
 ABOOL ShaderResourceViewParamsDX11::InitForTexture2D(	AUINT8 format,
 														AUINT16 miplevels, 
-														AUINT16 mostdetailedmip	)
+														AUINT16 mostdetailedmip,
+														ABOOL   multiSampled )
 {
 	Format = static_cast<DXGI_FORMAT>(format);
 	Texture2D.MipLevels = 1;
 	Texture2D.MostDetailedMip = 0;
-	ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
+	if (!multiSampled)
+		ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
+	else
+		ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2DMS;
 
 	return true;
 }
@@ -72,6 +76,20 @@ ABOOL ShaderResourceViewParamsDX11::InitForCubeTexture(	AUINT8 format,
 	TextureCube.MipLevels = miplevels;
 	TextureCube.MostDetailedMip = mostdetailedmip;
 	ViewDimension = D3D11_SRV_DIMENSION_TEXTURECUBE;
+
+	return true;
+}
+
+ABOOL ShaderResourceViewParamsDX11::InitForBuffer(  AUINT8 format, 
+													AUINT32 offset,
+													AUINT32 elementWidth)
+{
+	Format = static_cast<DXGI_FORMAT>(format);
+	//Buffer.ElementOffset = offset;
+	//Buffer.ElementWidth = elementWidth;
+	Buffer.FirstElement = 0;
+	Buffer.NumElements = elementWidth;
+	ViewDimension = D3D11_SRV_DIMENSION_BUFFER;
 
 	return true;
 }

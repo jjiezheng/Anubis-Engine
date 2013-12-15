@@ -53,11 +53,30 @@ using namespace Anubis;
 	RenderTargetViewParamsDX11
 == **/
 ABOOL RenderTargetViewParamsDX11::InitForTexture2D(	AUINT8 format,
-													AUINT16 mipslice)
+													AUINT16 mipslice,
+													ABOOL multiSampled)
 {
 	Format = static_cast<DXGI_FORMAT>(format);
 	Texture2D.MipSlice = mipslice;
-	ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
+	if (!multiSampled)
+		ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
+	else
+		ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2DMS;
+
+	return true;
+}
+
+ABOOL RenderTargetViewParamsDX11::InitForTexture2DArray( AUINT32 arraySize,
+														 AUINT8 format, 
+														 AUINT32 firstArraySlice,
+														 AUINT16 mipslice)
+{
+	Format = static_cast<DXGI_FORMAT>(format);
+	ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2DARRAY;
+
+	Texture2DArray.ArraySize = arraySize;
+	Texture2DArray.MipSlice = mipslice;
+	Texture2DArray.FirstArraySlice = firstArraySlice;
 
 	return true;
 }
@@ -68,6 +87,11 @@ ABOOL RenderTargetViewParamsDX11::InitForTexture2D(	AUINT8 format,
 AVOID RenderTargetViewDX11::Set(const DepthStencilViewDX11 & depthview) const
 {
 	D3D11DeviceContext()->OMSetRenderTargets(1, &m_pView, depthview.m_pView);
+}
+
+AVOID RenderTargetViewDX11::Set(const DepthStencilViewDX11 * pDSV) const
+{
+	D3D11DeviceContext()->OMSetRenderTargets(1, &m_pView, pDSV->m_pView);
 }
 
 AVOID RenderTargetViewDX11::Set() const

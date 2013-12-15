@@ -68,6 +68,20 @@ namespace Anubis
 	/************************************************************
 	============= Class with basic light properties =============
 	************************************************************/
+
+	struct LightParams
+	{
+		Vec color;
+		Vec pos;
+		Vec dirANDrange;
+		Vec spotAngles;
+	};
+
+	struct LightGeometry
+	{
+		Vec posANDrang;
+	};
+
 	class Renderer;
 	class Light
 	{
@@ -112,6 +126,8 @@ namespace Anubis
 		ShaderResourceView* m_pVarianceShadowSRV;
 		RenderTargetView* m_pVarianceShadowRTV;
 		UnorderedAccessView* m_pVarianceShadowUAV;
+
+		Viewport m_shadowViewport;
 
 		Texture2D* m_pTempTexture;
 		ShaderResourceView* m_pTempSRV;
@@ -208,7 +224,7 @@ namespace Anubis
 		AVIRTUAL AVOID VPostRender(Renderer* pRenderer);
 
 		AVIRTUAL AVOID VPrepareToGenerateShadowMap(const Mat4x4 & world, Renderer * pRenderer);
-		AVOID ClearShadowMap();
+		AVIRTUAL AVOID VClearShadowMap();
 		AVIRTUAL AVOID VFinishShadowMapGeneration(Renderer *pRenderer);
 
 		//for optimizations purposes only. generates screen-space rect
@@ -233,6 +249,16 @@ namespace Anubis
 		ShaderResourceView* GetTempSRV() const
 		{
 			return m_pTempSRV;
+		}
+
+		LightData* GetData() const
+		{
+			return m_pData;
+		}
+
+		AUINT32 GetRange() const
+		{
+			return m_r32Range;
 		}
 
 		//tramsforms

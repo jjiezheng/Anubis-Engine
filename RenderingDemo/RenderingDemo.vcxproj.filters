@@ -41,6 +41,9 @@
     <Filter Include="Shaders">
       <UniqueIdentifier>{89e073a9-aba4-4b6d-b527-28732500035c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Shaders\Atmosphere">
+      <UniqueIdentifier>{f54d1d43-aebd-4cdb-a4cf-13516b4a8270}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\Entities\BoxEntity.xml">
@@ -52,10 +55,34 @@
     <None Include="Shaders\CubeShadowMap_VS.hlsl">
       <Filter>Shaders</Filter>
     </None>
-    <None Include="CubeShadowMap_GS.hlsl">
+    <None Include="Shaders\CubeShadowMap_GS.hlsl">
       <Filter>Shaders</Filter>
     </None>
-    <None Include="CubeShadowMap_PS.hlsl">
+    <None Include="Shaders\CubeShadowMap_PS.hlsl">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="Shaders\FXAA.hlsl">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="Shaders\Atmosphere\SkyFromAtmosphere_ps.hlsl">
+      <Filter>Shaders\Atmosphere</Filter>
+    </None>
+    <None Include="Shaders\Atmosphere\SkyFromAtmosphere_vs.hlsl">
+      <Filter>Shaders\Atmosphere</Filter>
+    </None>
+    <None Include="Shaders\Atmosphere\Common.hlsli">
+      <Filter>Shaders\Atmosphere</Filter>
+    </None>
+    <None Include="forwardp_shading_ps.hlsl">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="forwardp_shading_vs.hlsl">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="LightCulling.hlsl">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="ZPrepass.hlsl">
       <Filter>Shaders</Filter>
     </None>
   </ItemGroup>

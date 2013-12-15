@@ -165,6 +165,7 @@ namespace Anubis
 				Methods
 								==*/
 		AVIRTUAL AVOID VUpdate(AUINT32 const elapsedMs);
+		AVOID SetViewport();
 	};
 
 	//typedefs

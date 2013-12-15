@@ -52,20 +52,8 @@ namespace Anubis
 	{
 	protected:
 
-		//define structure with light properties
-		//struct SpotLightData : public Light::LightData 
-		//{
-		//AREAL32	m_r32Range;
-			AREAL32 m_r32InnerAngleInRadians;
-			AREAL32 m_r32OuterAngleInRadians;
-
-		//	SpotLightData(AREAL32 r32InnerAngleInRadians, AREAL32 r32OuterAngleInRadians)
-		//		: m_r32InnerAngleInRadians(r32InnerAngleInRadians), m_r32OuterAngleInRadians(r32OuterAngleInRadians)
-		//	{
-		//	}
-		//};
-
-		//SpotLightData m_ldData;
+		AREAL32 m_r32InnerAngleInRadians;
+		AREAL32 m_r32OuterAngleInRadians;
 
 	public:
 

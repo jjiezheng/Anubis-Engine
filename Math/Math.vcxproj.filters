@@ -16,6 +16,9 @@
     <ClInclude Include="Source\Interpolation.h" />
     <ClInclude Include="Source\Standard.h" />
     <ClInclude Include="Source\DualNumbers.h" />
+    <ClInclude Include="Source\Geometry\BBox.h">
+      <Filter>Geometry</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Vectors.cpp" />

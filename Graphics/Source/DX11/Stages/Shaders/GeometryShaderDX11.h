@@ -60,6 +60,6 @@ namespace Anubis
 		AVOID Set() const;
 
 		ABOOL Create(BlobDX11 & shaderbuffer);
-		ABOOL VCreateAndCompile(AWSTRING fileName, ASTRING entrypoint, BlobDX11 * pErrors = NULL);
+		ABOOL CreateAndCompile(AWSTRING fileName, ASTRING entrypoint, BlobDX11 * pErrors = NULL);
 	};
 }; //Anubis

@@ -121,3 +121,8 @@ Vec Camera::GetLookAt() const
 
 	return lookAt;
 }
+
+AVOID Camera::SetViewport()
+{
+	m_viewport.Set();
+}

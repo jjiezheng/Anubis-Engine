@@ -136,6 +136,11 @@ ABOOL Renderer::VInitialize(HWND hWnd, AUINT32 width, AUINT32 height)
 	m_pcbWVP = new ConstantBuffer();
 	if (!m_pcbWVP->Create(params, NULL))			return false;
 
+	//7 natrices buffer
+	params->FillConstantBufferParams(7*sizeof(Mat4x4), true, false, false);
+	m_pcb7Matrices = new ConstantBuffer();
+	if (!m_pcb7Matrices->Create(params, NULL))		return false;
+
 	//Create Position Camera Buffer
 	params->SetSize(sizeof(Vec));
 	m_pcbCameraPos = new ConstantBuffer();
@@ -175,6 +180,19 @@ ABOOL Renderer::VInitialize(HWND hWnd, AUINT32 width, AUINT32 height)
 	m_pcbCameraPosPlusInverseWP = new ConstantBuffer();
 	if (!m_pcbCameraPosPlusInverseWP->Create(params, NULL))	return false;
 
+	//Create atmosphere buffers
+	params->SetSize(sizeof(Vec) * 5);
+	m_pcbAtmosphere = new ConstantBuffer();
+	if (!m_pcbAtmosphere->Create(params, NULL)) return false;
+
+	params->SetSize(sizeof(Mat4x4) + sizeof(Vec));
+	m_pcbAtmoWorld = new ConstantBuffer();
+	if (!m_pcbAtmoWorld->Create(params, NULL)) return false;
+
+	params->SetSize(sizeof(Vec) * 2);
+	m_pcbAtmoConst = new ConstantBuffer();
+	if (!m_pcbAtmoConst->Create(params, NULL)) return false;
+
 	//Create SSAO sample points buffer
 	//params->SetSize(sizeof(float3) * 8);
 	//m_pcbSSAOSamples = new ConstantBuffer();
@@ -194,16 +212,16 @@ ABOOL Renderer::VInitialize(HWND hWnd, AUINT32 width, AUINT32 height)
 	if (!m_pDepthDisableStencilDisable->Create(&depthStencilParams))		return false;
 
 	Texture2DParams dParams;
-	dParams.Init(SCREEN_WIDTH, SCREEN_HEIGHT, 1, DXGI_FORMAT_R32_TYPELESS, true, false, false, true, 1, 0,
+	dParams.Init(SCREEN_WIDTH, SCREEN_HEIGHT, 1, DXGI_FORMAT_R32_TYPELESS, true, false, false, true, 8, 1,
 				1, true, false, false);
 	if (!m_pDepthTexture->Create(&dParams))	return false;
 
 	ShaderResourceViewParams srvParams;
-	srvParams.InitForTexture2D(DXGI_FORMAT_R32_FLOAT, 1, 0);
+	srvParams.InitForTexture2D(DXGI_FORMAT_R32_FLOAT, 1, 0, true);
 	if (!m_pDepthTexture->CreateShaderResourceView(&m_pDepthSRV->m_pView, &srvParams))	return false;
 
 	DepthStencilViewParams dsvParams;
-	dsvParams.InitForTexture2D(DXGI_FORMAT_D32_FLOAT, 0);
+	dsvParams.InitForTexture2D(DXGI_FORMAT_D32_FLOAT, 0, true);
 	if (!m_pDepthTexture->CreateDepthStencilView(&m_pDepthDSV->m_pView, &dsvParams))	return false;
 
 	////////////////////////////////////////////////////
@@ -213,11 +231,11 @@ ABOOL Renderer::VInitialize(HWND hWnd, AUINT32 width, AUINT32 height)
 	if (!m_pVelocityTexture->Create(&velTexParams)) return false;
 
 	ShaderResourceViewParams velSRVParams;
-	velSRVParams.InitForTexture2D(velTexParams.Format, 1, 0);
+	velSRVParams.InitForTexture2D(velTexParams.Format, 1, 0, false);
 	if (!m_pVelocityTexture->CreateShaderResourceView(&m_pVelocitySRV->m_pView, &velSRVParams)) return false;
 
 	RenderTargetViewParams velRTVParams;
-	velRTVParams.InitForTexture2D(velTexParams.Format, 0);
+	velRTVParams.InitForTexture2D(velTexParams.Format, 0, false);
 	if (!m_pVelocityTexture->CreateRenderTargetView(&m_pVelocityRTV->m_pView, &velRTVParams)) return false;
 
 	///////////////////////////////////////////
@@ -234,14 +252,23 @@ ABOOL Renderer::VInitialize(HWND hWnd, AUINT32 width, AUINT32 height)
 	if (!m_pLinearDepthTexture->CreateRenderTargetView(&m_pLinearDepthRTV->m_pView, &rtvParams)) return false; */
 
 	Texture2DParams tempTexParams;
-	tempTexParams.Init(SCREEN_WIDTH, SCREEN_HEIGHT, 1, DXGI_FORMAT_R32G32B32A32_FLOAT, true, true, true, false, 1, 0, 1, true, false, false);
+	//tempTexParams.Init(SCREEN_WIDTH, SCREEN_HEIGHT, 1, DXGI_FORMAT_R32G32B32A32_FLOAT, true, true, true, false, 1, 0, 1, true, false, false);
+	//if (!m_pTempTexture->Create(&tempTexParams)) return false;
+
+	//srvParams.InitForTexture2D(DXGI_FORMAT_R32G32B32A32_FLOAT, 1, 0);
+	//if (!m_pTempTexture->CreateShaderResourceView(&m_pTempSRV->m_pView, &srvParams)) return false;
+
+	//RenderTargetViewParams rtvParams;
+	//rtvParams.InitForTexture2D(DXGI_FORMAT_R32G32B32A32_FLOAT, 0);
+	//if (!m_pTempTexture->CreateRenderTargetView(&m_pTempRTV->m_pView, &rtvParams)) return false;
+	tempTexParams.Init(SCREEN_WIDTH, SCREEN_HEIGHT, 1, DXGI_FORMAT_R8G8B8A8_TYPELESS, true, true, true, false, 1, 0, 1, true, false, false);
 	if (!m_pTempTexture->Create(&tempTexParams)) return false;
 
-	srvParams.InitForTexture2D(DXGI_FORMAT_R32G32B32A32_FLOAT, 1, 0);
+	srvParams.InitForTexture2D(DXGI_FORMAT_R8G8B8A8_UNORM, 1, 0, false);
 	if (!m_pTempTexture->CreateShaderResourceView(&m_pTempSRV->m_pView, &srvParams)) return false;
 
 	RenderTargetViewParams rtvParams;
-	rtvParams.InitForTexture2D(DXGI_FORMAT_R32G32B32A32_FLOAT, 0);
+	rtvParams.InitForTexture2D(DXGI_FORMAT_R8G8B8A8_UNORM, 0, false);
 	if (!m_pTempTexture->CreateRenderTargetView(&m_pTempRTV->m_pView, &rtvParams)) return false;
 
 	return true;
@@ -258,6 +285,7 @@ Renderer::~Renderer()
 	SAFE_DELETE(m_pcbWorldPlusWorldViewPlusWVP);
 	SAFE_DELETE(m_pcbWorldPlusWVP);
 	SAFE_DELETE(m_pcbView);
+	SAFE_DELETE(m_pcb7Matrices);
 
 	SAFE_DELETE(m_pcbCameraPos);
 	SAFE_DELETE(m_pcbCameraPosPlusInverseWP);
@@ -295,6 +323,11 @@ Renderer::~Renderer()
 	SAFE_DELETE(m_pVelocityRTV);
 	SAFE_DELETE(m_pVelocitySRV);
 	SAFE_DELETE(m_pVelocityTexture);
+
+	//atmosphere buffers
+	SAFE_DELETE(m_pcbAtmoConst);
+	SAFE_DELETE(m_pcbAtmoWorld);
+	SAFE_DELETE(m_pcbAtmosphere);
 
 	//remove all cameras
 	while (!m_cameras.empty())

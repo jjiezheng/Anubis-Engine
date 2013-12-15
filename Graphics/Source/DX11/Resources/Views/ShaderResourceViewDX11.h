@@ -52,10 +52,16 @@ namespace Anubis
 		ShaderResourceViewParamsDX11() { ZeroMemory(this, sizeof(ShaderResourceViewParamsDX11)); }
 		ABOOL InitForTexture2D( AUINT8 format,
 								AUINT16 miplevels, 
-								AUINT16 mostdetailedmip);
+								AUINT16 mostdetailedmip,
+								ABOOL   multiSampeled);
+
 		ABOOL InitForCubeTexture(	AUINT8 format,
 									AUINT16 miplevels,
 									AUINT16 mostdetailedmip );
+
+		ABOOL InitForBuffer( AUINT8 format, 
+							 AUINT32 offset,
+							 AUINT32 elementWidth);
 	};
 
 	class ShaderResourceViewDX11

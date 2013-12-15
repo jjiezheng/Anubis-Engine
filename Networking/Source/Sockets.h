@@ -47,6 +47,8 @@
 #define MAX_PACKET_SIZE		256
 #define RECV_BUFFER_SIZE	(MAX_PACKET_SIZE * 512)
 
+#include "Packets.h"
+
 namespace Anubis
 {
 	class Socket

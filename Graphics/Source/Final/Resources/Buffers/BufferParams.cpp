@@ -143,3 +143,37 @@ ABOOL BufferParams::FillConstantBufferParams(AUINT32 size,
 
 	return true;
 }
+
+ABOOL BufferParams::FillStructredBufferParams(AUINT32 structsize, AUINT32 count, ABOOL CPUWritable, 
+			ABOOL GPUWritable)
+{
+	ZeroMemory(this, sizeof(D3D11_BUFFER_DESC));
+	ByteWidth = structsize * count;
+	MiscFlags = D3D11_RESOURCE_MISC_BUFFER_STRUCTURED;
+	StructureByteStride = structsize;
+
+	if (!CPUWritable && !GPUWritable)
+	{
+		BindFlags = D3D11_BIND_SHADER_RESOURCE;
+		Usage = D3D11_USAGE_IMMUTABLE;
+		CPUAccessFlags = 0;
+	}
+	else if (CPUWritable && !GPUWritable)
+	{
+		BindFlags = D3D11_BIND_SHADER_RESOURCE;
+		Usage = D3D11_USAGE_DYNAMIC;
+		CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
+	}
+	else if (!CPUWritable && GPUWritable)
+	{
+		BindFlags = D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_UNORDERED_ACCESS;
+		Usage = D3D11_USAGE_DEFAULT;
+		CPUAccessFlags = 0;
+	}
+	else if (CPUWritable && GPUWritable)
+	{
+		assert(0 && "Error: Resource cannot be simultanuously writable by CPU and GPU");
+	}
+
+	return true;
+}

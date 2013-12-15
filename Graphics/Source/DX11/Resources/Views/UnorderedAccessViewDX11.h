@@ -52,6 +52,7 @@ namespace Anubis
 		UnorderedAccessViewParamsDX11() { ZeroMemory(this, sizeof(UnorderedAccessViewParamsDX11)); }
 		ABOOL InitForTexture2D( AUINT8 format,
 								AUINT16 mipslice);
+		ABOOL InitForStructuredBuffer( AUINT8 format, AUINT32 elementOffset, AUINT32 numElements, D3D11_BUFFER_UAV_FLAG flag);
 	};
 
 	class UnorderedAccessViewDX11

@@ -514,6 +514,7 @@ AVOID HavokPhysics::VSyncData(AREAL64 r64CurrentTime)
 		EntityPtr pEntity = g_pEngine->m_pGame->VGetEntity(id);
 
 		hkpRigidBody* const pRigidBody = it->second;
+		if (pRigidBody->getMass() == 0) continue;
 		//const hkMotionState * const pMotionState = pRigidBody->getMotionState();
 
 		Mat4x4 transform = hkTransform_to_Mat4x4(pRigidBody->getTransform());
@@ -669,7 +670,7 @@ AVOID HavokPhysics::VAddPlane(EntityPtr pEntity, Vec & pos, Quaternion & rot, Ve
 	hkpRigidBodyCinfo ci;
 	ci.m_shape = pPlaneShape;
 	//ci.m_position = Vec_to_hkVector4(pos) - hkVector4(0.0f, -0.2f, 0.0f, 0.0f);
-	ci.m_position = hkVector4(pos.x, pos.y - 0.3f, pos.z, pos.w);
+	ci.m_position = hkVector4(pos.x, pos.y - 0.65f, pos.z, pos.w);
 	if(!(rot.GetX() == 0 && rot.GetY() == 0 && rot.GetZ() == 0))
 	{
 		ci.m_rotation = Quaternion_to_hkQuaternion(rot);

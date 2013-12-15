@@ -50,6 +50,76 @@
 
 using namespace Anubis;
 
+ABOOL PointLight::VInitialize(INPUT_LAYOUT * pLayout)
+{
+	//Initialize default light shaders
+	m_pShaders = new ShaderBunch();
+	m_pShaders->VSetVertexShader(m_vertexShaderFile,	DEFAULT_VERTEX_SHADER_NAME, pLayout, 2, TOPOLOGY_TRIANGLELIST);
+	m_pShaders->VSetPixelShader(m_pixelShaderFile,	DEFAULT_PIXEL_SHADER_NAME);
+
+	//Initialize textures for shadow mapping
+	Texture2DParams tex2DParams;
+	tex2DParams.Init(SCREEN_WIDTH, SCREEN_HEIGHT, 1, DXGI_FORMAT_R32_TYPELESS, true, false, false, true, 1, 0,
+		1, true, false, false);
+	m_pShadowMapTex->Create(&tex2DParams);
+
+	//create shader resource and render target view for the texture
+	ShaderResourceViewParams srvParams;
+	srvParams.InitForTexture2D(DXGI_FORMAT_R32_FLOAT, 0, 0, false);
+	m_pShadowMapTex->CreateShaderResourceView(&m_pShadowMapSRV->m_pView, &srvParams);
+
+	DepthStencilViewParams dsvParams;
+	dsvParams.InitForTexture2D(DXGI_FORMAT_D32_FLOAT, 0, false);
+	if (!m_pShadowMapTex->CreateDepthStencilView(&m_pShadowMapDSV->m_pView, &dsvParams))	return false;
+
+	/*** Initialize texture for variance shadow mapping ***/
+	//tex2DParams.Init(SCREEN_WIDTH, SCREEN_HEIGHT, 1, DXGI_FORMAT_R32G32B32A32_FLOAT, true, true, true, false,
+	//	1, 0, 8, true, false, false, true);
+	//m_pTempTexture->Create(&tex2DParams);
+
+	const AINT32 shadowMapSize = 1024;
+	tex2DParams.InitCubeTexture(shadowMapSize, shadowMapSize, 6, TEX_R32G32B32A32_FLOAT, true, false, true, false,
+		1, 0, 1, true, false, false);
+	m_pShadowTex->Create(&tex2DParams);
+
+
+	//create shadow resource view
+	//srvParams.InitForTexture2D(DXGI_FORMAT_R32G32B32A32_FLOAT, 8, 0);
+	//m_pVarianceShadowTex->CreateShaderResourceView(&m_pVarianceShadowSRV->m_pView, &srvParams);
+	//m_pTempTexture->CreateShaderResourceView(&m_pTempSRV->m_pView, &srvParams);
+	srvParams.InitForCubeTexture(TEX_R32G32B32A32_FLOAT, 1, 0);
+	m_pShadowTex->CreateShaderResourceView(&m_pShadowSRV->m_pView, &srvParams);
+
+	RenderTargetViewParams rtvParams;
+	rtvParams.InitForTexture2DArray(6, tex2DParams.Format, 0, 0);
+	m_pShadowTex->CreateRenderTargetView(&m_pShadowRTV->m_pView, &rtvParams);
+
+	rtvParams.Texture2DArray.ArraySize = 1;
+	for (AINT8 i = 0; i < 6; i++)
+	{
+		rtvParams.Texture2DArray.FirstArraySlice = i;
+		m_pShadowTex->CreateRenderTargetView(&m_pShadowOneRTV[i]->m_pView, &rtvParams);
+	}
+	
+	m_shadowViewport = Viewport(0, 0, shadowMapSize, shadowMapSize, 0.0f, 1.0f);
+
+	//////////////////////////////////////////////
+	// *******************************************
+	tex2DParams.Init(shadowMapSize, shadowMapSize, 6, DXGI_FORMAT_D32_FLOAT,false, false, false, true,
+		1, 0, 1, true, false, false);
+	m_pShadowDepthTex->Create(&tex2DParams);
+
+	dsvParams.InitForTexture2DArray(6, DXGI_FORMAT_D32_FLOAT, 0, 0);
+	m_pShadowDepthTex->CreateDepthStencilView(&m_pShadowDSV->m_pView, &dsvParams);
+
+	dsvParams.Texture2DArray.ArraySize = 1;
+	m_pShadowDepthTex->CreateDepthStencilView(&m_pShadowOneDSV->m_pView, &dsvParams);
+
+	m_bInitialized = true;
+
+	return true;
+}
+
 AVOID PointLight::VPreRender(Renderer *pRenderer)
 {
 	Light::VPreRender(pRenderer);
@@ -59,12 +129,15 @@ AVOID PointLight::VPreRender(Renderer *pRenderer)
 	pRenderer->m_pcbPointLight->UpdateSubresource(0, NULL, &range, 0, 0);
 //	pRenderer->m_pcbPointLight->UpdateSubresource(0, nullptr, &m_vec, 0, 0);
 	pRenderer->m_pcbPointLight->Set(2, ST_Pixel);
+
+	m_pShadowSRV->Set(9, ST_Pixel);
 }
 
 AVOID PointLight::VPostRender(Renderer* pRenderer)
 {
 	Light::VPostRender(pRenderer);
 	D3D11DeviceContext()->RSSetScissorRects(0, nullptr);
+	UnbindShaderResourceViews(9, 1, ST_Pixel);
 }
 
 AVOID PointLight::VSetScissorRect(Renderer* pRenderer, CameraPtr pCamera)
@@ -141,4 +214,107 @@ AVOID PointLight::VSetScissorRect(Renderer* pRenderer, CameraPtr pCamera)
 	scissorRect.right	= min(static_cast<AINT32>(pCamera->GetViewportWidth()), scissorRect.right);
 
 	D3D11DeviceContext()->RSSetScissorRects(1, &scissorRect);
+}
+
+AVOID PointLight::VPrepareToGenerateShadowMap(const Mat4x4 & world, Renderer * pRenderer)
+{
+	//Set depth stencil view
+	//if (pRenderer->m_bVarianceShadows)
+	//{
+	//	m_pVarianceShadowRTV->Set(*m_pShadowMapDSV);
+		//m_pVarianceShadowRTV->Set();
+	//}
+	//else
+	//{
+	//	SetDepthStencilView(m_pShadowMapDSV);
+	//}
+	//GetRenderTargetView()->Set(*m_pShadowMapDSV);
+
+	m_pShadowRTV->Set(*m_pShadowDSV);
+
+	//set constant buffer with orthographic projection
+	Vec pos = m_pData->m_pos * m_worldTransform;
+	Vec dir = Vector(m_pData->m_dir.x, m_pData->m_dir.y, m_pData->m_dir.z, 0.0f);
+	Mat4x4 view = CreateViewMatrixLH(pos, dir, Vector(0.0f, 1.0f, 0.0f, 0.0f));
+	//Mat4x4 ortho = CreateOrthoProjectionLH(m_iShadowMapWidth * 1.5f, m_iShadowMapHeight * 1.5f, 0.5f, m_r32Range);
+	//Mat4x4 ortho = CreateOrthoProjectionLH(m_iShadowMapWidth, m_iShadowMapHeight, 2.0f, 60.0f);
+	//Mat4x4 ortho = CreatePerspectiveProjectionLH( 0.25f * 3.14f, (AREAL)SCREEN_WIDTH / (AREAL)SCREEN_HEIGHT, 0.5f, 30.0f);
+	//Mat4x4 perspective = CreatePerspectiveProjectionLH(3.14f / 2.0f, 1.0f, 0.5f, m_r32Range);
+	Mat4x4 perspective = CreatePerspectiveProjectionLH(3.14159265359f * 0.5f, 1.0f, 0.5f, m_r32Range);
+	//Mat4x4 perspective = CreateOrthoProjectionLH(512 * 1.5f, 512 * 1.5f, 0.0f, m_r32Range);
+
+	m_view = view;
+	//m_viewProjection = view * ortho;
+	m_viewProjection = view * perspective;
+
+	Mat4x4 World = world;
+	World.Transpose();
+	pRenderer->m_pcbView->UpdateSubresource(0, nullptr, &World, 0, 0);
+	pRenderer->m_pcbView->Set(0, ST_Vertex);
+
+	struct SevenMatrices
+	{
+		Mat4x4 view[6];
+		Mat4x4 proj;
+	};
+	SevenMatrices matrices;
+	matrices.view[0] = CreateViewMatrixLH(pos, Vector(1.0f, 0.0f, 0.0f, 0.0f), Vector(0.0f, 1.0f, 0.0f, 0.0f));
+	matrices.view[1] = CreateViewMatrixLH(pos, Vector(-1.0f, 0.0f, 0.0f, 0.0f), Vector(0.0f, 1.0f, 0.0f, 0.0f));
+	matrices.view[2] = CreateViewMatrixLH(pos, Vector(0.0f, 1.0f, 0.0f, 0.0f), Vector(0.0f, 0.0f, -1.0f, 0.0f));
+	matrices.view[3] = CreateViewMatrixLH(pos, Vector(0.0f, -1.0f, 0.0f, 0.0f), Vector(0.0f, 0.0f, 1.0f, 0.0f));
+	matrices.view[4] = CreateViewMatrixLH(pos, Vector(0.0f, 0.0f, 1.0f, 0.0f), Vector(0.0f, 1.0f, 0.0f, 0.0f));
+	matrices.view[5] = CreateViewMatrixLH(pos, Vector(0.0f, 0.0f, -1.0f, 0.0f), Vector(0.0f, 1.0f, 0.0f, 0.0f));
+	for (AINT8 i = 0; i < 6; i++)
+		matrices.view[i].Transpose();
+	matrices.proj = perspective;
+	matrices.proj.Transpose();
+	pRenderer->m_pcb7Matrices->UpdateSubresource(0, nullptr, &matrices, 0, 0);
+	pRenderer->m_pcb7Matrices->Set(0, ST_Geometry);
+	/*Mat4x4 WVP = world * m_viewProjection;
+	WVP.Transpose();
+
+	if (pRenderer->m_bVarianceShadows)
+	{
+		Mat4x4 WorldView = world * view;
+		WorldView.Transpose();
+
+		struct MatrixBuffer
+		{
+			Mat4x4 WorldView;
+			Mat4x4 WVP;
+		};
+		MatrixBuffer buffer;
+		buffer.WorldView = WorldView;
+		buffer.WVP = WVP;
+		pRenderer->m_pcbWorldPlusWVP->UpdateSubresource(0, NULL, &buffer, 0, 0);
+		pRenderer->m_pcbWorldPlusWVP->Set(0, ST_Vertex);
+	}
+	else
+	{
+		pRenderer->m_pcbWVP->UpdateSubresource(0, NULL, &WVP, 0, 0);
+		pRenderer->m_pcbWVP->Set(0, ST_Vertex);
+	} */
+
+	//Actually stores length of light frustum
+	Vec frustumSize = Vector(m_r32Range, m_r32Range, m_r32Range, m_r32Range);
+	pRenderer->m_pcbCameraPos->UpdateSubresource(0, NULL, &frustumSize, 0, 0);
+	pRenderer->m_pcbCameraPos->Set(0, ST_Pixel);
+
+	m_shadowViewport.Set();
+}
+
+AVOID PointLight::VClearShadowMap()
+{
+	AREAL bgColor[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
+	ClearDepthStencilView(true, false, 1.0f, 0xFF, m_pShadowDSV);
+	ClearRenderTargetView(bgColor, m_pShadowRTV);
+} 
+
+AVOID PointLight::VFinishShadowMapGeneration(Renderer * pRenderer)
+{
+	if (pRenderer->m_bVarianceShadows)
+	{
+		SetRenderTargetView();
+	}
+	UnbindGeometryShader();
 }

@@ -14,6 +14,7 @@
     <ClInclude Include="Source\Cameras\Camera.h" />
     <ClInclude Include="Source\Deferred\DeferredRenderer.h" />
     <ClInclude Include="Source\Deferred\GBuffer.h" />
+    <ClInclude Include="Source\ForwardPlus\ForwardPlusRenderer.h" />
     <ClInclude Include="Source\Grass\GrassPack.h" />
     <ClInclude Include="Source\Lights\DirectionalLight.h" />
     <ClInclude Include="Source\Lights\Light.h" />
@@ -23,6 +24,7 @@
     <ClInclude Include="Source\Meshes\Meshes.h" />
     <ClInclude Include="Source\Meshes\PlaneMesh.h" />
     <ClInclude Include="Source\Other\Material.h" />
+    <ClInclude Include="Source\Other\Partition\BVH.h" />
     <ClInclude Include="Source\Other\ShaderBunch.h" />
     <ClInclude Include="Source\Renderer.h" />
     <ClInclude Include="Source\Renderer_pch.h" />
@@ -37,6 +39,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Use</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Use</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="Source\ForwardPlus\ForwardPlusRenderer.cpp" />
     <ClCompile Include="Source\Grass\GrassPack.cpp" />
     <ClCompile Include="Source\Lights\DirectionalLight.cpp" />
     <ClCompile Include="Source\Lights\Light.cpp" />
@@ -46,6 +49,7 @@
     <ClCompile Include="Source\Meshes\Meshes.cpp" />
     <ClCompile Include="Source\Meshes\PlaneMesh.cpp" />
     <ClCompile Include="Source\Other\Material.cpp" />
+    <ClCompile Include="Source\Other\Partition\BVH.cpp" />
     <ClCompile Include="Source\Other\ShaderBunch.cpp" />
     <ClCompile Include="Source\Renderer.cpp" />
     <ClCompile Include="Source\Renderer_pch.cpp">

@@ -90,6 +90,7 @@ EntityResource::EntityResource(const ACHAR * filename)
 		pComponent = pComponent->NextSiblingElement();
 	}
 
+	m_vOffset = Vector(0.0f, 0.0f, 0.0f, 0.0f);
 }
 
 EntityResource::~EntityResource()
@@ -476,6 +477,23 @@ AVOID EntityResource::InitTransform(TiXmlElement* pComponent)
 
 		m_qRot = Quaternion(x, y, z, w);
 	}
+
+	//Acquire scaling
+	pTempEl = pComponent->FirstChildElement("Scale");
+	m_vScale = Vector(1.0f, 1.0f, 1.0f, 1.0f);
+	if (pTempEl)
+	{
+		pTempAtt = pTempEl->FirstAttribute();
+		AREAL x = pTempAtt->DoubleValue();
+
+		pTempAtt = pTempAtt->Next();
+		AREAL y = pTempAtt->DoubleValue();
+
+		pTempAtt = pTempAtt->Next();
+		AREAL z = pTempAtt->DoubleValue();
+
+		m_vScale = Vector(x, y, z, 1.0f);
+	}
 }
 
 EntityPtr EntityResource::VCreateEntity(Game * pGame)
@@ -490,9 +508,10 @@ AVOID EntityResource::VCreateRepresentation(Scene * pScene, EntityPtr pEntity)
 	pEntity->SetRepresentation(pRepresentation);
 
 	//Apply transformations
-	Mat4x4 trans;
+	Mat4x4 trans, scale;
 	trans.CreateTranslation(m_vPos);
-	pRepresentation->SetCurrentTransform(trans, g_pEngine->GameTimeInSeconds());
+	scale.CreateScaling(m_vScale);
+	pRepresentation->SetCurrentTransform(scale * trans, g_pEngine->GameTimeInSeconds());
 	pScene->AddRepresentation(pRepresentation);
 
 	//Now add all graphics components to its representation
@@ -540,8 +559,8 @@ AVOID EntityResource::VCreateRepresentation(Scene * pScene, EntityPtr pEntity)
 			GraphicsPointLightComponent * pointLight = static_cast<GraphicsPointLightComponent *>((*component));
 
 			//Create point light
-			//PointLight* pLight = new PointLight(pointLight->m_color, pointLight->m_position, pointLight->m_range);
-			PointLight* pLight = new PointLight(pointLight->m_color, Vector(0, 0, 0, 1), pointLight->m_range);
+			PointLight* pLight = new PointLight(pointLight->m_color, pointLight->m_position + m_vOffset, pointLight->m_range);
+			//PointLight* pLight = new PointLight(pointLight->m_color, Vector(0, 0, 0, 1), pointLight->m_range);
 			shared_ptr<PointLight> pLightPtr = make_shared<PointLight>(*pLight);
 			pRepresentation->VAddLight(pLightPtr);
 		}
@@ -552,7 +571,7 @@ AVOID EntityResource::VCreateRepresentation(Scene * pScene, EntityPtr pEntity)
 			//Create point light
 			//SpotLight* pLight = new SpotLight(spotLight->m_color, spotLight->m_position, spotLight->m_direction,
 			//	spotLight->m_range, spotLight->m_innerAngle, spotLight->m_outerAngle);
-			SpotLight* pLight = new SpotLight(spotLight->m_color, Vector(0, 0, 0, 1), spotLight->m_direction,
+			SpotLight* pLight = new SpotLight(spotLight->m_color, spotLight->m_position + m_vOffset, spotLight->m_direction,
 				spotLight->m_range, spotLight->m_innerAngle, spotLight->m_outerAngle);
 			shared_ptr<SpotLight> pLightPtr = make_shared<SpotLight>(*pLight);
 			pRepresentation->VAddLight(pLightPtr);
@@ -570,24 +589,24 @@ AVOID EntityResource::VCreatePhysicalBody(IPhysics * pPhysics, EntityPtr pEntity
 		if (type == "Box")
 		{
 			PhysicsBoxComponent * box = static_cast<PhysicsBoxComponent *>((*component));
-			pPhysics->VAddBox(pEntity, m_vPos, m_qRot, Vector(box->m_fXHalfExtent, box->m_fYHalfExtent, box->m_fZHalfExtent, 1.0f),
+			pPhysics->VAddBox(pEntity, m_vPos + m_vOffset, m_qRot, Vector(box->m_fXHalfExtent, box->m_fYHalfExtent, box->m_fZHalfExtent, 1.0f),
 				box->m_mass, box->m_material, box->m_bIsStatic);
 		}
 		if (type == "Plane")
 		{
 			PhysicsPlaneComponent * plane = static_cast<PhysicsPlaneComponent *>((*component));
-			pPhysics->VAddPlane(pEntity, m_vPos, m_qRot, Vector(plane->m_fXHalfExtent, plane->m_fYHalfExtent, plane->m_fZHalfExtent, 1.0f),
+			pPhysics->VAddPlane(pEntity, m_vPos + m_vOffset, m_qRot, Vector(plane->m_fXHalfExtent, plane->m_fYHalfExtent, plane->m_fZHalfExtent, 1.0f),
 				plane->m_mass, plane->m_material, plane->m_bIsStatic);
 		}
 		if (type == "Sphere")
 		{
 			PhysicsSphereComponent * sphere = static_cast<PhysicsSphereComponent *>((*component));
-			pPhysics->VAddSphere(pEntity, m_vPos, m_qRot, sphere->m_fRadius, sphere->m_mass, sphere->m_material, sphere->m_bIsStatic);
+			pPhysics->VAddSphere(pEntity, m_vPos + m_vOffset, m_qRot, sphere->m_fRadius, sphere->m_mass, sphere->m_material, sphere->m_bIsStatic);
 		}
 		if (type == "Character")
 		{
 			PhysicsCharacterComponent * character = static_cast<PhysicsCharacterComponent *>((*component));
-			pPhysics->VAddCharacter(pEntity, m_vPos, m_qRot, Vector(character->m_width, character->m_height, character->m_depth, 0.0f),
+			pPhysics->VAddCharacter(pEntity, m_vPos + m_vOffset, m_qRot, Vector(character->m_width, character->m_height, character->m_depth, 0.0f),
 				character->m_mass, character->m_forceInNewtons, character->m_maxSlopeInRadians);
 		}
 	}

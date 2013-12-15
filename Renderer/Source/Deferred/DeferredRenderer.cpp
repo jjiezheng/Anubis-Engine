@@ -81,6 +81,7 @@ DeferredRenderer::DeferredRenderer() : Renderer()
 	m_pSSAOBlurredUAV = new UnorderedAccessView();
 
 	m_pShadowsShaders = new ShaderBunch();
+	m_pShadowCubeShaders = new ShaderBunchVGP();
 	m_pVarianceShadowsShaders = new ShaderBunch();
 
 	m_pVelocityMapShaders = new ShaderBunch();
@@ -89,8 +90,12 @@ DeferredRenderer::DeferredRenderer() : Renderer()
 	m_pSkyTexture = new TextureCube();
 	m_pSkySRV = new ShaderResourceView();
 	m_pSkyShaders = new ShaderBunch();
+	m_pAtmoShaders = new ShaderBunch();
 
 	m_pSRVtoRTVShaders = new ShaderBunch();
+
+	m_pFXAAShaders = new ShaderBunch();
+	m_pFullscreenEmpty = new VertexBuffer();
 }
 
 DeferredRenderer::~DeferredRenderer()
@@ -115,6 +120,7 @@ DeferredRenderer::~DeferredRenderer()
 	SAFE_DELETE(m_pSSAOBlurredTexture);
 
 	SAFE_DELETE(m_pShadowsShaders);
+	SAFE_DELETE(m_pShadowCubeShaders);
 	SAFE_DELETE(m_pShadowsLayout);
 
 	SAFE_DELETE(m_pVarianceShadowsShaders);
@@ -126,6 +132,7 @@ DeferredRenderer::~DeferredRenderer()
 	SAFE_DELETE(m_pSkySRV);
 	SAFE_DELETE(m_pSkyTexture); 
 	SAFE_DELETE(m_pSkyShaders);
+	SAFE_DELETE(m_pAtmoShaders);
 	SAFE_DELETE(m_pSkyLayout);
 
 	SAFE_DELETE(m_pLayout);
@@ -135,6 +142,9 @@ DeferredRenderer::~DeferredRenderer()
 
 	SAFE_DELETE(m_pSRVtoRTVLayout);
 	SAFE_DELETE(m_pSRVtoRTVShaders);
+
+	SAFE_DELETE(m_pFXAAShaders);
+	SAFE_DELETE(m_pFullscreenEmpty);
 }
 
 ABOOL DeferredRenderer::VInitialize(HWND hWnd, AUINT32 width, AUINT32 height)
@@ -253,6 +263,10 @@ ABOOL DeferredRenderer::VInitialize(HWND hWnd, AUINT32 width, AUINT32 height)
 
 	m_pShadowsShaders->VSetVertexShader(L"Resources\\Shaders\\Shadows\\ShadowMap_VS.hlsl", "Shadows_VS", m_pShadowsLayout, 1, TOPOLOGY_TRIANGLELIST);
 	m_pShadowsShaders->VSetPixelShader(L"Resources\\Shaders\\Shadows\\ShadowMap_PS.hlsl", "Shadows_PS");
+
+	m_pShadowCubeShaders->VSetVertexShader(L"Shaders\\CubeShadowMap_VS.hlsl", "CubeShadowMap_VS", m_pShadowsLayout, 1, TOPOLOGY_TRIANGLELIST);
+	m_pShadowCubeShaders->VSetGeometryShader(L"Shaders\\CubeShadowMap_GS.hlsl", "CubeShadowMap_GS");
+	m_pShadowCubeShaders->VSetPixelShader(L"Shaders\\CubeShadowMap_PS.hlsl", "CubeShadowMap_PS");
 	
 	m_pVarianceShadowsShaders->VSetVertexShader(L"Resources\\Shaders\\Shadows\\VarianceShadows_DepthVS.hlsl", "VarianceShadows_DepthVS", m_pShadowsLayout, 1, TOPOLOGY_TRIANGLELIST);
 	m_pVarianceShadowsShaders->VSetPixelShader(L"Resources\\Shaders\\Shadows\\VarianceShadows_DepthPS.hlsl", "VarianceShadows_DepthPS");
@@ -309,7 +323,7 @@ ABOOL DeferredRenderer::VInitialize(HWND hWnd, AUINT32 width, AUINT32 height)
 
 	//create shader resource and render target view for the texture
 	ShaderResourceViewParams srvSSAOParams;
-	srvSSAOParams.InitForTexture2D(tex2DParams.Format, 0, 0);
+	srvSSAOParams.InitForTexture2D(tex2DParams.Format, 0, 0, false);
 	m_pSSAOTexture->CreateShaderResourceView(&m_pSSAOSRV->m_pView, &srvSSAOParams);
 
 	UnorderedAccessViewParams uavSSAOParams;
@@ -317,7 +331,7 @@ ABOOL DeferredRenderer::VInitialize(HWND hWnd, AUINT32 width, AUINT32 height)
 	m_pSSAOTexture->CreateUnorderedAccessView(&m_pSSAOUAV->m_pView, &uavSSAOParams);
 
 	RenderTargetViewParams rtvSSAOParams;
-	rtvSSAOParams.InitForTexture2D(tex2DParams.Format, 0);
+	rtvSSAOParams.InitForTexture2D(tex2DParams.Format, 0, false);
 	m_pSSAOTexture->CreateRenderTargetView(&m_pSSAORTV->m_pView, &rtvSSAOParams);
 
 	///////////////////////////////////////////////
@@ -351,11 +365,36 @@ ABOOL DeferredRenderer::VInitialize(HWND hWnd, AUINT32 width, AUINT32 height)
 	m_pSkyShaders->VSetVertexShader(L"Source\\Shaders\\SkyBox.hlsl", "SkyBox_VS", m_pSkyLayout, 1, TOPOLOGY_TRIANGLELIST);
 	m_pSkyShaders->VSetPixelShader(L"Source\\Shaders\\SkyBox.hlsl", "SkyBox_PS");
 
+	m_pAtmoShaders->VSetVertexShader(L"Shaders\\Atmosphere\\SkyFromAtmosphere_vs.hlsl", "SkyFromAtmosphere_vs", m_pSkyLayout, 1, TOPOLOGY_TRIANGLELIST);
+	m_pAtmoShaders->VSetPixelShader(L"Shaders\\Atmosphere\\SkyFromAtmosphere_ps.hlsl", "SkyFromAtmosphere_ps");
+
 	Resource meshResource("sphere.obj");
 	shared_ptr<ResHandle> pMeshes = Anubis::SafeGetHandle(&meshResource);
 	std::shared_ptr<MeshResourceExtraData> pData = static_pointer_cast<MeshResourceExtraData>(pMeshes->GetExtra());
 
 	m_pSphereMesh = pData->m_pMeshes[0];
+
+	///////////////////////////////////////////////
+	//Antialiasing
+	///////////////////////////////////////////////
+	m_pNullLayout = nullptr;
+
+	struct EmptyVertex {};
+	EmptyVertex verts [] =
+	{
+		EmptyVertex(),
+		EmptyVertex(),
+		EmptyVertex(),
+	};
+	params.FillVertexBufferParams(0, 3, true, false, false, false);
+	SubresourceData emptydata;
+	data.SetData(verts);
+//	m_pFullscreenEmpty->Create(&params, &emptydata, 3, 0);
+
+	//m_pFXAAShaders->VSetVertexShader(L"Shaders\\FXAA.hlsl", "FXAA_VS", m_pLayout, 0, TOPOLOGY_TRIANGLELIST);
+	//m_pFXAAShaders->VSetPixelShader(L"Shaders\\FXAA.hlsl", "FXAA_PS");
+	m_pFXAAShaders->VSetVertexShader(L"Shaders\\FXAA_orig.hlsl", "FxaaVS", m_pLayout, 0, TOPOLOGY_TRIANGLESTRIP);
+	m_pFXAAShaders->VSetPixelShader(L"Shaders\\FXAA_orig.hlsl", "FxaaPS");
 
 	///////////////////////////////////////////////
 	//Initialize data for blurring
@@ -364,7 +403,7 @@ ABOOL DeferredRenderer::VInitialize(HWND hWnd, AUINT32 width, AUINT32 height)
 		1, true, false, false);
 	m_pSSAOBlurredTexture->Create(&tex2DParams);
 
-	srvSSAOParams.InitForTexture2D(tex2DParams.Format, 0, 0);
+	srvSSAOParams.InitForTexture2D(tex2DParams.Format, 0, 0, false);
 	m_pSSAOBlurredTexture->CreateShaderResourceView(&m_pSSAOBlurredSRV->m_pView, &srvSSAOParams);
 	
 	uavSSAOParams.InitForTexture2D(tex2DParams.Format, 0);
@@ -460,13 +499,14 @@ AVOID DeferredRenderer::VGenerateShadowMaps()
 {
 	if (m_bVarianceShadows)
 	{
-		m_pVarianceShadowsShaders->VBind();
+		//m_pVarianceShadowsShaders->VBind();
 		//m_pShadowsShaders->VBind();
 	}
 	else
 	{
-		m_pShadowsShaders->VBind();
+		//m_pShadowsShaders->VBind();
 	}
+	m_pShadowCubeShaders->VBind();
 
 	//Set rendering states
 	m_pDepthEnableStencilDisableStandard->Set(1);
@@ -479,7 +519,7 @@ AVOID DeferredRenderer::VGenerateShadowMaps()
 			pLight->VInitialize(m_pLayout);
 
 		//clear shadow map before generating new one
-		pLight->ClearShadowMap();
+		pLight->VClearShadowMap();
 
 		Mesh * pMesh;
 		m_queue.Reset();
@@ -624,6 +664,9 @@ AVOID DeferredRenderer::PrepareForLightPass(CameraPtr pCamera)
 	//m_pcbCameraPos->UpdateSubresource(0, NULL, &cameraBuffer, 0, 0);
 	m_pcbCameraPos->Set(0, ST_Pixel);
 
+	//pCamera->SetViewport();
+	SetGlobalViewport();
+
 	//set shader resources
 	m_pSSAOBlurredSRV->Set(6, ST_Pixel);
 	m_pDepthSRV->Set(8, ST_Pixel);
@@ -636,6 +679,9 @@ AVOID DeferredRenderer::PrepareForGeometryPass(CameraPtr pCamera)
 {
 	m_pcbCameraPos->UpdateSubresource(0, NULL, &pCamera->GetPosition(), 0, 0);
 	m_pcbCameraPos->Set(0, ST_Pixel);
+
+	//pCamera->SetViewport();
+	SetGlobalViewport();
 }
 
 AVOID DeferredRenderer::VFinishPass()
@@ -650,7 +696,7 @@ AVOID DeferredRenderer::VFinishPass()
 	for (LightList::iterator lit = m_lights.begin(); lit != m_lights.end(); lit++)
 	{
 		Light* pLight = (*lit);
-		pLight->ClearShadowMap();
+		pLight->VClearShadowMap();
 	}
 }
 
@@ -715,7 +761,7 @@ AVOID DeferredRenderer::VRender()
 				Light* pLight = (*lit);
 				for (int i =0; i < 1; i++)
 				{
-					FilterImage(pLight->GetVarianceShadowMapSRV(), pLight->GetVarianceShadowUAV(), pLight->GetTempSRV(), pLight->GetTempUAV(), SCREEN_WIDTH, SCREEN_HEIGHT, FT_Gaussian);
+					//FilterImage(pLight->GetVarianceShadowMapSRV(), pLight->GetVarianceShadowUAV(), pLight->GetTempSRV(), pLight->GetTempUAV(), SCREEN_WIDTH, SCREEN_HEIGHT, FT_Gaussian);
 				}
 			}
 		}
@@ -804,9 +850,12 @@ AVOID DeferredRenderer::CopyPostProcessingToBackBuffer()
 {
 	SetRenderTargetView();
 	m_pTempSRV->Set(0, ST_Pixel);
-	m_pSRVtoRTVShaders->VBind();
+	//m_pSRVtoRTVShaders->VBind();
+	this->AnisotropySampler16()->Set(3, ST_Pixel);
+	m_pFXAAShaders->VBind();
 
-	Draw(6, 0);
+	//Draw(6, 0);
+	Draw(4, 0);
 
 	UnbindShaderResourceViews(0, 1, ST_Pixel);
 	AREAL bgColor[4] = { 1.0f, 0.0f, 1.0f, 1.0f };
@@ -815,21 +864,33 @@ AVOID DeferredRenderer::CopyPostProcessingToBackBuffer()
 
 AVOID DeferredRenderer::VRenderSky(CameraPtr pCamera, const Mat4x4 & viewproj)
 {
-	//m_pTempRTV->Set();
 	m_gbuffer.BindRenderTarget(3);
-	//
 
-	m_pSkyShaders->VBind();
-//m_pVelocityMapShaders->VBind();
+	//m_pSkyShaders->VBind();
+	m_pAtmoShaders->VBind();
 
 	Mat4x4 trans;
 	trans.CreateTranslation(pCamera->GetPosition());
 
-	Mat4x4 worldViewProj = trans * viewproj;
+	Mat4x4 scale;
+	scale.CreateScaling(1, 1, 1);
+
+	//Mat4x4 worldViewProj = trans * viewproj;
+	Mat4x4 worldViewProj = scale * viewproj;
 	worldViewProj.Transpose();
 
 	m_pcbWVP->UpdateSubresource(0, nullptr, &worldViewProj, 0, 0);
-	m_pcbWVP->Set(0, ST_Vertex);
+	m_pcbWVP->Set(1, ST_Vertex);
+	struct WorldData
+	{
+		Mat4x4 wvp;
+		//Vec cameraPos;
+	};
+	WorldData worldData;
+	worldData.wvp = worldViewProj;
+	//worldData.cameraPos = pCamera->GetPosition();
+	//m_pcbAtmoWorld->UpdateSubresource(0, nullptr, &worldData, 0, 0);
+	//m_pcbAtmoWorld->Set(1, ST_Vertex);
 
 	m_pSphereMesh->SetPositionBuffer();
 	m_pSphereMesh->SetIndexBuffer();
@@ -837,11 +898,8 @@ AVOID DeferredRenderer::VRenderSky(CameraPtr pCamera, const Mat4x4 & viewproj)
 	this->NoCullingStandardRasterizer()->Set();
 	this->m_pDepthDisableStencilDisable->Set(0xFF);
 
-	//m_pSphereMesh->VPreRender(this, pCamera->GetView(), pCamera->GetViewProjection());
-	m_pSkySRV->Set(0, ST_Pixel);
+	//m_pSkySRV->Set(0, ST_Pixel);
 	m_pSphereMesh->VRender(this);
-	//m_pVertices->Set(0, 0);
-	//Draw(6, 0);
 
 	UnbindRenderTargetViews(1);
 	UnbindShaderResourceViews(0, 1, ST_Pixel);

@@ -84,9 +84,11 @@ ABOOL GBufferOne::VInitialize()
 	//Define properties for textures
 	//==
 	Texture2DParams * pParams = new Texture2DParams();
-	pParams->Init(SCREEN_WIDTH, SCREEN_HEIGHT, 1, TEX_R32G32B32A32_FLOAT, true, false, 
+	//pParams->Init(SCREEN_WIDTH, SCREEN_HEIGHT, 1, TEX_R32G32B32A32_FLOAT, true, false, 
+	//	true, false, 1, 0, 1, true, false, false);
+	pParams->Init(SCREEN_WIDTH, SCREEN_HEIGHT, 1, TEX_R16G16B16A16_FLOAT, true, false, 
 		true, false, 1, 0, 1, true, false, false);
-	//pParams->Init(SCREEN_WIDTH, SCREEN_HEIGHT, 1, TEX_R8G8B8A8_UNORM, true, false, true, false, 1, 0, 1, true, false, false);
+	//pParams->Init(SCREEN_WIDTH, SCREEN_HEIGHT, 1, TEX_R8G8B8A8_SNORM, true, false, true, false, 1, 0, 1, true, false, false);
 
 	//==
 	//Create textures
@@ -107,7 +109,7 @@ ABOOL GBufferOne::VInitialize()
 
 	//Define properties for shader resource views
 	ShaderResourceViewParams * pSRVParams = new ShaderResourceViewParams();
-	pSRVParams->InitForTexture2D(pParams->Format, 1, 0);
+	pSRVParams->InitForTexture2D(pParams->Format, 1, 0, false);
 
 	//ShaderResourceViewParams * pSRVDepthParams = new ShaderResourceViewParams();
 	//pSRVDepthParams->InitForTexture2D(TEX_R32_FLOAT, 1, 0);
@@ -124,7 +126,7 @@ ABOOL GBufferOne::VInitialize()
 
 	//Define properties for render target views
 	RenderTargetViewParams * pRTVParams = new RenderTargetViewParams();
-	pRTVParams->InitForTexture2D(pParams->Format, 0);
+	pRTVParams->InitForTexture2D(pParams->Format, 0, false);
 
 	//==
 	//Create Render Target Views

@@ -87,7 +87,7 @@ ABOOL BlobDX11::CompileShader(const AWSTRING & fileName, const ASTRING & entrypo
 	{
 		OutputDebugStringA((char*)pErrors->m_pBlob->GetBufferPointer());
 		CheckHR(hr);
-		return false;
+		return false; 
 	}
 
 	return true;

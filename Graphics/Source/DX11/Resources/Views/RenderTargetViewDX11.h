@@ -53,7 +53,13 @@ namespace Anubis
 	public:
 		RenderTargetViewParamsDX11() { ZeroMemory(this, sizeof(RenderTargetViewParamsDX11)); }
 		ABOOL InitForTexture2D( AUINT8 format,
-								AUINT16 mipslice);
+								AUINT16 mipslice,
+								ABOOL multiSampled);
+
+		ABOOL InitForTexture2DArray( AUINT32 arraySize,
+									 AUINT8 format, 
+									 AUINT32 firstArraySlice,
+									 AUINT16 mipslice);
 	};
 
 	class RenderTargetViewDX11
@@ -68,6 +74,7 @@ namespace Anubis
 		~RenderTargetViewDX11() { SAFE_RELEASE(m_pView); }
 
 		AVOID Set(const DepthStencilViewDX11 & depthview) const;
+		AVOID Set(const DepthStencilViewDX11* pDepthStencilView) const;
 		AVOID Set() const;
 		AVOID Clear(const AREAL * bgColor);
 		AVOID Clear();

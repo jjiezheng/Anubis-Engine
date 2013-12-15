@@ -63,7 +63,8 @@ namespace Anubis
 		ABOOL FillConstantBufferParams(AUINT32 size,
 										ABOOL gpuWrite, ABOOL cpuRead, ABOOL cpuWrite);
 
-		ABOOL FillStructredBufferParams();
+		ABOOL FillStructredBufferParams(AUINT32 structsize, AUINT32 count, ABOOL CPUWritable, 
+			ABOOL GPUWritable);
 
 		/** ================
 			==	Mutators  ==

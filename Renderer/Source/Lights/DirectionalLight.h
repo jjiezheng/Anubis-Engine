@@ -52,13 +52,6 @@ namespace Anubis
 	{
 	protected:
 
-		//define structure with light properties
-		//struct DirectionalLightData : public Light::LightData 
-		//{
-		//};
-
-		//DirectionalLightData	m_ldData;
-
 	public:
 
 		//Constructor

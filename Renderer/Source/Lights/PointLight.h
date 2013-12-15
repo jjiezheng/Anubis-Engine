@@ -52,16 +52,39 @@ namespace Anubis
 	class PointLight : public Light
 	{
 	protected:
-			//AREAL32	m_r32Range;
+
+		TextureCube* m_pShadowTex;
+		ShaderResourceView* m_pShadowSRV;
+		RenderTargetView* m_pShadowRTV;
+		RenderTargetView* m_pShadowOneRTV[6];
+		
+		Texture2D*			m_pShadowDepthTex;
+		DepthStencilView*	m_pShadowDSV;
+		DepthStencilView*	m_pShadowOneDSV;
 
 	public:
 
 		//Constructor
 		PointLight(const Vec color, const Vec pos, const AREAL32 r32Range) 
-			: Light(color, pos, Vector(0.0f, 0.0f, 0.0f, 1))
+			: Light(color, pos, Vector(0.0f, -1.0f, 0.0f, 1))
 		{
 			m_r32Range = r32Range;
+
+			m_pShadowTex = new TextureCube();
+			m_pShadowSRV = new ShaderResourceView();
+			m_pShadowRTV = new RenderTargetView();
+
+			m_pShadowDepthTex = new Texture2D();
+			m_pShadowDSV = new DepthStencilView();
+			m_pShadowOneDSV = new DepthStencilView();
+
+			for (AINT8 i = 0; i < 6; i++)
+			{
+				m_pShadowOneRTV[i] = new RenderTargetView();
+			}
 		};
+
+		AVIRTUAL ABOOL VInitialize(INPUT_LAYOUT * pLayout);
 
 
 		/**
@@ -71,6 +94,10 @@ namespace Anubis
 		//AVOID VRender();
 		AVOID VPostRender(Renderer *pRenderer);
 		AVOID VSetScissorRect(Renderer* pRenderer, CameraPtr pCamera);
+
+		AVOID VPrepareToGenerateShadowMap(const Mat4x4 & world, Renderer * pRenderer);
+		AVOID VClearShadowMap();
+		AVOID VFinishShadowMapGeneration(Renderer *pRenderer);
 
 		/**
 			== Getters ==

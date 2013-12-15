@@ -62,7 +62,7 @@ ABOOL GeometryShaderDX11::Create(BlobDX11 & shaderbuffer)
 	VALID(hr);
 }
 
-ABOOL GeometryShaderDX11::VCreateAndCompile(AWSTRING fileName, ASTRING entrypoint, BlobDX11 * pErrors)
+ABOOL GeometryShaderDX11::CreateAndCompile(AWSTRING fileName, ASTRING entrypoint, BlobDX11 * pErrors)
 {
 	//Compile the shader first
 	BlobDX11 & compiledShaderBlob = BlobDX11();

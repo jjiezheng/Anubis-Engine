@@ -72,6 +72,7 @@ namespace Anubis
 		ConstantBuffer* m_pcbWorldPlusWorldViewPlusWVP;
 		ConstantBuffer* m_pcbWVP; 
 		ConstantBuffer* m_pcbPrevViewProj;
+		ConstantBuffer* m_pcb7Matrices;
 
 		//Camera Buffers
 		ConstantBuffer*	m_pcbCameraPos;
@@ -90,6 +91,11 @@ namespace Anubis
 		//SSAO Buffers
 		ConstantBuffer*	m_pcbSSAOParams;
 		ConstantBuffer*	m_pcbSSAOSamples;
+
+		//Atmosphere scattering buffers
+		ConstantBuffer* m_pcbAtmosphere;
+		ConstantBuffer* m_pcbAtmoWorld;
+		ConstantBuffer* m_pcbAtmoConst;
 
 		/** ================================
 					Sampler States
@@ -207,6 +213,10 @@ namespace Anubis
 		SamplerState * LinearTiledSampler();
 		SamplerState * PointClampSampler();
 		SamplerState * LinearLessEqualSampler();
+
+		//DepthStencilState*	m_pDepthEnableStencilDisableStandard;
+		//DepthStencilState* 	m_pDepthDisableStencilDisable;
+
 
 		RasterizerState * NoCullingStandardRasterizer();
 		RasterizerState * AllEnabledBackCullingRasterizer();

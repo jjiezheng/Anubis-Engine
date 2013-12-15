@@ -94,6 +94,26 @@ AVOID Mesh::GenerateShadowMap()
 	Draw(m_pVertices->Count(), 0);
 }
 
+AVOID Mesh::VRenderZPass(Renderer* pRenderer, const Mat4x4 & view, const Mat4x4 & viewProj)
+{
+	struct Buffer 
+	{
+		Mat4x4 worldView;
+		Mat4x4 WVP;
+	};
+	Buffer buffer;
+	buffer.worldView = m_worldTransform * view;
+	buffer.WVP = m_worldTransform * viewProj;
+	buffer.worldView.Transpose();
+	buffer.WVP.Transpose();
+
+	pRenderer->m_pcbWorldPlusWVP->UpdateSubresource(0, nullptr, &buffer, 0, 0);
+	pRenderer->m_pcbWorldPlusWVP->Set(0, ST_Vertex);
+
+	m_pVertices->Set(0, 0);
+	Draw(m_pVertices->Count(), 0);
+}
+
 AVOID Mesh::VPreRender(Renderer *pRenderer, const Mat4x4 & view, const Mat4x4 & viewprojection)
 {
 	//update constant buffers
@@ -125,11 +145,11 @@ AVOID Mesh::VPreRender(Renderer *pRenderer, const Mat4x4 & view, const Mat4x4 & 
 		m_pNormals->Set(2, 0);
 
 	//set material
-	m_pMaterial->Set(0);
+	m_pMaterial->Set(5);
 
 	//set shaders
-	if (m_pShaders)
-		m_pShaders->VBind();
+	//if (m_pShaders)
+	//	m_pShaders->VBind();
 }
 
 AVOID Mesh::VRender(Renderer * pRenderer)
@@ -139,7 +159,7 @@ AVOID Mesh::VRender(Renderer * pRenderer)
 
 AVOID Mesh::VPostRender(Renderer * pRenderer)
 {
-	m_pMaterial->Unbind();
+	//m_pMaterial->Unbind();
 }
 
 AVOID Mesh::SetPositionBuffer()
@@ -193,4 +213,48 @@ AVOID IndexedMesh::GenerateShadowMap()
 	m_pIndexBuffer->Set(0);
 
 	DrawIndexed(m_pIndexBuffer->Count(), 0, 0);
+}
+
+AVOID IndexedMesh::VRenderZPass(Renderer* pRenderer, const Mat4x4 & view, const Mat4x4 & viewProj)
+{
+	struct Buffer 
+	{
+		Mat4x4 worldView;
+		Mat4x4 WVP;
+	};
+	Buffer buffer;
+	buffer.worldView = m_worldTransform * view;
+	buffer.WVP = m_worldTransform * viewProj;
+	buffer.worldView.Transpose();
+	buffer.WVP.Transpose();
+
+	pRenderer->m_pcbWorldPlusWVP->UpdateSubresource(0, nullptr, &buffer, 0, 0);
+	pRenderer->m_pcbWorldPlusWVP->Set(0, ST_Vertex);
+
+	m_pVertices->Set(0, 0);
+	m_pIndexBuffer->Set(0);
+
+	DrawIndexed(m_pIndexBuffer->Count(), 0, 0);
+}
+
+//////////////////////////////////////////////
+//Reflective mesh
+ReflectiveMesh::~ReflectiveMesh()
+{
+	SAFE_DELETE(m_pEnvMap);
+}
+
+AVOID ReflectiveMesh::VPreRender(Renderer *pRenderer, const Mat4x4 & view, const Mat4x4 & viewprojection)
+{
+	IndexedMesh::VPreRender(pRenderer, view, viewprojection);
+
+	m_pEnvSRV->Set(5, ST_Pixel);
+}
+
+AVOID ReflectiveMesh::VPostRender(Renderer *pRenderer)
+{
+	IndexedMesh::VPostRender(pRenderer);
+
+	//unbind environmental map shader resource
+	UnbindShaderResourceViews(5, 1, ST_Pixel);
 }

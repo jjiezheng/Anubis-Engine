@@ -46,6 +46,7 @@
 #include "Graphics_pch.h"
 #include "../../../Final/General.h"
 #include "UnorderedAccessViewDX11.h"
+//#include "../Buffers/StructuredBufferDX11.h"
 
 using namespace Anubis;
 
@@ -55,6 +56,17 @@ ABOOL UnorderedAccessViewParamsDX11::InitForTexture2D(	AUINT8 format,
 	Format = static_cast<DXGI_FORMAT>(format);
 	Texture2D.MipSlice = mipslice;
 	ViewDimension = D3D11_UAV_DIMENSION_TEXTURE2D;
+
+	return true;
+}
+
+ABOOL UnorderedAccessViewParamsDX11::InitForStructuredBuffer( AUINT8 format, AUINT32 elementOffset, AUINT32 numElements, D3D11_BUFFER_UAV_FLAG flag)
+{
+	Format = static_cast<DXGI_FORMAT>(format);
+	Buffer.FirstElement = elementOffset;
+	Buffer.NumElements = numElements;
+	Buffer.Flags = flag;
+	ViewDimension = D3D11_UAV_DIMENSION_BUFFER;
 
 	return true;
 }

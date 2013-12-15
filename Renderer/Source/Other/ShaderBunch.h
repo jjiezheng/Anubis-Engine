@@ -84,7 +84,7 @@ namespace Anubis
 	class ShaderBunchVGP
 	{
 	private:
-		VertexShader*	m_pVertrexShader;
+		VertexShader*	m_pVertexShader;
 		GeometryShader* m_pGeometryShader;
 		PixelShader*	m_pPixelShader;
 
@@ -99,8 +99,18 @@ namespace Anubis
 		};
 
 		//destructor
-		~ShaderBunch();
+		~ShaderBunchVGP();
 
+		//Shaders
+		AVIRTUAL AVOID VSetVertexShader		(const AWSTRING & fileName, const ASTRING & shaderName, INPUT_LAYOUT* layout,
+											 AUINT8 num, AUINT16 topology);
+		AVIRTUAL AVOID VSetHullShader		(const AWSTRING & fileName, const ASTRING & shaderName);
+		AVIRTUAL AVOID VSetDomainShader		(const AWSTRING & fileName, const ASTRING & shaderName);
+		AVIRTUAL AVOID VSetGeometryShader	(const AWSTRING & fileName, const ASTRING & shaderName);
+		AVIRTUAL AVOID VSetPixelShader		(const AWSTRING & fileName, const ASTRING & shaderName);
+
+		AVIRTUAL AVOID VBind();
+	};
 
 
 }; //Anubis

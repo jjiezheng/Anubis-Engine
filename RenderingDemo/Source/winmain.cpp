@@ -2,6 +2,7 @@
 
 #include "Application\Engine.h"
 #include "Deferred\DeferredRenderer.h"
+#include "ForwardPlus\ForwardPlusRenderer.h"
 #include "Havok\Havok.h"
 #include "NullPhysics.h"
 #include "Messenger.h"
@@ -52,7 +53,8 @@ int WINAPI wWinMain(	HINSTANCE hInstance,
 
 	//Allocate memory for engine subsystems!
 	//g_pAudio				= new DirectSoundAudio();
-	Renderer*	g_pRenderer = new DeferredRenderer();
+	//Renderer*	g_pRenderer = new DeferredRenderer();
+	ForwardPlusRenderer* g_pRenderer = new ForwardPlusRenderer();
 	IPhysics*	g_pPhysics = CreateHavokPhysics();
 	//IPhysics*	g_pPhysics = CreateNullPhysics();
 	Messenger*	g_pMessenger = new Messenger();

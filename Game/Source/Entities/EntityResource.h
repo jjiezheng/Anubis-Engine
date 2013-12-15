@@ -227,6 +227,8 @@ namespace Anubis
 	struct EntityResource
 	{
 		Vec m_vPos;
+		Vec m_vOffset;
+		Vec m_vScale;
 		Quaternion m_qRot;
 
 		////////////////////////////
