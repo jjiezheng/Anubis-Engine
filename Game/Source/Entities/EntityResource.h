@@ -111,6 +111,14 @@ namespace Anubis
 		AREAL m_fZHalfExtent;
 	};
 
+	struct GraphicsSpriteComponent : public GraphicsComponent
+	{
+		AVIRTUAL ASTRING VGetType() const { return "Sprite"; }
+
+		AREAL m_fXHalfExtent;
+		AREAL m_fYHalfExtent;
+	};
+
 	struct GraphicsBoxComponent : public GraphicsComponent
 	{
 		ASTRING VGetType() const { return "Box"; }

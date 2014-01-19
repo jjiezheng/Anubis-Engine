@@ -142,7 +142,10 @@ namespace Anubis
 		AINLINE Mat4x4	GetPrevView()		const { return m_prevView; }
 		AINLINE Mat4x4	GetPrevProjection()	const { return m_prevProjection; }
 
-		AINLINE Mat4x4	GetOrthoProjection() const;
+		AINLINE Mat4x4	GetOrthoProjection() const
+		{
+			return CreateOrthoProjectionLH(SCREEN_WIDTH, SCREEN_HEIGHT, m_frustum.GetNearZ(), m_frustum.GetFarZ());
+		}
 
 		AINLINE Vec		GetPosition()		const { return m_pos; }
 		Vec				GetLookAt()			const;

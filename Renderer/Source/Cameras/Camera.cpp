@@ -106,11 +106,6 @@ AVOID Camera::VUpdate(AUINT32 const elapsedMs)
 	UpdateTransforms();
 }
 
-Mat4x4 Camera::GetOrthoProjection() const
-{
-	return CreateOrthoProjectionLH(SCREEN_WIDTH, SCREEN_HEIGHT, m_frustum.GetNearZ(), m_frustum.GetFarZ());
-}
-
 Vec Camera::GetLookAt() const
 {
 	Mat4x4 rot;

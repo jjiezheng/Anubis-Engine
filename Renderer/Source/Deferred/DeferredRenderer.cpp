@@ -237,8 +237,8 @@ ABOOL DeferredRenderer::VInitialize(HWND hWnd, AUINT32 width, AUINT32 height)
 	m_pDefaultLayout[4].InstanceDataStepRate	= 0;					
 
 	//Initialize shaders
-	m_pDefaultGBufferShaders->VSetVertexShader(L"GBufferShader.hlsl", "VS", m_pDefaultLayout, 5, TOPOLOGY_TRIANGLELIST);
-	m_pDefaultGBufferShaders->VSetPixelShader(L"GBufferShader.hlsl", "PS");
+	m_pDefaultGBufferShaders->VSetVertexShader(L"GBufferShader.hlsl", "VS", m_pDefaultLayout, 5, TOPOLOGY_TRIANGLELIST, "vs_5_0");
+	m_pDefaultGBufferShaders->VSetPixelShader(L"GBufferShader.hlsl", "PS", "ps_5_0");
 
 	//input layout
 	m_pLayout = new INPUT_LAYOUT[2];
@@ -261,15 +261,15 @@ ABOOL DeferredRenderer::VInitialize(HWND hWnd, AUINT32 width, AUINT32 height)
 	m_pShadowsLayout->InputSlotClass	=	IA_PER_VERTEX_DATA;
 	m_pShadowsLayout->InstanceDataStepRate =	0;
 
-	m_pShadowsShaders->VSetVertexShader(L"Resources\\Shaders\\Shadows\\ShadowMap_VS.hlsl", "Shadows_VS", m_pShadowsLayout, 1, TOPOLOGY_TRIANGLELIST);
-	m_pShadowsShaders->VSetPixelShader(L"Resources\\Shaders\\Shadows\\ShadowMap_PS.hlsl", "Shadows_PS");
+	m_pShadowsShaders->VSetVertexShader(L"Resources\\Shaders\\Shadows\\ShadowMap_VS.hlsl", "Shadows_VS", m_pShadowsLayout, 1, TOPOLOGY_TRIANGLELIST, "vs_5_0");
+	m_pShadowsShaders->VSetPixelShader(L"Resources\\Shaders\\Shadows\\ShadowMap_PS.hlsl", "Shadows_PS", "ps_5_0");
 
-	m_pShadowCubeShaders->VSetVertexShader(L"Shaders\\CubeShadowMap_VS.hlsl", "CubeShadowMap_VS", m_pShadowsLayout, 1, TOPOLOGY_TRIANGLELIST);
-	m_pShadowCubeShaders->VSetGeometryShader(L"Shaders\\CubeShadowMap_GS.hlsl", "CubeShadowMap_GS");
-	m_pShadowCubeShaders->VSetPixelShader(L"Shaders\\CubeShadowMap_PS.hlsl", "CubeShadowMap_PS");
+	m_pShadowCubeShaders->VSetVertexShader(L"Shaders\\CubeShadowMap_VS.hlsl", "CubeShadowMap_VS", m_pShadowsLayout, 1, TOPOLOGY_TRIANGLELIST, "vs_5_0");
+	m_pShadowCubeShaders->VSetGeometryShader(L"Shaders\\CubeShadowMap_GS.hlsl", "CubeShadowMap_GS", "gs_5_0");
+	m_pShadowCubeShaders->VSetPixelShader(L"Shaders\\CubeShadowMap_PS.hlsl", "CubeShadowMap_PS", "gs_5_0");
 	
-	m_pVarianceShadowsShaders->VSetVertexShader(L"Resources\\Shaders\\Shadows\\VarianceShadows_DepthVS.hlsl", "VarianceShadows_DepthVS", m_pShadowsLayout, 1, TOPOLOGY_TRIANGLELIST);
-	m_pVarianceShadowsShaders->VSetPixelShader(L"Resources\\Shaders\\Shadows\\VarianceShadows_DepthPS.hlsl", "VarianceShadows_DepthPS");
+	m_pVarianceShadowsShaders->VSetVertexShader(L"Resources\\Shaders\\Shadows\\VarianceShadows_DepthVS.hlsl", "VarianceShadows_DepthVS", m_pShadowsLayout, 1, TOPOLOGY_TRIANGLELIST, "vs_5_0");
+	m_pVarianceShadowsShaders->VSetPixelShader(L"Resources\\Shaders\\Shadows\\VarianceShadows_DepthPS.hlsl", "VarianceShadows_DepthPS", "ps_5_0");
 
 	////////////////////////////////////////////////////////
 	//Motion Blur
@@ -282,11 +282,11 @@ ABOOL DeferredRenderer::VInitialize(HWND hWnd, AUINT32 width, AUINT32 height)
 	m_pMotionBlurLayout[0].InputSlotClass = IA_PER_VERTEX_DATA;		m_pMotionBlurLayout[1].InputSlotClass = IA_PER_VERTEX_DATA;
 	m_pMotionBlurLayout[0].InstanceDataStepRate = 0;				m_pMotionBlurLayout[1].InstanceDataStepRate = 0;
 
-	m_pVelocityMapShaders->VSetVertexShader(L"Resources\\Shaders\\PostProcessing\\VelocityMap_VS.hlsl", "GenerateVelocityMap_VS", m_pMotionBlurLayout, 2, TOPOLOGY_TRIANGLELIST);
-	m_pVelocityMapShaders->VSetPixelShader(L"Resources\\Shaders\\PostProcessing\\VelocityMap_PS.hlsl", "GenerateVelocityMap_PS");
+	m_pVelocityMapShaders->VSetVertexShader(L"Resources\\Shaders\\PostProcessing\\VelocityMap_VS.hlsl", "GenerateVelocityMap_VS", m_pMotionBlurLayout, 2, TOPOLOGY_TRIANGLELIST, "vs_5_0");
+	m_pVelocityMapShaders->VSetPixelShader(L"Resources\\Shaders\\PostProcessing\\VelocityMap_PS.hlsl", "GenerateVelocityMap_PS", "ps_5_0");
 
-	m_pMotionBlurShaders->VSetVertexShader(L"Resources\\Shaders\\PostProcessing\\MotionBlur_VS.hlsl", "MotionBlur_VS", m_pMotionBlurLayout, 2, TOPOLOGY_TRIANGLELIST);
-	m_pMotionBlurShaders->VSetPixelShader(L"Resources\\Shaders\\PostProcessing\\MotionBlur_PS.hlsl", "MotionBlur_PS");
+	m_pMotionBlurShaders->VSetVertexShader(L"Resources\\Shaders\\PostProcessing\\MotionBlur_VS.hlsl", "MotionBlur_VS", m_pMotionBlurLayout, 2, TOPOLOGY_TRIANGLELIST, "vs_5_0");
+	m_pMotionBlurShaders->VSetPixelShader(L"Resources\\Shaders\\PostProcessing\\MotionBlur_PS.hlsl", "MotionBlur_PS", "ps_5_0");
 
 	////////////////////////////////////////////////////////
 	//resourece copying
@@ -299,8 +299,8 @@ ABOOL DeferredRenderer::VInitialize(HWND hWnd, AUINT32 width, AUINT32 height)
 	m_pSRVtoRTVLayout->InputSlotClass	=	IA_PER_VERTEX_DATA;
 	m_pSRVtoRTVLayout->InstanceDataStepRate =	0;
 
-	m_pSRVtoRTVShaders->VSetVertexShader(L"Resources\\Shaders\\Other\\FromSRVtoRTV_VS.hlsl", "SRVtoRTV_VS", m_pSRVtoRTVLayout, 1, TOPOLOGY_TRIANGLELIST);
-	m_pSRVtoRTVShaders->VSetPixelShader(L"Resources\\Shaders\\Other\\FromSRVtoRTV_PS.hlsl", "SRVtoRTV_PS");
+	m_pSRVtoRTVShaders->VSetVertexShader(L"Resources\\Shaders\\Other\\FromSRVtoRTV_VS.hlsl", "SRVtoRTV_VS", m_pSRVtoRTVLayout, 1, TOPOLOGY_TRIANGLELIST, "vs_5_0");
+	m_pSRVtoRTVShaders->VSetPixelShader(L"Resources\\Shaders\\Other\\FromSRVtoRTV_PS.hlsl", "SRVtoRTV_PS", "ps_5_0");
 
 	////////////////////////////////////////////////////////
 	//Ambient occlusion
@@ -313,8 +313,8 @@ ABOOL DeferredRenderer::VInitialize(HWND hWnd, AUINT32 width, AUINT32 height)
 	m_pSSAOLayout->InputSlotClass	=	IA_PER_VERTEX_DATA;
 	m_pSSAOLayout->InstanceDataStepRate =	0;
 
-	m_pSSAOShaders->VSetVertexShader(L"SSAO_Vertex.hlsl", "SSAO_VS", m_pSSAOLayout, 1, TOPOLOGY_TRIANGLELIST);
-	m_pSSAOShaders->VSetPixelShader(L"SSAO_Pixel.hlsl", "SSAO_PS");
+	m_pSSAOShaders->VSetVertexShader(L"SSAO_Vertex.hlsl", "SSAO_VS", m_pSSAOLayout, 1, TOPOLOGY_TRIANGLELIST, "vs_5_0");
+	m_pSSAOShaders->VSetPixelShader(L"SSAO_Pixel.hlsl", "SSAO_PS", "ps_5_0");
 
 	Texture2DParams tex2DParams;
 	tex2DParams.Init(SCREEN_WIDTH, SCREEN_HEIGHT, 1, TEX_R32G32B32A32_FLOAT, true, true, true, false, 1, 0,
@@ -362,11 +362,11 @@ ABOOL DeferredRenderer::VInitialize(HWND hWnd, AUINT32 width, AUINT32 height)
 	m_pSkyLayout->InputSlotClass	=	IA_PER_VERTEX_DATA;
 	m_pSkyLayout->InstanceDataStepRate =	0;
 
-	m_pSkyShaders->VSetVertexShader(L"Source\\Shaders\\SkyBox.hlsl", "SkyBox_VS", m_pSkyLayout, 1, TOPOLOGY_TRIANGLELIST);
-	m_pSkyShaders->VSetPixelShader(L"Source\\Shaders\\SkyBox.hlsl", "SkyBox_PS");
+	m_pSkyShaders->VSetVertexShader(L"Source\\Shaders\\SkyBox.hlsl", "SkyBox_VS", m_pSkyLayout, 1, TOPOLOGY_TRIANGLELIST, "vs_5_0");
+	m_pSkyShaders->VSetPixelShader(L"Source\\Shaders\\SkyBox.hlsl", "SkyBox_PS", "ps_5_0");
 
-	m_pAtmoShaders->VSetVertexShader(L"Shaders\\Atmosphere\\SkyFromAtmosphere_vs.hlsl", "SkyFromAtmosphere_vs", m_pSkyLayout, 1, TOPOLOGY_TRIANGLELIST);
-	m_pAtmoShaders->VSetPixelShader(L"Shaders\\Atmosphere\\SkyFromAtmosphere_ps.hlsl", "SkyFromAtmosphere_ps");
+	//m_pAtmoShaders->VSetVertexShader(L"Shaders\\Atmosphere\\SkyFromAtmosphere_vs.hlsl", "SkyFromAtmosphere_vs", m_pSkyLayout, 1, TOPOLOGY_TRIANGLELIST, "vs_5_0");
+	//m_pAtmoShaders->VSetPixelShader(L"Shaders\\Atmosphere\\SkyFromAtmosphere_ps.hlsl", "SkyFromAtmosphere_ps", "ps_5_0");
 
 	Resource meshResource("sphere.obj");
 	shared_ptr<ResHandle> pMeshes = Anubis::SafeGetHandle(&meshResource);
@@ -393,8 +393,8 @@ ABOOL DeferredRenderer::VInitialize(HWND hWnd, AUINT32 width, AUINT32 height)
 
 	//m_pFXAAShaders->VSetVertexShader(L"Shaders\\FXAA.hlsl", "FXAA_VS", m_pLayout, 0, TOPOLOGY_TRIANGLELIST);
 	//m_pFXAAShaders->VSetPixelShader(L"Shaders\\FXAA.hlsl", "FXAA_PS");
-	m_pFXAAShaders->VSetVertexShader(L"Shaders\\FXAA_orig.hlsl", "FxaaVS", m_pLayout, 0, TOPOLOGY_TRIANGLESTRIP);
-	m_pFXAAShaders->VSetPixelShader(L"Shaders\\FXAA_orig.hlsl", "FxaaPS");
+	m_pFXAAShaders->VSetVertexShader(L"Shaders\\FXAA_orig.hlsl", "FxaaVS", m_pLayout, 0, TOPOLOGY_TRIANGLESTRIP, "vs_5_0");
+	m_pFXAAShaders->VSetPixelShader(L"Shaders\\FXAA_orig.hlsl", "FxaaPS", "ps_5_0");
 
 	///////////////////////////////////////////////
 	//Initialize data for blurring

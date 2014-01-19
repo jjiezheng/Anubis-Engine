@@ -116,6 +116,8 @@ AVOID Mesh::VRenderZPass(Renderer* pRenderer, const Mat4x4 & view, const Mat4x4 
 
 AVOID Mesh::VPreRender(Renderer *pRenderer, const Mat4x4 & view, const Mat4x4 & viewprojection)
 {
+	//pRenderer->AllEnabledBackCullingRasterizer()->Set();
+	//pRenderer->AllDisabledBackCullingRasterizer()->Set();
 	//update constant buffers
 	struct MatrixBuffer
 	{

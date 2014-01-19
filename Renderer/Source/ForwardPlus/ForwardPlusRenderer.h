@@ -128,6 +128,22 @@ namespace Anubis
 		};
 		CameraCullingData m_cameraCullingData;
 
+		////////////////////////////////////
+		//Sky rendering
+		TextureCube*	m_pSkyTexture;
+		ShaderResourceView* m_pSkySRV;
+		INPUT_LAYOUT*	m_pSkyLayout;
+		ShaderBunch* m_pSkyShaders;
+		ShaderBunch* m_pAtmoShaders;
+		shared_ptr<IndexedMesh> m_pSphereMesh;
+
+		ComputeShader*  m_pSphericalCoeffShader;
+		ComputeShader*	m_pIrradianceMapShader;
+		TextureCube*	m_pIrradianceMap;
+		ShaderResourceView* m_pIrradianceSRV;
+		//RenderTargetView*	m_pIrradianceRTV;
+		RenderTargetView* m_pIrradianceRTV[6];
+
 	public:
 		/***		=====		***
 		 Constructor and Destructor
@@ -154,6 +170,7 @@ namespace Anubis
 
 		AVOID VGenerateShadowMaps();
 		AVOID VRenderSky(Anubis::CameraPtr,const Anubis::Mat4x4 &);
+		AVOID VGenerateIrradianceMap();
 
 	protected:
 		AVOID UpdateLightBuffers();

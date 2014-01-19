@@ -72,11 +72,11 @@ namespace Anubis
 
 		//Shaders
 		AVIRTUAL AVOID VSetVertexShader		(const AWSTRING & fileName, const ASTRING & shaderName, INPUT_LAYOUT* layout,
-											 AUINT8 num, AUINT16 topology);
-		AVIRTUAL AVOID VSetHullShader		(const AWSTRING & fileName, const ASTRING & shaderName);
-		AVIRTUAL AVOID VSetDomainShader		(const AWSTRING & fileName, const ASTRING & shaderName);
-		AVIRTUAL AVOID VSetGeometryShader	(const AWSTRING & fileName, const ASTRING & shaderName);
-		AVIRTUAL AVOID VSetPixelShader		(const AWSTRING & fileName, const ASTRING & shaderName);
+											 AUINT8 num, AUINT16 topology, const ASTRING & target);
+		AVIRTUAL AVOID VSetHullShader		(const AWSTRING & fileName, const ASTRING & shaderName, const ASTRING & target);
+		AVIRTUAL AVOID VSetDomainShader		(const AWSTRING & fileName, const ASTRING & shaderName, const ASTRING & target);
+		AVIRTUAL AVOID VSetGeometryShader	(const AWSTRING & fileName, const ASTRING & shaderName, const ASTRING & target);
+		AVIRTUAL AVOID VSetPixelShader		(const AWSTRING & fileName, const ASTRING & shaderName, const ASTRING & target);
 
 		AVIRTUAL AVOID VBind();
 	}; 
@@ -103,11 +103,11 @@ namespace Anubis
 
 		//Shaders
 		AVIRTUAL AVOID VSetVertexShader		(const AWSTRING & fileName, const ASTRING & shaderName, INPUT_LAYOUT* layout,
-											 AUINT8 num, AUINT16 topology);
-		AVIRTUAL AVOID VSetHullShader		(const AWSTRING & fileName, const ASTRING & shaderName);
-		AVIRTUAL AVOID VSetDomainShader		(const AWSTRING & fileName, const ASTRING & shaderName);
-		AVIRTUAL AVOID VSetGeometryShader	(const AWSTRING & fileName, const ASTRING & shaderName);
-		AVIRTUAL AVOID VSetPixelShader		(const AWSTRING & fileName, const ASTRING & shaderName);
+											 AUINT8 num, AUINT16 topology, const ASTRING & target);
+		AVIRTUAL AVOID VSetHullShader		(const AWSTRING & fileName, const ASTRING & shaderName, const ASTRING & target);
+		AVIRTUAL AVOID VSetDomainShader		(const AWSTRING & fileName, const ASTRING & shaderName, const ASTRING & target);
+		AVIRTUAL AVOID VSetGeometryShader	(const AWSTRING & fileName, const ASTRING & shaderName, const ASTRING & target);
+		AVIRTUAL AVOID VSetPixelShader		(const AWSTRING & fileName, const ASTRING & shaderName, const ASTRING & target);
 
 		AVIRTUAL AVOID VBind();
 	};

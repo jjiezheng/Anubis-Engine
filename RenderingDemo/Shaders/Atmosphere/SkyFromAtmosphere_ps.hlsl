@@ -18,7 +18,7 @@ float4 SkyFromAtmosphere_ps( vs_output input ) : SV_Target
 	float4 color = calcRayleighPhase(cos) * input.rColor + 
 		calcMiePhase(cos, g, g2) * input.mColor;
 
-	return float4(1.0f, 0.0f, 0.0f, 1.0f);
+	//return float4(1.0f, 0.0f, 0.0f, 1.0f);
 	return input.rColor;
 	//return float4(calcMiePhase(cos, g, g2), calcMiePhase(cos, g, g2),
 	//	calcMiePhase(cos, g, g2), 1.0f);

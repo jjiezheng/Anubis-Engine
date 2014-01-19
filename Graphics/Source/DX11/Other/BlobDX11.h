@@ -56,7 +56,7 @@ namespace Anubis
 		~BlobDX11() { SAFE_RELEASE(m_pBlob); }
 
 		ABOOL CompileShader(const AWSTRING & fileName, const ASTRING & entrypoint,
-									ShaderType type, BlobDX11 * pErrors) const;
+									ShaderType type, const ASTRING &target, BlobDX11 * pErrors) const;
 	};
 
 }; //Anubis

@@ -221,8 +221,8 @@ GrassPack::GrassPack(	const Vec & center, const AREAL r32HalfWidth, const AREAL 
 		{ "NORMAL",   0, TEX_R32G32B32_FLOAT, 2, 0, IA_PER_VERTEX_DATA, 0},
 	};
 
-	m_pShaders->VSetVertexShader(L"Grass_Vertex.hlsl", "Grass_VS", layout, 3, TOPOLOGY_TRIANGLELIST);
-	m_pShaders->VSetPixelShader(L"Grass_Pixel.hlsl", "Grass_PS");
+	m_pShaders->VSetVertexShader(L"Grass_Vertex.hlsl", "Grass_VS", layout, 3, TOPOLOGY_TRIANGLELIST, "vs_5_0");
+	m_pShaders->VSetPixelShader(L"Grass_Pixel.hlsl", "Grass_PS", "ps_5_0");
 }
 
 GrassPack::~GrassPack()

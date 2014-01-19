@@ -62,7 +62,7 @@ AVOID ShaderBunch::VBind()
 
 //Shaders
 AVOID ShaderBunch::VSetVertexShader		(const AWSTRING & fileName, const ASTRING & shaderName, INPUT_LAYOUT* layout,
-										 AUINT8 num, AUINT16 topology)
+										 AUINT8 num, AUINT16 topology, const ASTRING & target)
 {
 	//create shader
 	//m_pVertexShader = make_shared<VertexShader>(VertexShader());
@@ -70,31 +70,31 @@ AVOID ShaderBunch::VSetVertexShader		(const AWSTRING & fileName, const ASTRING &
 
 	//create and compile shader
 	BlobDX11* pErrors = new BlobDX11();
-	m_pVertexShader->CreateAndCompile(fileName, shaderName, layout, num, topology, pErrors);
+	m_pVertexShader->CreateAndCompile(fileName, shaderName, layout, num, topology, target, pErrors);
 }
 
-AVOID ShaderBunch::VSetHullShader		(const AWSTRING & fileName, const ASTRING & shaderName)
+AVOID ShaderBunch::VSetHullShader		(const AWSTRING & fileName, const ASTRING & shaderName, const ASTRING & target)
 {
 	//empty here...
 }
 
-AVOID ShaderBunch::VSetDomainShader		(const AWSTRING & fileName, const ASTRING & shaderName)
+AVOID ShaderBunch::VSetDomainShader		(const AWSTRING & fileName, const ASTRING & shaderName, const ASTRING & target)
 {
 	//empty here...
 }
 
-AVOID ShaderBunch::VSetGeometryShader	(const AWSTRING & fileName, const ASTRING & shaderName)
+AVOID ShaderBunch::VSetGeometryShader	(const AWSTRING & fileName, const ASTRING & shaderName, const ASTRING & target)
 {
 	//empty here...
 }
 
-AVOID ShaderBunch::VSetPixelShader		(const AWSTRING & fileName, const  ASTRING & shaderName)
+AVOID ShaderBunch::VSetPixelShader		(const AWSTRING & fileName, const  ASTRING & shaderName, const ASTRING & target)
 {
 	m_pPixelShader = new PixelShader();
 
 	//create and compile shader
 	BlobDX11* pErrors = new BlobDX11();
-	m_pPixelShader->CreateAndCompile(fileName, shaderName, pErrors);
+	m_pPixelShader->CreateAndCompile(fileName, shaderName, target, pErrors);
 }
 
 /////////////////////////////////////////////
@@ -117,40 +117,40 @@ AVOID ShaderBunchVGP::VBind()
 
 //Shaders
 AVOID ShaderBunchVGP::VSetVertexShader		(const AWSTRING & fileName, const ASTRING & shaderName, INPUT_LAYOUT* layout,
-										 AUINT8 num, AUINT16 topology)
+										 AUINT8 num, AUINT16 topology, const ASTRING & target)
 {
 	//create shader
 	m_pVertexShader = new VertexShader;
 
 	//create and compile shader
 	BlobDX11* pErrors = new BlobDX11();
-	m_pVertexShader->CreateAndCompile(fileName, shaderName, layout, num, topology, pErrors);
+	m_pVertexShader->CreateAndCompile(fileName, shaderName, layout, num, topology, target, pErrors);
 }
 
-AVOID ShaderBunchVGP::VSetHullShader		(const AWSTRING & fileName, const ASTRING & shaderName)
+AVOID ShaderBunchVGP::VSetHullShader		(const AWSTRING & fileName, const ASTRING & shaderName, const ASTRING & target)
 {
 	//empty here...
 }
 
-AVOID ShaderBunchVGP::VSetDomainShader		(const AWSTRING & fileName, const ASTRING & shaderName)
+AVOID ShaderBunchVGP::VSetDomainShader		(const AWSTRING & fileName, const ASTRING & shaderName, const ASTRING & target)
 {
 	//empty here...
 }
 
-AVOID ShaderBunchVGP::VSetGeometryShader	(const AWSTRING & fileName, const ASTRING & shaderName)
+AVOID ShaderBunchVGP::VSetGeometryShader	(const AWSTRING & fileName, const ASTRING & shaderName, const ASTRING & target)
 {
 	m_pGeometryShader = new GeometryShader();
 
 	//create and compile shader
 	BlobDX11* pErrors = new BlobDX11();
-	m_pGeometryShader->CreateAndCompile(fileName, shaderName, pErrors);
+	m_pGeometryShader->CreateAndCompile(fileName, shaderName, target, pErrors);
 }
 
-AVOID ShaderBunchVGP::VSetPixelShader		(const AWSTRING & fileName, const  ASTRING & shaderName)
+AVOID ShaderBunchVGP::VSetPixelShader		(const AWSTRING & fileName, const  ASTRING & shaderName, const ASTRING & target)
 {
 	m_pPixelShader = new PixelShader();
 
 	//create and compile shader
 	BlobDX11* pErrors = new BlobDX11();
-	m_pPixelShader->CreateAndCompile(fileName, shaderName, pErrors);
+	m_pPixelShader->CreateAndCompile(fileName, shaderName, target, pErrors);
 }

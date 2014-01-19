@@ -100,11 +100,11 @@ ABOOL Renderer::VInitialize(HWND hWnd, AUINT32 width, AUINT32 height)
 		==	Create Shaders  ==
 		===============================  */
 	BlobDX11* pErrors = new BlobDX11();
-	m_pGaussianFilter->CreateAndCompile(L"Gauss.hlsl", "CS", pErrors);
-	m_pGaussianHorFilter->CreateAndCompile(L"Gauss_Separable.hlsl", "CS_Horizontal", pErrors);
-	m_pGaussianVerFilter->CreateAndCompile(L"Gauss_Separable.hlsl", "CS_Vertical", pErrors);
+	//m_pGaussianFilter->CreateAndCompile(L"Gauss.hlsl", "CS", pErrors);
+	//m_pGaussianHorFilter->CreateAndCompile(L"Gauss_Separable.hlsl", "CS_Horizontal", pErrors);
+	//m_pGaussianVerFilter->CreateAndCompile(L"Gauss_Separable.hlsl", "CS_Vertical", pErrors);
 
-	m_pCopyResourceShader->CreateAndCompile(L"Resources\\Shaders\\Other\\CopyResource.hlsl", "Copy_CS");
+	//m_pCopyResourceShader->CreateAndCompile(L"Shaders\\CopyResource.hlsl", "Copy_CS");
 
 	//Initialize structure to fill buffer properties
 	BufferParams * params = new BufferParams();
@@ -205,23 +205,23 @@ ABOOL Renderer::VInitialize(HWND hWnd, AUINT32 width, AUINT32 height)
 		==	Create Depth Stencil States  ==
 		=================================== */
 	DepthStencilParams depthStencilParams;
-	depthStencilParams.Init(true, D3D11_COMPARISON_LESS, false, 0, 0);
+	depthStencilParams.Init(false, D3D11_COMPARISON_LESS, false, 0, 0);
 	if (!m_pDepthEnableStencilDisableStandard->Create(&depthStencilParams))	return false;
 
 	depthStencilParams.Init(false, D3D11_COMPARISON_LESS, false, 0, 0);
 	if (!m_pDepthDisableStencilDisable->Create(&depthStencilParams))		return false;
 
 	Texture2DParams dParams;
-	dParams.Init(SCREEN_WIDTH, SCREEN_HEIGHT, 1, DXGI_FORMAT_R32_TYPELESS, true, false, false, true, 8, 1,
+	dParams.Init(SCREEN_WIDTH, SCREEN_HEIGHT, 1, DXGI_FORMAT_D24_UNORM_S8_UINT, false, false, false, true, 1, 0,
 				1, true, false, false);
 	if (!m_pDepthTexture->Create(&dParams))	return false;
 
 	ShaderResourceViewParams srvParams;
-	srvParams.InitForTexture2D(DXGI_FORMAT_R32_FLOAT, 1, 0, true);
-	if (!m_pDepthTexture->CreateShaderResourceView(&m_pDepthSRV->m_pView, &srvParams))	return false;
+	//srvParams.InitForTexture2D(DXGI_FORMAT_R32_FLOAT, 1, 0, true);
+	//if (!m_pDepthTexture->CreateShaderResourceView(&m_pDepthSRV->m_pView, &srvParams))	return false;
 
 	DepthStencilViewParams dsvParams;
-	dsvParams.InitForTexture2D(DXGI_FORMAT_D32_FLOAT, 0, true);
+	dsvParams.InitForTexture2D(DXGI_FORMAT_D24_UNORM_S8_UINT, 0, true);
 	if (!m_pDepthTexture->CreateDepthStencilView(&m_pDepthDSV->m_pView, &dsvParams))	return false;
 
 	////////////////////////////////////////////////////
@@ -261,7 +261,7 @@ ABOOL Renderer::VInitialize(HWND hWnd, AUINT32 width, AUINT32 height)
 	//RenderTargetViewParams rtvParams;
 	//rtvParams.InitForTexture2D(DXGI_FORMAT_R32G32B32A32_FLOAT, 0);
 	//if (!m_pTempTexture->CreateRenderTargetView(&m_pTempRTV->m_pView, &rtvParams)) return false;
-	tempTexParams.Init(SCREEN_WIDTH, SCREEN_HEIGHT, 1, DXGI_FORMAT_R8G8B8A8_TYPELESS, true, true, true, false, 1, 0, 1, true, false, false);
+	/*tempTexParams.Init(SCREEN_WIDTH, SCREEN_HEIGHT, 1, DXGI_FORMAT_R8G8B8A8_TYPELESS, true, true, true, false, 1, 0, 1, true, false, false);
 	if (!m_pTempTexture->Create(&tempTexParams)) return false;
 
 	srvParams.InitForTexture2D(DXGI_FORMAT_R8G8B8A8_UNORM, 1, 0, false);
@@ -270,7 +270,7 @@ ABOOL Renderer::VInitialize(HWND hWnd, AUINT32 width, AUINT32 height)
 	RenderTargetViewParams rtvParams;
 	rtvParams.InitForTexture2D(DXGI_FORMAT_R8G8B8A8_UNORM, 0, false);
 	if (!m_pTempTexture->CreateRenderTargetView(&m_pTempRTV->m_pView, &rtvParams)) return false;
-
+	*/
 	return true;
 }
 
@@ -495,7 +495,7 @@ RasterizerState* Renderer::AllDisabledBackCullingRasterizer()
 	//not created yet
 	m_pAllDisabledBackCulling = new RasterizerState();
 	RasterizerParams params;
-	params.Init(false, false, false, true, 0.0f, 0.0f, 0.0f, false, false, false, false);
+	params.Init(false, true, false, true, 0.0f, 0.0f, 0.0f, false, false, false, false);
 	m_pAllDisabledBackCulling->Create(&params);
 
 	return m_pAllDisabledBackCulling;

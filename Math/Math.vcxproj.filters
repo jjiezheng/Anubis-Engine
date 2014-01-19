@@ -19,6 +19,9 @@
     <ClInclude Include="Source\Geometry\BBox.h">
       <Filter>Geometry</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Geometry\Ray.h">
+      <Filter>Geometry</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Vectors.cpp" />

@@ -1,0 +1,210 @@
+//====================================================================================
+//GBuffer2D.cpp
+//
+//This code is part of Anubis Engine.
+//
+//Anubis Engine is a free game engine created as a fan project to be
+//awesome platform for developing games!
+//
+//All sources can be found here:
+//	https://github.com/Dgek/Anubis-Engine
+//
+//Demos based on Anubis Engine can be found here:
+//	https://github.com/Dgek/Demos
+//
+//Copyright (c) 2013, Muralev Evgeny
+//All rights reserved.
+//
+//Redistribution and use in source and binary forms, with
+//or without modification, are permitted provided that the
+//following conditions are met:
+//
+//Redistributions of source code must retain the above copyright notice,
+//this list of conditions and the following disclaimer.
+//
+//Redistributions in binary form must reproduce the above copyright notice,
+//this list of conditions and the following disclaimer in the documentation
+//and/or other materials provided with the distribution.
+//
+//Neither the name of the Minotower Games nor the names of its contributors 
+//may be used to endorse or promote products derived from this software 
+//without specific prior written permission.
+//
+//THIS SOFTWARE IS PROVIDED BY MURALEV EVGENY "AS IS"
+//AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, 
+//THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+//ARE DISCLAIMED. IN NO EVENT SHALL MURALEV EVGENY BE LIABLE
+//FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+//(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+//LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
+//ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+//(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+//SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+//
+//====================================================================================
+
+#include "Renderer_pch.h"
+#include "GBuffer2D.h"
+
+#include "Final/General.h"
+
+using namespace Anubis;
+
+/* ==
+	==	Constructor ==
+== */
+GBuffer2D::GBuffer2D() : 
+	/*m_pPosSRV(ShaderResourceView()),		m_pPosRTV(RenderTargetView()), 
+	m_pNormalSRV(ShaderResourceView()),		m_pNormalRTV(RenderTargetView()), 
+	m_pDiffuseSRV(ShaderResourceView()),	m_pDiffuseRTV(RenderTargetView()), 
+	m_pSpecularSRV(ShaderResourceView()),	m_pSpecularRTV(RenderTargetView()) */
+	m_SRVList(5), m_RTVList(5)
+{
+	//==
+	//Initialize textures
+	//==
+	m_pPosTex		= make_shared<Texture2D>(Texture2D());
+	m_pNormalTex	= make_shared<Texture2D>(Texture2D());
+	m_pDepthTex		= make_shared<Texture2D>(Texture2D());
+	m_pDiffuseTex	= make_shared<Texture2D>(Texture2D());
+	m_pSpecularTex	= make_shared<Texture2D>(Texture2D());	
+
+	//m_pDepthStencilView = new DepthStencilView();
+}
+
+GBuffer2D::~GBuffer2D()
+{
+	SAFE_DELETE(m_pDepthStencilView);
+}
+
+ABOOL GBuffer2D::VInitialize()
+{
+	//==
+	//Define properties for textures
+	//==
+	Texture2DParams * pParams = new Texture2DParams();
+	//pParams->Init(SCREEN_WIDTH, SCREEN_HEIGHT, 1, TEX_R32G32B32A32_FLOAT, true, false, 
+	//	true, false, 1, 0, 1, true, false, false);
+	pParams->Init(SCREEN_WIDTH, SCREEN_HEIGHT, 1, TEX_R16G16B16A16_FLOAT, true, false, 
+		true, false, 1, 0, 1, true, false, false);
+	//pParams->Init(SCREEN_WIDTH, SCREEN_HEIGHT, 1, TEX_R8G8B8A8_SNORM, true, false, true, false, 1, 0, 1, true, false, false);
+
+	//==
+	//Create textures
+	//==
+	Texture2D pTex = *m_pPosTex;
+	pTex.Create(pParams);
+	m_pPosTex->Create(pParams);
+	m_pNormalTex->Create(pParams);
+	m_pDepthTex->Create(pParams);
+	m_pDiffuseTex->Create(pParams);
+	m_pSpecularTex->Create(pParams);
+
+	//Texture2DParams * pDepthParams = new Texture2DParams();
+	//pDepthParams->Init(SCREEN_WIDTH, SCREEN_HEIGHT, 1, TEX_R24G8_TYPELESS, true, false, 
+	//	false, true, 1, 0, 1, true, false, false);
+	//m_pDepthTex->Create(pDepthParams);
+
+	//Define properties for shader resource views
+	ShaderResourceViewParams * pSRVParams = new ShaderResourceViewParams();
+	pSRVParams->InitForTexture2D(pParams->Format, 1, 0, false);
+
+	//ShaderResourceViewParams * pSRVDepthParams = new ShaderResourceViewParams();
+	//pSRVDepthParams->InitForTexture2D(TEX_R32_FLOAT, 1, 0);
+
+	//==
+	//Create Shader Resource Views
+	//==
+	m_pPosTex->CreateShaderResourceView(m_SRVList.GetView(0), pSRVParams);
+	m_pNormalTex->CreateShaderResourceView(m_SRVList.GetView(1), pSRVParams);
+	m_pDepthTex->CreateShaderResourceView(m_SRVList.GetView(2), pSRVParams);
+	m_pDiffuseTex->CreateShaderResourceView(m_SRVList.GetView(3), pSRVParams);
+	m_pSpecularTex->CreateShaderResourceView(m_SRVList.GetView(4), pSRVParams);
+
+	//Define properties for render target views
+	RenderTargetViewParams * pRTVParams = new RenderTargetViewParams();
+	pRTVParams->InitForTexture2D(pParams->Format, 0, false);
+
+	//==
+	//Create Render Target Views
+	//==
+	m_pPosTex->CreateRenderTargetView(m_RTVList.GetView(0), pRTVParams);
+	m_pNormalTex->CreateRenderTargetView(m_RTVList.GetView(1), pRTVParams);
+	m_pDepthTex->CreateRenderTargetView(m_RTVList.GetView(2), pRTVParams);
+	m_pDiffuseTex->CreateRenderTargetView(m_RTVList.GetView(3), pRTVParams);
+	m_pSpecularTex->CreateRenderTargetView(m_RTVList.GetView(4), pRTVParams);
+
+	//Define properties for depth stencil view
+	//DepthStencilViewParams * pDSVParams = new DepthStencilViewParams();
+	//pDSVParams->InitForTexture2D(TEX_D24_UNORM_S8_UINT, 0);
+	
+	//==
+	//Create Depth Stencil View
+	//==
+//	m_pDepthTex->CreateDepthStencilView(&m_pDepthStencilView->m_pView, pDSVParams);
+
+	SAFE_DELETE(pParams);
+	//SAFE_DELETE(pDepthParams);
+	SAFE_DELETE(pSRVParams);
+	//SAFE_DELETE(pSRVDepthParams);
+	SAFE_DELETE(pRTVParams);
+	//SAFE_DELETE(pDSVParams);
+
+	return 1;
+}
+
+AVOID GBuffer2D::BindForReading(AUINT16 slot) const
+{
+	m_SRVList.Set(slot, ST_Pixel); //bind g-buffer for writing
+}
+
+AVOID GBuffer2D::UnbindFromReading(AUINT16 slot) const
+{
+	UnbindShaderResourceViews(slot, 5, ST_Pixel);
+}
+
+AVOID GBuffer2D::BindForWriting(DepthStencilView * pView)
+{
+	//m_RTVList.Clear(); //clear all render targets
+	m_RTVList.Set(pView); //bind them to the pipeline
+}
+
+AVOID GBuffer2D::BindRenderTarget(const AUINT8 index)
+{
+	m_RTVList.SetOneView(index);
+}
+
+AVOID GBuffer2D::UnbindFromWriting() const
+{
+	UnbindRenderTargetViews(5);
+}
+
+AVOID GBuffer2D::Clear()
+{
+	m_RTVList.Clear();
+}
+
+AVOID GBuffer2D::BindPositionTex(AUINT16 slot, ShaderType shaderType) const
+{
+	m_SRVList.SetView(0, slot, shaderType);
+}
+
+AVOID GBuffer2D::BindNormalTex(AUINT16 slot, ShaderType shaderType) const
+{
+	m_SRVList.SetView(1, slot, shaderType);
+}
+
+AVOID GBuffer2D::BindDepthTex(AUINT16 slot, ShaderType shaderType) const
+{
+	m_SRVList.SetView(2, slot, shaderType);
+}
+
+AVOID GBuffer2D::BindDiffuseTex(AUINT16 slot, ShaderType shaderType) const
+{
+	m_SRVList.SetView(3, slot, shaderType);
+}
+
+AVOID GBuffer2D::BindSpecularTex(AUINT16 slot, ShaderType shaderType) const
+{
+	m_SRVList.SetView(4, slot, shaderType);
+}

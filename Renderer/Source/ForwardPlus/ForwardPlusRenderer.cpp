@@ -4,6 +4,10 @@
 #include "Final\Resources\ResourceData.h"
 #include "Final\General.h"
 
+#include "Resource.h"
+#include "ResourceCache.h"
+#include "../Resources/MeshResource.h"
+
 using namespace Anubis;
 
 ForwardPlusRenderer::ForwardPlusRenderer()
@@ -39,6 +43,17 @@ ForwardPlusRenderer::ForwardPlusRenderer()
 	m_pLightsSRV = new ShaderResourceView();
 
 	m_pcbCameraCulling = new ConstantBuffer();
+
+	m_pSkyTexture = new TextureCube();
+	m_pSkySRV = new ShaderResourceView();
+	m_pSkyShaders = new ShaderBunch();
+	m_pAtmoShaders = new ShaderBunch();
+
+	m_pSphericalCoeffShader = new ComputeShader();
+	m_pIrradianceMapShader = new ComputeShader();
+	m_pIrradianceMap = new TextureCube();
+	m_pIrradianceSRV = new ShaderResourceView();
+	//m_pIrradianceRTV = new RenderTargetView();
 }
 
 ForwardPlusRenderer::~ForwardPlusRenderer()
@@ -77,6 +92,18 @@ ForwardPlusRenderer::~ForwardPlusRenderer()
 	SAFE_DELETE(m_psbLights);
 
 	SAFE_DELETE(m_pcbCameraCulling);
+
+	SAFE_DELETE(m_pSkySRV);
+	SAFE_DELETE(m_pSkyTexture); 
+	SAFE_DELETE(m_pSkyShaders);
+	SAFE_DELETE(m_pAtmoShaders);
+	SAFE_DELETE(m_pSkyLayout);
+
+	//SAFE_DELETE_ARRAY(m_pIrradianceRTV);
+	SAFE_DELETE(m_pIrradianceSRV);
+	SAFE_DELETE(m_pIrradianceMap);
+	SAFE_DELETE(m_pSphericalCoeffShader);
+	SAFE_DELETE(m_pIrradianceMapShader);
 }
 
 ABOOL ForwardPlusRenderer::VInitialize(HWND hWnd, AUINT32 width, AUINT32 height)
@@ -112,13 +139,13 @@ ABOOL ForwardPlusRenderer::VInitialize(HWND hWnd, AUINT32 width, AUINT32 height)
 	m_pZPrepassLayout[0].InputSlotClass			= IA_PER_VERTEX_DATA;
 	m_pZPrepassLayout[0].InstanceDataStepRate	= 0;
 
-	m_pZPrepassShaders->VSetVertexShader(L"ZPrepass.hlsl", "zprepass_vs", m_pZPrepassLayout, 1, TOPOLOGY_TRIANGLELIST);
-	m_pZPrepassShaders->VSetPixelShader(L"ZPrepass.hlsl", "zprepass_ps");
+	m_pZPrepassShaders->VSetVertexShader(L"ZPrepass.hlsl", "zprepass_vs", m_pZPrepassLayout, 1, TOPOLOGY_TRIANGLELIST, "vs_5_0");
+	m_pZPrepassShaders->VSetPixelShader(L"ZPrepass.hlsl", "zprepass_ps", "ps_5_0");
 
 	////////////////////////////////////////
 	//compile light culling shader
 	BlobDX11* pErrors = new BlobDX11();
-	m_pLightCullingShader->CreateAndCompile(L"LightCulling.hlsl", "light_culling_cs", pErrors);
+	m_pLightCullingShader->CreateAndCompile(L"LightCulling.hlsl", "light_culling_cs", "cs_5_0", pErrors);
 	delete pErrors;
 
 	m_pDefaultLayout = new INPUT_LAYOUT[5];
@@ -147,8 +174,8 @@ ABOOL ForwardPlusRenderer::VInitialize(HWND hWnd, AUINT32 width, AUINT32 height)
 	m_pDefaultLayout[4].InputSlotClass			= IA_PER_VERTEX_DATA;	
 	m_pDefaultLayout[4].InstanceDataStepRate	= 0;
 
-	m_pFinalShadingShaders->VSetVertexShader(L"forwardp_shading_vs.hlsl", "shading_vs", m_pDefaultLayout, 5, TOPOLOGY_TRIANGLELIST);
-	m_pFinalShadingShaders->VSetPixelShader(L"forwardp_shading_ps.hlsl", "shading_ps");
+	m_pFinalShadingShaders->VSetVertexShader(L"forwardp_shading_vs.hlsl", "shading_vs", m_pDefaultLayout, 5, TOPOLOGY_TRIANGLELIST, "vs_5_0");
+	m_pFinalShadingShaders->VSetPixelShader(L"forwardp_shading_ps.hlsl", "shading_ps", "ps_5_0");
 
 	//////////////////////////////////////////////////////
 	//Initialize structured buffers for Forward+ rendering
@@ -274,6 +301,72 @@ ABOOL ForwardPlusRenderer::VInitialize(HWND hWnd, AUINT32 width, AUINT32 height)
 	if (!m_pcbCullingData->Create(pcb_params, NULL)) return false;
 
 	delete pcb_params;
+
+	///////////////////////////////////////////////
+	//Initialize sky resources
+	///////////////////////////////////////////////
+	Texture2DParams tex2DParams;
+	tex2DParams.InitCubeTexture(512, 512, 1, TEX_R8G8B8A8_UNORM, true, false, false, false, 1, 0,
+		1, true, false, false);
+	//m_pSkyTexture->CreateFromFile(L"church_cubemap.dds");
+	m_pSkyTexture->CreateFromFile(L"test_cubemap_512.dds");
+
+	ShaderResourceViewParams srvSkyParams;
+	srvSkyParams.InitForCubeTexture(TEX_R8G8B8A8_UNORM, 1, 0);
+	m_pSkyTexture->CreateShaderResourceView(&m_pSkySRV->m_pView, &srvSkyParams);
+
+	////////////////////////////////////////////////
+	//Initialize irradiance map
+	/*tex2DParams.InitCubeTexture(128, 128, 1, TEX_R8G8B8A8_UNORM, true, true, true, false, 1, 0, 1, true, false, false);
+	m_pIrradianceMap->Create(&tex2DParams);
+
+	ShaderResourceViewParams srvIrradianceParams;
+	srvIrradianceParams.InitForCubeTexture(TEX_R8G8B8A8_UNORM, 1, 0);
+	m_pIrradianceMap->CreateShaderResourceView(&m_pIrradianceSRV->m_pView, &srvIrradianceParams);
+
+	RenderTargetViewParams rtvIrradianceParams;
+	rtvIrradianceParams.InitForTexture2DArray(6, tex2DParams.Format, 0, 0);
+	//m_pIrradianceMap->CreateRenderTargetView(&m_pShadowRTV->m_pView, &rtvIrradianceParams);
+
+	rtvParams.Texture2DArray.ArraySize = 1;
+	for (AINT8 i = 0; i < 6; i++)
+	{
+		rtvIrradianceParams.Texture2DArray.FirstArraySlice = i;
+		m_pIrradianceMap->CreateRenderTargetView(&m_pIrradianceRTV[i]->m_pView, &rtvIrradianceParams);
+	}*/
+
+	//BlobDX11* pCSErrors = new BlobDX11();
+	//m_pSphericalCoeffShader->CreateAndCompile(L"Cubemap_SH_coeff.hlsl", "generate_spherical_coeff", pCSErrors);
+	//m_pIrradianceMapShader->CreateAndCompile(L"IrradianceMap_FromSH.hlsl", "irradiance_map_SH", pCSErrors);
+	//delete pCSErrors;
+
+	m_pSkyLayout = new INPUT_LAYOUT();
+	//m_pSkyLayout[0].SemanticName = "POSITION";					//m_pSkyLayout[1].SemanticName = "TEXCOORD";
+	//m_pSkyLayout[0].SemanticIndex = 0;							//m_pSkyLayout[1].SemanticIndex = 0;
+	//m_pSkyLayout[0].Format = TEX_R32G32B32_FLOAT;				//m_pSkyLayout[1].Format = TEX_R32G32_FLOAT;
+	//m_pSkyLayout[0].InputSlot = 0;								//m_pSkyLayout[1].InputSlot = 1;
+	//m_pSkyLayout[0].AlignedByteOffset = 0;						//m_pSkyLayout[1].AlignedByteOffset = 0;
+	//m_pSkyLayout[0].InputSlotClass = IA_PER_VERTEX_DATA;		//m_pSkyLayout[1].InputSlotClass = IA_PER_VERTEX_DATA;
+	//m_pSkyLayout[0].InstanceDataStepRate = 0;					//m_pSkyLayout[1].InstanceDataStepRate = 0;
+	m_pSkyLayout->SemanticName		=	"POSITION";
+	m_pSkyLayout->SemanticIndex	=	0;
+	m_pSkyLayout->Format			=	TEX_R32G32B32_FLOAT;
+	m_pSkyLayout->InputSlot		=	0;
+	m_pSkyLayout->AlignedByteOffset =	0;
+	m_pSkyLayout->InputSlotClass	=	IA_PER_VERTEX_DATA;
+	m_pSkyLayout->InstanceDataStepRate =	0;
+
+	m_pSkyShaders->VSetVertexShader(L"Source\\Shaders\\SkyBox.hlsl", "SkyBox_VS", m_pSkyLayout, 1, TOPOLOGY_TRIANGLELIST, "vs_5_0");
+	m_pSkyShaders->VSetPixelShader(L"Source\\Shaders\\SkyBox.hlsl", "SkyBox_PS", "ps_5_0");
+
+	m_pAtmoShaders->VSetVertexShader(L"Shaders\\Atmosphere\\SkyFromAtmosphere_vs.hlsl", "SkyFromAtmosphere_vs", m_pSkyLayout, 1, TOPOLOGY_TRIANGLELIST, "vs_5_0");
+	m_pAtmoShaders->VSetPixelShader(L"Shaders\\Atmosphere\\SkyFromAtmosphere_ps.hlsl", "SkyFromAtmosphere_ps", "ps_5_0");
+
+	Resource meshResource("sphere.obj");
+	shared_ptr<ResHandle> pMeshes = Anubis::SafeGetHandle(&meshResource);
+	std::shared_ptr<MeshResourceExtraData> pData = static_pointer_cast<MeshResourceExtraData>(pMeshes->GetExtra());
+
+	m_pSphereMesh = pData->m_pMeshes[0];
 
 	return true;
 }
@@ -424,6 +517,8 @@ AVOID ForwardPlusRenderer::VRender()
 		// ===================================================== //
 		//						Final Shading Pass				 //
 		// ===================================================== //
+		VRenderSky(pCamera, viewProj);
+
 		PrepareForShadingPass(pCamera);
 		m_queue.Reset();
 		while (pMesh = m_queue.Next())
@@ -462,8 +557,51 @@ AVOID ForwardPlusRenderer::VGenerateShadowMaps()
 {
 }
 
-AVOID ForwardPlusRenderer::VRenderSky(Anubis::CameraPtr,const Anubis::Mat4x4 &)
+AVOID ForwardPlusRenderer::VGenerateIrradianceMap()
 {
+}
+
+AVOID ForwardPlusRenderer::VRenderSky(CameraPtr pCamera, const Mat4x4 & viewproj)
+{
+	SetRenderTargetView();
+
+	m_pSkyShaders->VBind();
+	//m_pAtmoShaders->VBind();
+
+	Mat4x4 trans;
+	trans.CreateTranslation(pCamera->GetPosition());
+
+	Mat4x4 scale;
+	scale.CreateScaling(1, 1, 1);
+
+	Mat4x4 worldViewProj = trans * viewproj;
+	//Mat4x4 worldViewProj = scale * viewproj;
+	worldViewProj.Transpose();
+
+	m_pcbWVP->UpdateSubresource(0, nullptr, &worldViewProj, 0, 0);
+	m_pcbWVP->Set(0, ST_Vertex);
+	struct WorldData
+	{
+		Mat4x4 wvp;
+		//Vec cameraPos;
+	};
+	WorldData worldData;
+	worldData.wvp = worldViewProj;
+	//worldData.cameraPos = pCamera->GetPosition();
+	//m_pcbAtmoWorld->UpdateSubresource(0, nullptr, &worldData, 0, 0);
+	//m_pcbAtmoWorld->Set(1, ST_Vertex);
+
+	m_pSphereMesh->SetPositionBuffer();
+	m_pSphereMesh->SetIndexBuffer();
+
+	this->NoCullingStandardRasterizer()->Set();
+	this->m_pDepthDisableStencilDisable->Set(0xFF);
+
+	m_pSkySRV->Set(0, ST_Pixel);
+	m_pSphereMesh->VRender(this);
+
+	UnbindRenderTargetViews(1);
+	UnbindShaderResourceViews(0, 1, ST_Pixel);
 }
 
 AVOID ForwardPlusRenderer::VFinishPass()

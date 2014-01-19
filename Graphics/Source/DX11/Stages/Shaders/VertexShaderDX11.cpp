@@ -86,11 +86,11 @@ ABOOL VertexShaderDX11::Create(BlobDX11 & shaderbuffer, INPUT_LAYOUT* layout, AU
 }
 
 ABOOL VertexShaderDX11::CreateAndCompile(	const AWSTRING& fileName, const ASTRING& entrypoint, INPUT_LAYOUT* layout, AUINT8 num,
-											AUINT16 topology, BlobDX11 * pErrors)
+											AUINT16 topology, const ASTRING &target, BlobDX11 * pErrors)
 {
 	//Compile the shader first
 	BlobDX11*  pCompiledShaderBlob = new BlobDX11();
-	if (!pCompiledShaderBlob->CompileShader(fileName, entrypoint, VERTEX_SHADER, pErrors))
+	if (!pCompiledShaderBlob->CompileShader(fileName, entrypoint, VERTEX_SHADER, target, pErrors))
 	{
 		assert(0 && "Some error when compiling the vertex shader occured!");
 		return false;

@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Actor>
+  <Transform>
+    <Position x="0" y="0" z="7" />
+    <Orientation axisx="0" axisy="1" axisz="0" degrees="0" />
+  </Transform>
+  <PhysicsComponent>
+	<!--<BoxComponent x="1" y="1" z="1" mass="10">
+		<Density>aluminium</Density>
+		<Material>Normal</Material>
+		<Type>Static</Type>
+	</BoxComponent> -->
+  </PhysicsComponent> 
+  <GraphicsComponent>
+	<!--<BoxComponent x="0.5" y="0.5" z="0.5">
+		<Material>Bricks</Material>
+	</BoxComponent>  -->
+    <PointLightComponent range="10" >
+		<Color r="0.9" g="0.9" b="1.0" />
+	</PointLightComponent> 
+	<!--<SpotLightComponent range="60" innerAngle="30" outerAngle="70" >
+		<Color r="1.0" g="1.0" b="1.0" />
+		<Direction x="-0.05" y="-1.0" z="-0.5 " />
+	</SpotLightComponent>-->
+  </GraphicsComponent>
+</Actor>

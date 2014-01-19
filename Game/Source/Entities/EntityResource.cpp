@@ -56,6 +56,7 @@
 #include "Meshes\Meshes.h"
 #include "Meshes\BoxMesh.h"
 #include "Meshes\PlaneMesh.h"
+#include "Meshes\Sprite.h"
 
 using namespace Anubis;
 
@@ -151,6 +152,21 @@ AVOID EntityResource::InitGraphicsComponent(TiXmlElement* pComponent)
 
 			pTempAtt = pTempAtt->Next();
 			plane->m_fZHalfExtent = pTempAtt->DoubleValue();
+
+			TiXmlElement* pLocal = pTempEl->FirstChildElement("Material");
+			plane->m_material = s2ws(pLocal->GetText());
+
+			m_graphics.push_back(plane);
+		}
+		else if(componentName == "SpriteComponent")
+		{
+			GraphicsSpriteComponent* plane = new GraphicsSpriteComponent();
+
+			pTempAtt = pTempEl->FirstAttribute();
+			plane->m_fXHalfExtent = pTempAtt->DoubleValue();
+
+			pTempAtt = pTempAtt->Next();
+			plane->m_fYHalfExtent = pTempAtt->DoubleValue();
 
 			TiXmlElement* pLocal = pTempEl->FirstChildElement("Material");
 			plane->m_material = s2ws(pLocal->GetText());
@@ -537,6 +553,16 @@ AVOID EntityResource::VCreateRepresentation(Scene * pScene, EntityPtr pEntity)
 			pPlaneMesh->VSetMaterial(plane->m_material);
 			shared_ptr<PlaneMesh> pPlaneMeshPtr = make_shared<PlaneMesh>(*pPlaneMesh);
 			pRepresentation->VAddMesh(static_pointer_cast<Mesh>(pPlaneMeshPtr));
+		}
+		else if (type == "Sprite")
+		{
+			GraphicsSpriteComponent * sprite = static_cast<GraphicsSpriteComponent *>((*component));
+
+			//Create plane mesh
+			Sprite* pSpriteMesh = new Sprite(sprite->m_fXHalfExtent, sprite->m_fYHalfExtent);
+			pSpriteMesh->VSetMaterial(sprite->m_material);
+			shared_ptr<Sprite> pSpriteMeshPtr = make_shared<Sprite>(*pSpriteMesh);
+			pRepresentation->VAddMesh(static_pointer_cast<Mesh>(pSpriteMeshPtr));
 		}
 		else if (type == "Mesh")
 		{

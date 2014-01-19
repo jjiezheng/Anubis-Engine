@@ -79,6 +79,10 @@
 	#define INFINITE = 0xffffffff;
 #endif
 
+#if !defined INFINITY
+	#define INFINITY FLT_MAX 
+#endif
+
 #define PI		 = 3.14159265;
 
 #define fOPAQUE (1.0f)

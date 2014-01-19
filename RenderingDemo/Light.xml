@@ -1,21 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Actor>
   <Transform>
-    <Position x="0" y="-6" z="5" />
+    <Position x="-70" y="-6" z="70" />
     <Orientation axisx="0" axisy="1" axisz="0" degrees="0" />
   </Transform>
   <PhysicsComponent>
 	<!--<BoxComponent x="1" y="1" z="1" mass="10">
 		<Density>aluminium</Density>
 		<Material>Normal</Material>
-		<Type>Rigid</Type>
+		<Type>Static</Type>
 	</BoxComponent> -->
   </PhysicsComponent> 
   <GraphicsComponent>
 	<!--<BoxComponent x="0.5" y="0.5" z="0.5">
 		<Material>Bricks</Material>
-	</BoxComponent> -->
-    <PointLightComponent range="20" >
+	</BoxComponent>  -->
+    <PointLightComponent range="40" >
 		<Color r="0.9" g="0.9" b="1.0" />
 	</PointLightComponent> 
 	<!--<SpotLightComponent range="60" innerAngle="30" outerAngle="70" >

@@ -71,8 +71,8 @@ ABOOL Light::VInitialize(INPUT_LAYOUT * pLayout)
 {
 	//Initialize default light shaders
 	m_pShaders = new ShaderBunch();
-	m_pShaders->VSetVertexShader(m_vertexShaderFile,	DEFAULT_VERTEX_SHADER_NAME, pLayout, 2, TOPOLOGY_TRIANGLELIST);
-	m_pShaders->VSetPixelShader(m_pixelShaderFile,	DEFAULT_PIXEL_SHADER_NAME);
+	m_pShaders->VSetVertexShader(m_vertexShaderFile,	DEFAULT_VERTEX_SHADER_NAME, pLayout, 2, TOPOLOGY_TRIANGLELIST, "vs_3_0");
+	m_pShaders->VSetPixelShader(m_pixelShaderFile,	DEFAULT_PIXEL_SHADER_NAME, "ps_3_0");
 
 	//Initialize textures for shadow mapping
 	Texture2DParams tex2DParams;
@@ -168,7 +168,7 @@ AVOID Light::VPreRender(Renderer *pRenderer)
 	//set sampler states
 	pRenderer->AnisotropySampler16()->Set(1, ST_Pixel);
 	//pRenderer->LinearTiledSampler()->Set(1, ST_Pixel);
-	pRenderer->LinearLessEqualSampler()->Set(2, ST_Pixel);
+//	pRenderer->LinearLessEqualSampler()->Set(2, ST_Pixel);
 
 	//set rasterizer state
 	//pRenderer->AllEnabledBackCullingRasterizer()->Set();
@@ -183,7 +183,7 @@ AVOID Light::VPostRender(Renderer* pRenderer)
 {
 	//UnbindShaderResourceViews(9, 1, ST_Pixel);
 	UnbindShaderResourceViews(0, 9, ST_Pixel);
-	pRenderer->AllDisabledBackCullingRasterizer()->Set();
+	//pRenderer->AllDisabledBackCullingRasterizer()->Set();
 }
 
 AVOID Light::VPrepareToGenerateShadowMap(const Mat4x4 & world, Renderer * pRenderer)

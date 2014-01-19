@@ -11,6 +11,8 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Source\2D\GBuffer2D.h" />
+    <ClInclude Include="Source\2D\Renderer2D.h" />
     <ClInclude Include="Source\Cameras\Camera.h" />
     <ClInclude Include="Source\Deferred\DeferredRenderer.h" />
     <ClInclude Include="Source\Deferred\GBuffer.h" />
@@ -23,6 +25,7 @@
     <ClInclude Include="Source\Meshes\BoxMesh.h" />
     <ClInclude Include="Source\Meshes\Meshes.h" />
     <ClInclude Include="Source\Meshes\PlaneMesh.h" />
+    <ClInclude Include="Source\Meshes\Sprite.h" />
     <ClInclude Include="Source\Other\Material.h" />
     <ClInclude Include="Source\Other\Partition\BVH.h" />
     <ClInclude Include="Source\Other\ShaderBunch.h" />
@@ -33,6 +36,8 @@
     <ClInclude Include="Source\Resources\ShaderResource.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Source\2D\GBuffer2D.cpp" />
+    <ClCompile Include="Source\2D\Renderer2D.cpp" />
     <ClCompile Include="Source\Cameras\Camera.cpp" />
     <ClCompile Include="Source\Deferred\DeferredRenderer.cpp" />
     <ClCompile Include="Source\Deferred\GBuffer.cpp">
@@ -48,6 +53,7 @@
     <ClCompile Include="Source\Meshes\BoxMesh.cpp" />
     <ClCompile Include="Source\Meshes\Meshes.cpp" />
     <ClCompile Include="Source\Meshes\PlaneMesh.cpp" />
+    <ClCompile Include="Source\Meshes\Sprite.cpp" />
     <ClCompile Include="Source\Other\Material.cpp" />
     <ClCompile Include="Source\Other\Partition\BVH.cpp" />
     <ClCompile Include="Source\Other\ShaderBunch.cpp" />
@@ -77,6 +83,16 @@
       <EntryPointName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">VS</EntryPointName>
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">5.0</ShaderModel>
     </FxCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\RenderingDemo\Cubemap_SH_coeff.hlsl" />
+    <None Include="..\RenderingDemo\IrradianceMap_FromSH.hlsl" />
+    <None Include="Source\2D\gbuffer_2d_pixel.hlsl" />
+    <None Include="Source\2D\light_2d_pixel.hlsl" />
+    <None Include="Source\2D\Shaders\gbuffer_2d_vertex.hlsl" />
+    <None Include="Source\2D\Shaders\light_2d_vertex.hlsl" />
+    <None Include="Source\2D\shadowmap_2d_pixel.hlsl" />
+    <None Include="Source\2D\shadowmap_2d_vertex.hlsl" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{B862D1FA-B04E-4789-B049-90996F9DDA90}</ProjectGuid>

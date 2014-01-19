@@ -62,11 +62,11 @@ ABOOL PixelShaderDX11::Create(BlobDX11 & shaderbuffer)
 	VALID(hr);
 }
 
-ABOOL PixelShaderDX11::CreateAndCompile(const AWSTRING & fileName, const ASTRING & entrypoint, BlobDX11 * pErrors)
+ABOOL PixelShaderDX11::CreateAndCompile(const AWSTRING & fileName, const ASTRING & entrypoint, const ASTRING & target, BlobDX11 * pErrors)
 {
 	//Compile the shader first
 	BlobDX11 & compiledShaderBlob = BlobDX11();
-	if (!compiledShaderBlob.CompileShader(fileName, entrypoint, PIXEL_SHADER, pErrors))
+	if (!compiledShaderBlob.CompileShader(fileName, entrypoint, PIXEL_SHADER, target, pErrors))
 	{
 		assert(0 && "Some error when compiling the pixel shader occured!");
 		return false;

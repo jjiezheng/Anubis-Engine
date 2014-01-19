@@ -62,11 +62,11 @@ ABOOL GeometryShaderDX11::Create(BlobDX11 & shaderbuffer)
 	VALID(hr);
 }
 
-ABOOL GeometryShaderDX11::CreateAndCompile(AWSTRING fileName, ASTRING entrypoint, BlobDX11 * pErrors)
+ABOOL GeometryShaderDX11::CreateAndCompile(AWSTRING fileName, ASTRING entrypoint, const ASTRING & target, BlobDX11 * pErrors)
 {
 	//Compile the shader first
 	BlobDX11 & compiledShaderBlob = BlobDX11();
-	if (!compiledShaderBlob.CompileShader(fileName, entrypoint, GEOMETRY_SHADER, pErrors))
+	if (!compiledShaderBlob.CompileShader(fileName, entrypoint, GEOMETRY_SHADER, target, pErrors))
 	{
 		assert(0 && "Some error when compiling the geometry shader occured!");
 		return false;

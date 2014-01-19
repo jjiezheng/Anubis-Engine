@@ -54,11 +54,11 @@ ABOOL PointLight::VInitialize(INPUT_LAYOUT * pLayout)
 {
 	//Initialize default light shaders
 	m_pShaders = new ShaderBunch();
-	m_pShaders->VSetVertexShader(m_vertexShaderFile,	DEFAULT_VERTEX_SHADER_NAME, pLayout, 2, TOPOLOGY_TRIANGLELIST);
-	m_pShaders->VSetPixelShader(m_pixelShaderFile,	DEFAULT_PIXEL_SHADER_NAME);
+	m_pShaders->VSetVertexShader(m_vertexShaderFile,	DEFAULT_VERTEX_SHADER_NAME, pLayout, 2, TOPOLOGY_TRIANGLELIST, "vs_4_0_level_9_3");
+	m_pShaders->VSetPixelShader(m_pixelShaderFile,	DEFAULT_PIXEL_SHADER_NAME, "ps_4_0_level_9_3");
 
 	//Initialize textures for shadow mapping
-	Texture2DParams tex2DParams;
+	/*Texture2DParams tex2DParams;
 	tex2DParams.Init(SCREEN_WIDTH, SCREEN_HEIGHT, 1, DXGI_FORMAT_R32_TYPELESS, true, false, false, true, 1, 0,
 		1, true, false, false);
 	m_pShadowMapTex->Create(&tex2DParams);
@@ -71,13 +71,13 @@ ABOOL PointLight::VInitialize(INPUT_LAYOUT * pLayout)
 	DepthStencilViewParams dsvParams;
 	dsvParams.InitForTexture2D(DXGI_FORMAT_D32_FLOAT, 0, false);
 	if (!m_pShadowMapTex->CreateDepthStencilView(&m_pShadowMapDSV->m_pView, &dsvParams))	return false;
-
+	*/
 	/*** Initialize texture for variance shadow mapping ***/
 	//tex2DParams.Init(SCREEN_WIDTH, SCREEN_HEIGHT, 1, DXGI_FORMAT_R32G32B32A32_FLOAT, true, true, true, false,
 	//	1, 0, 8, true, false, false, true);
 	//m_pTempTexture->Create(&tex2DParams);
 
-	const AINT32 shadowMapSize = 1024;
+/*	const AINT32 shadowMapSize = 1024;
 	tex2DParams.InitCubeTexture(shadowMapSize, shadowMapSize, 6, TEX_R32G32B32A32_FLOAT, true, false, true, false,
 		1, 0, 1, true, false, false);
 	m_pShadowTex->Create(&tex2DParams);
@@ -104,7 +104,7 @@ ABOOL PointLight::VInitialize(INPUT_LAYOUT * pLayout)
 	m_shadowViewport = Viewport(0, 0, shadowMapSize, shadowMapSize, 0.0f, 1.0f);
 
 	//////////////////////////////////////////////
-	// *******************************************
+	// 
 	tex2DParams.Init(shadowMapSize, shadowMapSize, 6, DXGI_FORMAT_D32_FLOAT,false, false, false, true,
 		1, 0, 1, true, false, false);
 	m_pShadowDepthTex->Create(&tex2DParams);
@@ -114,7 +114,7 @@ ABOOL PointLight::VInitialize(INPUT_LAYOUT * pLayout)
 
 	dsvParams.Texture2DArray.ArraySize = 1;
 	m_pShadowDepthTex->CreateDepthStencilView(&m_pShadowOneDSV->m_pView, &dsvParams);
-
+	*/
 	m_bInitialized = true;
 
 	return true;

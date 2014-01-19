@@ -62,11 +62,11 @@ ABOOL DomainShaderDX11::Create(BlobDX11 & shaderbuffer)
 	VALID(hr);
 }
 
-ABOOL DomainShaderDX11::CreateAndCompile(AWSTRING fileName, ASTRING entrypoint, BlobDX11 * pErrors)
+ABOOL DomainShaderDX11::CreateAndCompile(AWSTRING fileName, ASTRING entrypoint, const ASTRING & target, BlobDX11 * pErrors)
 {
 	//Compile the shader first
 	BlobDX11 & compiledShaderBlob = BlobDX11();
-	if (!compiledShaderBlob.CompileShader(fileName, entrypoint, DOMAIN_SHADER, pErrors))
+	if (!compiledShaderBlob.CompileShader(fileName, entrypoint, DOMAIN_SHADER, target, pErrors))
 	{
 		assert(0 && "Some error when compiling the domain shader occured!");
 		return false;

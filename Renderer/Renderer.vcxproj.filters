@@ -31,6 +31,12 @@
     <Filter Include="Other\Partition">
       <UniqueIdentifier>{b02edbc6-1ae4-4b8f-a002-e5b7b2424004}</UniqueIdentifier>
     </Filter>
+    <Filter Include="2D">
+      <UniqueIdentifier>{3da2d29f-798b-4354-b1f3-a8f33a412fe6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="2D\Shaders">
+      <UniqueIdentifier>{482ba229-cb24-4ec6-bc06-8c87183af0ee}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Renderer.h" />
@@ -87,6 +93,15 @@
     <ClInclude Include="Source\Other\Partition\BVH.h">
       <Filter>Other\Partition</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Meshes\Sprite.h">
+      <Filter>Meshes</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\2D\Renderer2D.h">
+      <Filter>2D</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\2D\GBuffer2D.h">
+      <Filter>2D</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Renderer.cpp" />
@@ -140,6 +155,15 @@
     <ClCompile Include="Source\Other\Partition\BVH.cpp">
       <Filter>Other\Partition</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Meshes\Sprite.cpp">
+      <Filter>Meshes</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\2D\Renderer2D.cpp">
+      <Filter>2D</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\2D\GBuffer2D.cpp">
+      <Filter>2D</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Source\Shaders\GBufferShader.hlsl">
@@ -148,5 +172,31 @@
     <FxCompile Include="Source\Shaders\LightPass.hlsl">
       <Filter>Shaders</Filter>
     </FxCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\RenderingDemo\Cubemap_SH_coeff.hlsl">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\RenderingDemo\IrradianceMap_FromSH.hlsl">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="Source\2D\Shaders\gbuffer_2d_vertex.hlsl">
+      <Filter>2D\Shaders</Filter>
+    </None>
+    <None Include="Source\2D\gbuffer_2d_pixel.hlsl">
+      <Filter>2D\Shaders</Filter>
+    </None>
+    <None Include="Source\2D\shadowmap_2d_vertex.hlsl">
+      <Filter>2D\Shaders</Filter>
+    </None>
+    <None Include="Source\2D\shadowmap_2d_pixel.hlsl">
+      <Filter>2D\Shaders</Filter>
+    </None>
+    <None Include="Source\2D\Shaders\light_2d_vertex.hlsl">
+      <Filter>2D\Shaders</Filter>
+    </None>
+    <None Include="Source\2D\light_2d_pixel.hlsl">
+      <Filter>2D\Shaders</Filter>
+    </None>
   </ItemGroup>
 </Project>

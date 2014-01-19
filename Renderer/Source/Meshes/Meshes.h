@@ -144,8 +144,8 @@ namespace Anubis
 
 			//Initialize shaders
 			m_pShaders = new ShaderBunch();
-			m_pShaders->VSetVertexShader(L"GBufferShader.hlsl", "VS", layout, 5, TOPOLOGY_TRIANGLELIST);
-			m_pShaders->VSetPixelShader(L"GBufferShader.hlsl", "PS");
+			m_pShaders->VSetVertexShader(L"Shaders//gbuffer_2d_vertex.hlsl", "VS", layout, 5, TOPOLOGY_TRIANGLELIST, "vs_4_0_level_9_3");
+			m_pShaders->VSetPixelShader(L"Shaders//gbuffer_2d_pixel.hlsl", "PS", "ps_4_0_level_9_3");
 		}
 		virtual ~IndexedMesh();
 
