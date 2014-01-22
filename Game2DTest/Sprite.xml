@@ -5,7 +5,7 @@
     <Orientation axisx="0" axisy="0" axisz="0" degrees="0.0" />
   </Transform>
   <GraphicsComponent>
-    <SpriteComponent x="700" y="700">
+    <SpriteComponent x="256" y="256">
 		<Material>Bricks</Material>
 	</SpriteComponent>
   </GraphicsComponent>

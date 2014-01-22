@@ -58,14 +58,14 @@ GBuffer2D::GBuffer2D() :
 	m_pNormalSRV(ShaderResourceView()),		m_pNormalRTV(RenderTargetView()), 
 	m_pDiffuseSRV(ShaderResourceView()),	m_pDiffuseRTV(RenderTargetView()), 
 	m_pSpecularSRV(ShaderResourceView()),	m_pSpecularRTV(RenderTargetView()) */
-	m_SRVList(5), m_RTVList(5)
+	m_SRVList(4), m_RTVList(4)
 {
 	//==
 	//Initialize textures
 	//==
 	m_pPosTex		= make_shared<Texture2D>(Texture2D());
 	m_pNormalTex	= make_shared<Texture2D>(Texture2D());
-	m_pDepthTex		= make_shared<Texture2D>(Texture2D());
+	//m_pDepthTex		= make_shared<Texture2D>(Texture2D());
 	m_pDiffuseTex	= make_shared<Texture2D>(Texture2D());
 	m_pSpecularTex	= make_shared<Texture2D>(Texture2D());	
 
@@ -83,10 +83,10 @@ ABOOL GBuffer2D::VInitialize()
 	//Define properties for textures
 	//==
 	Texture2DParams * pParams = new Texture2DParams();
-	//pParams->Init(SCREEN_WIDTH, SCREEN_HEIGHT, 1, TEX_R32G32B32A32_FLOAT, true, false, 
-	//	true, false, 1, 0, 1, true, false, false);
-	pParams->Init(SCREEN_WIDTH, SCREEN_HEIGHT, 1, TEX_R16G16B16A16_FLOAT, true, false, 
+	pParams->Init(SCREEN_WIDTH, SCREEN_HEIGHT, 1, TEX_R32G32B32A32_FLOAT, true, false, 
 		true, false, 1, 0, 1, true, false, false);
+	//pParams->Init(SCREEN_WIDTH, SCREEN_HEIGHT, 1, TEX_R16G16B16A16_FLOAT, true, false, 
+	//	true, false, 1, 0, 1, true, false, false);
 	//pParams->Init(SCREEN_WIDTH, SCREEN_HEIGHT, 1, TEX_R8G8B8A8_SNORM, true, false, true, false, 1, 0, 1, true, false, false);
 
 	//==
@@ -96,7 +96,7 @@ ABOOL GBuffer2D::VInitialize()
 	pTex.Create(pParams);
 	m_pPosTex->Create(pParams);
 	m_pNormalTex->Create(pParams);
-	m_pDepthTex->Create(pParams);
+	//m_pDepthTex->Create(pParams);
 	m_pDiffuseTex->Create(pParams);
 	m_pSpecularTex->Create(pParams);
 
@@ -117,9 +117,9 @@ ABOOL GBuffer2D::VInitialize()
 	//==
 	m_pPosTex->CreateShaderResourceView(m_SRVList.GetView(0), pSRVParams);
 	m_pNormalTex->CreateShaderResourceView(m_SRVList.GetView(1), pSRVParams);
-	m_pDepthTex->CreateShaderResourceView(m_SRVList.GetView(2), pSRVParams);
-	m_pDiffuseTex->CreateShaderResourceView(m_SRVList.GetView(3), pSRVParams);
-	m_pSpecularTex->CreateShaderResourceView(m_SRVList.GetView(4), pSRVParams);
+	//m_pDepthTex->CreateShaderResourceView(m_SRVList.GetView(2), pSRVParams);
+	m_pDiffuseTex->CreateShaderResourceView(m_SRVList.GetView(2), pSRVParams);
+	m_pSpecularTex->CreateShaderResourceView(m_SRVList.GetView(3), pSRVParams);
 
 	//Define properties for render target views
 	RenderTargetViewParams * pRTVParams = new RenderTargetViewParams();
@@ -130,9 +130,9 @@ ABOOL GBuffer2D::VInitialize()
 	//==
 	m_pPosTex->CreateRenderTargetView(m_RTVList.GetView(0), pRTVParams);
 	m_pNormalTex->CreateRenderTargetView(m_RTVList.GetView(1), pRTVParams);
-	m_pDepthTex->CreateRenderTargetView(m_RTVList.GetView(2), pRTVParams);
-	m_pDiffuseTex->CreateRenderTargetView(m_RTVList.GetView(3), pRTVParams);
-	m_pSpecularTex->CreateRenderTargetView(m_RTVList.GetView(4), pRTVParams);
+	//m_pDepthTex->CreateRenderTargetView(m_RTVList.GetView(2), pRTVParams);
+	m_pDiffuseTex->CreateRenderTargetView(m_RTVList.GetView(2), pRTVParams);
+	m_pSpecularTex->CreateRenderTargetView(m_RTVList.GetView(3), pRTVParams);
 
 	//Define properties for depth stencil view
 	//DepthStencilViewParams * pDSVParams = new DepthStencilViewParams();
@@ -160,7 +160,7 @@ AVOID GBuffer2D::BindForReading(AUINT16 slot) const
 
 AVOID GBuffer2D::UnbindFromReading(AUINT16 slot) const
 {
-	UnbindShaderResourceViews(slot, 5, ST_Pixel);
+	UnbindShaderResourceViews(slot, 4, ST_Pixel);
 }
 
 AVOID GBuffer2D::BindForWriting(DepthStencilView * pView)
@@ -176,7 +176,7 @@ AVOID GBuffer2D::BindRenderTarget(const AUINT8 index)
 
 AVOID GBuffer2D::UnbindFromWriting() const
 {
-	UnbindRenderTargetViews(5);
+	UnbindRenderTargetViews(4);
 }
 
 AVOID GBuffer2D::Clear()
@@ -196,15 +196,15 @@ AVOID GBuffer2D::BindNormalTex(AUINT16 slot, ShaderType shaderType) const
 
 AVOID GBuffer2D::BindDepthTex(AUINT16 slot, ShaderType shaderType) const
 {
-	m_SRVList.SetView(2, slot, shaderType);
+	//m_SRVList.SetView(2, slot, shaderType);
 }
 
 AVOID GBuffer2D::BindDiffuseTex(AUINT16 slot, ShaderType shaderType) const
 {
-	m_SRVList.SetView(3, slot, shaderType);
+	m_SRVList.SetView(2, slot, shaderType);
 }
 
 AVOID GBuffer2D::BindSpecularTex(AUINT16 slot, ShaderType shaderType) const
 {
-	m_SRVList.SetView(4, slot, shaderType);
+	m_SRVList.SetView(3, slot, shaderType);
 }

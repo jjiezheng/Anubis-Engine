@@ -34,7 +34,12 @@ AVOID BoxTestState::VInitialize( Game * pGame, AUINTPTR uptrData)
 	EntityResource & projector_resource = EntityResource("Light.xml");
 	EntityPtr pProjector = pGame->VAddEntity(projector_resource.VCreateEntity(pGame));
 	projector_resource.VCreateRepresentation(m_pScene, pProjector);
-	projector_resource.VCreatePhysicalBody(g_pEngine->GetPhysics(), pProjector);  
+	projector_resource.VCreatePhysicalBody(g_pEngine->GetPhysics(), pProjector);
+
+	projector_resource.m_vOffset = Vector(0, 0.0, 0, 0.0f);
+	EntityPtr pProjectorNew = pGame->VAddEntity(projector_resource.VCreateEntity(pGame));
+	projector_resource.VCreateRepresentation(m_pScene, pProjectorNew);
+	projector_resource.VCreatePhysicalBody(g_pEngine->GetPhysics(), pProjectorNew); 
 
 	/*EntityResource & sphere_resource = EntityResource("StaticSphere.xml");
 	EntityPtr pSphere1 = pGame->VAddEntity(sphere_resource.VCreateEntity(pGame));

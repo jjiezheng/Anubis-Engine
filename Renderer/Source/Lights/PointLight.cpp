@@ -54,8 +54,8 @@ ABOOL PointLight::VInitialize(INPUT_LAYOUT * pLayout)
 {
 	//Initialize default light shaders
 	m_pShaders = new ShaderBunch();
-	m_pShaders->VSetVertexShader(m_vertexShaderFile,	DEFAULT_VERTEX_SHADER_NAME, pLayout, 2, TOPOLOGY_TRIANGLELIST, "vs_4_0_level_9_3");
-	m_pShaders->VSetPixelShader(m_pixelShaderFile,	DEFAULT_PIXEL_SHADER_NAME, "ps_4_0_level_9_3");
+	//m_pShaders->VSetVertexShader(m_vertexShaderFile,	DEFAULT_VERTEX_SHADER_NAME, pLayout, 2, TOPOLOGY_TRIANGLELIST, "vs_4_0_level_9_3");
+	//m_pShaders->VSetPixelShader(m_pixelShaderFile,	DEFAULT_PIXEL_SHADER_NAME, "ps_4_0_level_9_3");
 
 	//Initialize textures for shadow mapping
 	/*Texture2DParams tex2DParams;

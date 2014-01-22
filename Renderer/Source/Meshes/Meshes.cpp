@@ -147,7 +147,8 @@ AVOID Mesh::VPreRender(Renderer *pRenderer, const Mat4x4 & view, const Mat4x4 & 
 		m_pNormals->Set(2, 0);
 
 	//set material
-	m_pMaterial->Set(5);
+	//m_pMaterial->Set(5);
+	m_pMaterial->Set(0);
 
 	//set shaders
 	//if (m_pShaders)

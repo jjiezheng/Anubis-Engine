@@ -59,6 +59,8 @@ namespace Anubis
 		AVIRTUAL AINT32 VGetRawResource(const Resource & resource, ACHAR* pBuffer) = 0;
 		AVIRTUAL AINT32 VGetNumResources() const = 0;
 		AVIRTUAL ASTRING VGetResourceName(const AINT32 num) const = 0;
+
+		AVIRTUAL AWSTRING VGetDirectory() const = 0;
 	};
 
 	typedef std::map<ASTRING, AINT32> ContentMap;
@@ -83,6 +85,8 @@ namespace Anubis
 		AVIRTUAL AINT32 VGetRawResource(const Resource & resource, ACHAR* pBuffer);
 		AVIRTUAL AINT32 VGetNumResources() const;
 		AVIRTUAL ASTRING VGetResourceName(const AINT32 num) const;
+
+		AVIRTUAL AWSTRING VGetDirectory() const { return m_directory; }
 
 		AINT32 Find(const ASTRING & name);
 	};

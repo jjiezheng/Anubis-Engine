@@ -81,6 +81,7 @@ namespace Anubis
 		//lights
 		typedef vector<Light*> LightList;
 		LightList	m_lights;
+		ShaderBunch* m_pLightShaders;
 
 		//data for light rendering
 		VertexBuffer*	m_pVertices;
@@ -114,7 +115,6 @@ namespace Anubis
 		//Shadow mapping
 		INPUT_LAYOUT* m_pShadowsLayout;
 		ShaderBunch*	m_pShadowsShaders;
-		ShaderBunchVGP* m_pShadowCubeShaders;
 
 		////////////////////////////////////
 		//Variance shadows

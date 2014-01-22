@@ -91,7 +91,7 @@ ABOOL Anubis::InitializeGraphics(HWND hwnd, AUINT32 width, AUINT32 height)
 	//=============================
 	//Create swap chain
 	//D3D_FEATURE_LEVEL pLevel = D3D_FEATURE_LEVEL_11_0; //set feature desired feature level
-	D3D_FEATURE_LEVEL pLevel = D3D_FEATURE_LEVEL_9_3;
+	D3D_FEATURE_LEVEL pLevel = D3D_FEATURE_LEVEL_10_0;
 	//D3D11_CREATE_DEVICE_DEBUG
 	HRESULT hr = D3D11CreateDeviceAndSwapChain(NULL, D3D_DRIVER_TYPE_HARDWARE, NULL, D3D11_CREATE_DEVICE_DEBUG, &pLevel, 1,
 		D3D11_SDK_VERSION, &swapChainDesc, &g_SwapChain, &g_d3d11Device, NULL, &g_d3d11DeviceContext);

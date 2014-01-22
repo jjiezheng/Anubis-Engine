@@ -67,6 +67,8 @@ Renderer2D::Renderer2D() : Renderer()
 
 	m_pDefaultGBufferShaders = new ShaderBunch();
 
+	m_pLightShaders = new ShaderBunch();
+
 	//create matrix constant buffer
 	m_pMatrixBuffer = new ConstantBuffer();
 
@@ -81,7 +83,6 @@ Renderer2D::Renderer2D() : Renderer()
 	m_pSSAOBlurredUAV = new UnorderedAccessView();
 
 	m_pShadowsShaders = new ShaderBunch();
-	m_pShadowCubeShaders = new ShaderBunchVGP();
 	m_pVarianceShadowsShaders = new ShaderBunch();
 
 	m_pVelocityMapShaders = new ShaderBunch();
@@ -107,6 +108,8 @@ Renderer2D::~Renderer2D()
 	SAFE_DELETE(m_pDefaultLayout);
 	SAFE_DELETE(m_pDefaultGBufferShaders);
 
+	SAFE_DELETE(m_pLightShaders);
+
 	SAFE_DELETE(m_pSSAOShaders);
 	SAFE_DELETE(m_pSSAOLayout);
 
@@ -120,7 +123,6 @@ Renderer2D::~Renderer2D()
 	SAFE_DELETE(m_pSSAOBlurredTexture);
 
 	SAFE_DELETE(m_pShadowsShaders);
-	SAFE_DELETE(m_pShadowCubeShaders);
 	SAFE_DELETE(m_pShadowsLayout);
 
 	SAFE_DELETE(m_pVarianceShadowsShaders);
@@ -187,7 +189,7 @@ ABOOL Renderer2D::VInitialize(HWND hWnd, AUINT32 width, AUINT32 height)
 	data.SetData(pos);
 	if (!m_pVertices->Create(&params, &data, 6, sizeof(float3)))
 	{
-		assert(0 && "Error creating vertex buffer in Deferred Renderer initialization!");
+		assert(0 && "Error creating vertex buffer in Renderer2D initialization!");
 	}
 
 	//texture coordinates
@@ -250,19 +252,22 @@ ABOOL Renderer2D::VInitialize(HWND hWnd, AUINT32 width, AUINT32 height)
 	m_pLayout[0].InputSlotClass			= IA_PER_VERTEX_DATA;	m_pLayout[1].InputSlotClass			= IA_PER_VERTEX_DATA;
 	m_pLayout[0].InstanceDataStepRate	= 0;					m_pLayout[1].InstanceDataStepRate	= 0;
 
+	m_pLightShaders->VSetVertexShader(L"Shaders\\light_2d_vertex.hlsl",	"VS", m_pLayout, 2, TOPOLOGY_TRIANGLELIST, "vs_4_0");
+	m_pLightShaders->VSetPixelShader(L"Shaders\\light_2d_pixel.hlsl", "PS", "ps_4_0");
+
 	////////////////////////////////////////////////////////
 	//Shadow mapping
-	m_pShadowsLayout = new INPUT_LAYOUT();
-	m_pShadowsLayout->SemanticName	=	"POSITION";
-	m_pShadowsLayout->SemanticIndex	=	0;
-	m_pShadowsLayout->Format		=	TEX_R32G32B32_FLOAT;
-	m_pShadowsLayout->InputSlot		=	0;
-	m_pShadowsLayout->AlignedByteOffset =	0;
-	m_pShadowsLayout->InputSlotClass	=	IA_PER_VERTEX_DATA;
-	m_pShadowsLayout->InstanceDataStepRate =	0;
+	m_pShadowsLayout = new INPUT_LAYOUT[2];
+	m_pShadowsLayout[0].SemanticName	=	"POSITION";			m_pShadowsLayout[1].SemanticName	=	"TEXCOORD";
+	m_pShadowsLayout[0].SemanticIndex	=	0;					m_pShadowsLayout[1].SemanticIndex	=	0;
+	m_pShadowsLayout[0].Format		=	TEX_R32G32B32_FLOAT;	m_pShadowsLayout[1].Format			= TEX_R32G32_FLOAT;
+	m_pShadowsLayout[0].InputSlot		=	0;					m_pShadowsLayout[1].InputSlot		=	1;
+	m_pShadowsLayout[0].AlignedByteOffset =	0;					m_pShadowsLayout[1].AlignedByteOffset = 0;
+	m_pShadowsLayout[0].InputSlotClass	=	IA_PER_VERTEX_DATA;	m_pShadowsLayout[1].InputSlotClass	=	IA_PER_VERTEX_DATA;
+	m_pShadowsLayout[0].InstanceDataStepRate =	0;				m_pShadowsLayout[1].InstanceDataStepRate = 0;
 
-	//m_pShadowsShaders->VSetVertexShader(L"Shaders\\shadowmap_2d_vertex.hlsl", "Shadows_VS", m_pShadowsLayout, 1, TOPOLOGY_TRIANGLELIST, "vs_4_0_level_9_3");
-	//m_pShadowsShaders->VSetPixelShader(L"Shaders\\shadowmap_2d_pixel.hlsl", "Shadows_PS", "ps_4_0_level_9_3");
+	m_pShadowsShaders->VSetVertexShader(L"Shaders\\shadowmap_2d_vertex.hlsl", "VS", m_pShadowsLayout, 2, TOPOLOGY_TRIANGLELIST, "vs_4_0_level_9_3");
+	m_pShadowsShaders->VSetPixelShader(L"Shaders\\shadowmap_2d_pixel.hlsl", "PS", "ps_4_0_level_9_3");
 
 	//m_pShadowCubeShaders->VSetVertexShader(L"Shaders\\CubeShadowMap_VS.hlsl", "CubeShadowMap_VS", m_pShadowsLayout, 1, TOPOLOGY_TRIANGLELIST);
 	//m_pShadowCubeShaders->VSetGeometryShader(L"Shaders\\CubeShadowMap_GS.hlsl", "CubeShadowMap_GS");
@@ -629,6 +634,8 @@ AVOID Renderer2D::VSetStateForGBuffer()
 
 AVOID Renderer2D::PrepareForLightPass(CameraPtr pCamera)                                                                                                                                                                                                                                       
 {
+	m_pLightShaders->VBind();
+
 	//set vertex buffer with positions
 	m_pVertices->Set(0, 0);
 
@@ -643,7 +650,7 @@ AVOID Renderer2D::PrepareForLightPass(CameraPtr pCamera)
 	Mat4x4 rot;
 	rot = rot.CreateRollPitchYaw(pCamera->GetRoll(), pCamera->GetPitch(), pCamera->GetYaw());
 
-	Mat4x4 WVP = rot * trans * pCamera->GetView() * CreateOrthoProjectionLH(SCREEN_WIDTH, SCREEN_HEIGHT, 1.0f, 1000.0f);
+	Mat4x4 WVP = rot * trans * pCamera->GetView() * CreateOrthoProjectionLH(SCREEN_WIDTH, SCREEN_HEIGHT, 1.0f, 500.0f);
 	WVP.Transpose();
 	m_pMatrixBuffer->UpdateSubresource(0, NULL, &WVP, 0, 0);
 	m_pMatrixBuffer->Set(0, ST_Vertex);
@@ -667,12 +674,12 @@ AVOID Renderer2D::PrepareForLightPass(CameraPtr pCamera)
 	//pCamera->SetViewport();
 	SetGlobalViewport();
 
-	//set shader resources
-	m_pSSAOBlurredSRV->Set(6, ST_Pixel);
-	m_pDepthSRV->Set(8, ST_Pixel);
+	m_pDepthDisableStencilDisable->Set(1);
 
 	//set blending functionality
-	//this->BlendLightPass()->Set(nullptr);
+	//this->NoBlending()->Set(nullptr);
+	this->BlendLightPass()->Set(nullptr);
+	//this->BlendAddStandard()->Set(nullptr);
 }
 
 AVOID Renderer2D::PrepareForGeometryPass(CameraPtr pCamera)
@@ -753,25 +760,6 @@ AVOID Renderer2D::VRender()
 		m_queue.Clear();
 		//m_pDepthDisableStencilDisable->Set(0);
 
-		//filter variance shadow maps
-		if (m_bVarianceShadows)
-		{
-			for (LightList::iterator lit = m_lights.begin(); lit != m_lights.end(); lit++)
-			{
-				Light* pLight = (*lit);
-				for (int i =0; i < 1; i++)
-				{
-					//FilterImage(pLight->GetVarianceShadowMapSRV(), pLight->GetVarianceShadowUAV(), pLight->GetTempSRV(), pLight->GetTempUAV(), SCREEN_WIDTH, SCREEN_HEIGHT, FT_Gaussian);
-				}
-			}
-		}
-
-		// ========================================= //
-		//	Calculate ambient occlusion				 //
-		// ========================================= //
-		//CalculateAmbientOcclusion(pCamera);
-		//FilterImage(m_pSSAOSRV, m_pSSAOBlurredUAV, FT_Gaussian);
-
 		//m_pSSAOSRV->Set(5, ST_Pixel); 
 		// ========================================= //
 		//	Time for light pass - Render all lights  //
@@ -779,7 +767,7 @@ AVOID Renderer2D::VRender()
 
 		//set g-buffer for reading and set back buffer as render target
 		m_gbuffer.BindForReading(0);
-		//SetRenderTargetView(); 
+		SetRenderTargetView(); 
 		//m_pTempRTV->Set();
 
 		PrepareForLightPass(pCamera);
@@ -797,7 +785,7 @@ AVOID Renderer2D::VRender()
 			pLight->VPreRender(this); 
 
 			//scissor test optimization
-			pLight->VSetScissorRect(this, pCamera);
+			//pLight->VSetScissorRect(this, pCamera);
 
 			//finally render it
 			pLight->VRender();
@@ -858,7 +846,7 @@ AVOID Renderer2D::CopyPostProcessingToBackBuffer()
 	Draw(4, 0);
 
 	UnbindShaderResourceViews(0, 1, ST_Pixel);
-	AREAL bgColor[4] = { 1.0f, 0.0f, 1.0f, 1.0f };
+	AREAL bgColor[4] = { 0.0f, 0.0f, 0.0f, 1.0f };
 	ClearRenderTargetView(bgColor, m_pTempRTV); 
 }
 

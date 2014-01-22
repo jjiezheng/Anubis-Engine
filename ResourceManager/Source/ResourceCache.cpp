@@ -159,7 +159,8 @@ shared_ptr<ResHandle>  ResourceCache::Load(Resource *pResource)
 		ABOOL bSuccess;
 		if (pLoader->VNeedFile())
 		{
-			bSuccess = pLoader->VLoadResource(const_cast<char*>(pResource->m_name.c_str()), uRawSize, pHandle);
+			const AWSTRING dir = m_pFile->VGetDirectory();
+			bSuccess = pLoader->VLoadResource(const_cast<char*>((ws2s(dir) + pResource->m_name).c_str()), uRawSize, pHandle);
 		}
 		else
 		{

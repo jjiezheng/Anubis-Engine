@@ -81,8 +81,10 @@ ps_output	PS( ps_input input )
 	//fill the g-buffer
 	output.position = input.posWS;
 	output.normal			= float4(bumpNormalWS, 0.0f);
+	//output.normal = float4(normalWS, 0.0f);
 	//output.normal = half4((half2(atan2(bumpNormalWS.y, bumpNormalWS.x)/3.1415926536f, bumpNormalWS.z)+1.0)*0.5, 0,0);
 	output.diffuseAlbedo	= float4(diffuse, 1.0f);
+	//output.diffuseAlbedo = float4(1.0f, 1.0f, 1.0f, 1.0f);
 	output.specAlbedo		= float4(specular, smoothness);
 
 	return output;

@@ -70,9 +70,9 @@ Light::~Light()
 ABOOL Light::VInitialize(INPUT_LAYOUT * pLayout)
 {
 	//Initialize default light shaders
-	m_pShaders = new ShaderBunch();
-	m_pShaders->VSetVertexShader(m_vertexShaderFile,	DEFAULT_VERTEX_SHADER_NAME, pLayout, 2, TOPOLOGY_TRIANGLELIST, "vs_3_0");
-	m_pShaders->VSetPixelShader(m_pixelShaderFile,	DEFAULT_PIXEL_SHADER_NAME, "ps_3_0");
+	//m_pShaders = new ShaderBunch();
+	//m_pShaders->VSetVertexShader(m_vertexShaderFile,	DEFAULT_VERTEX_SHADER_NAME, pLayout, 2, TOPOLOGY_TRIANGLELIST, "vs_3_0");
+	//m_pShaders->VSetPixelShader(m_pixelShaderFile,	DEFAULT_PIXEL_SHADER_NAME, "ps_3_0");
 
 	//Initialize textures for shadow mapping
 	Texture2DParams tex2DParams;
@@ -90,7 +90,7 @@ ABOOL Light::VInitialize(INPUT_LAYOUT * pLayout)
 	if (!m_pShadowMapTex->CreateDepthStencilView(&m_pShadowMapDSV->m_pView, &dsvParams))	return false;
 
 	/*** Initialize texture for variance shadow mapping ***/
-	tex2DParams.Init(SCREEN_WIDTH, SCREEN_HEIGHT, 1, DXGI_FORMAT_R32G32B32A32_FLOAT, true, true, true, false,
+/*	tex2DParams.Init(SCREEN_WIDTH, SCREEN_HEIGHT, 1, DXGI_FORMAT_R32G32B32A32_FLOAT, true, true, true, false,
 		1, 0, 8, true, false, false, true);
 	m_pVarianceShadowTex->Create(&tex2DParams);
 	m_pTempTexture->Create(&tex2DParams);
@@ -107,7 +107,7 @@ ABOOL Light::VInitialize(INPUT_LAYOUT * pLayout)
 	UnorderedAccessViewParams uavParams;
 	uavParams.InitForTexture2D(DXGI_FORMAT_R32G32B32A32_FLOAT, 0);
 	m_pVarianceShadowTex->CreateUnorderedAccessView(&m_pVarianceShadowUAV->m_pView, &uavParams);
-	m_pTempTexture->CreateUnorderedAccessView(&m_pTempUAV->m_pView, &uavParams);
+	m_pTempTexture->CreateUnorderedAccessView(&m_pTempUAV->m_pView, &uavParams); */
 
 	m_bInitialized = true;
 
@@ -126,15 +126,15 @@ AVOID Light::VPreRender(Renderer *pRenderer)
 	if (pRenderer->m_bVarianceShadows)
 	{
 		//D3D11DeviceContext()->GenerateMips(m_pVarianceShadowSRV->m_pView);
-		m_pVarianceShadowSRV->Set(7, ST_Pixel);
+		//m_pVarianceShadowSRV->Set(7, ST_Pixel);
 	}
 	else
 	{
-		m_pShadowMapSRV->Set(7, ST_Pixel);
+		//m_pShadowMapSRV->Set(7, ST_Pixel);
 	}
 
 	//set shader
-	m_pShaders->VBind();
+	//m_pShaders->VBind();
 
 	//bind constant buffer to the pipeline
 	struct LightBuffer
@@ -166,7 +166,7 @@ AVOID Light::VPreRender(Renderer *pRenderer)
 	pRenderer->m_pcbLight->Set(1, ST_Pixel);
 
 	//set sampler states
-	pRenderer->AnisotropySampler16()->Set(1, ST_Pixel);
+	//pRenderer->AnisotropySampler16()->Set(1, ST_Pixel);
 	//pRenderer->LinearTiledSampler()->Set(1, ST_Pixel);
 //	pRenderer->LinearLessEqualSampler()->Set(2, ST_Pixel);
 

@@ -22,7 +22,7 @@ ABOOL Demo2D::VInitialize()
 		Vector(0.0f, 0.0f, 1.0f, 0.0f),
 		Vector(0.0f, 1.0f, 0.0f, 0.0f),
 		0.0f, 0.0, 0.0, viewport)); */
-	CameraPtr pCamera = make_shared<Camera>(Camera(frustum, Vector(0.0f, 0.0f, 0.0, 1.0f),
+	CameraPtr pCamera = make_shared<Camera>(Camera(frustum, Vector(90.0f, 0.0f, 0.0, 1.0f),
 		Vector(0.0f, 0.0f, 1.0f, 0.0f),
 		Vector(0.0f, 1.0f, 0.0f, 0.0f),
 		0.0f, 0.0, 0.0, viewport));
@@ -34,14 +34,15 @@ ABOOL Demo2D::VInitialize()
 	//PlayerWASDController* m_pPlayerController = new PlayerWASDController();
 	shared_ptr<FreeCameraController> m_pFreeCameraController = make_shared<FreeCameraController>(FreeCameraController());
 	shared_ptr<PlayerWASDController> m_pPlayerController = make_shared<PlayerWASDController>(PlayerWASDController());
+	shared_ptr<CameraController2D>	 m_pController2D = make_shared<CameraController2D>(CameraController2D());
 
 	//pView->SetMouseHandler(m_pFreeCameraController);
 	//pView->SetKeyboardHandler(m_pFreeCameraController);
 	//pView->SetController(m_pFreeCameraController);
 
-	//pView->SetMouseHandler(m_pPlayerController);
-	//pView->SetKeyboardHandler(m_pPlayerController);
-	//pView->SetController(m_pPlayerController);
+	pView->SetMouseHandler(m_pController2D);
+	pView->SetKeyboardHandler(m_pController2D);
+	pView->SetController(m_pController2D);
 
 	//call base class initialization
 	return Game::VInitialize();

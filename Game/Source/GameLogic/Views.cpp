@@ -114,7 +114,7 @@ AVOID PlayerView::VUpdate(AUINT32 const deltaMilliseconds)
 
 			m_pCamera->VUpdate(deltaMilliseconds);
 
-			m_pController->VSetTargetDirection(m_pCamera->GetDir());
+			//m_pController->VSetTargetDirection(m_pCamera->GetDir());
 		}
 		else
 		{
@@ -134,7 +134,7 @@ AVOID PlayerView::VRender(Renderer *pRenderer, AREAL64 r64Time, AREAL64 r64Elaps
 {
 	//Clean back buffer render target and depth stencil
 	//ALIGN16 AREAL32 bgColor[4] = { 0.0f, 1.0f, 1.0f, 1.0f }; //color
-	AREAL32 bg[4] = { 1.0f, 0.0f, 1.0f, 1.0f };
+	AREAL32 bg[4] = { 0.0f, 0.0f, 0.0f, 1.0f };
 	ClearRenderTargetView(bg, NULL);
 	ClearDepthStencilView(true, false, 1.0f, 1, NULL);
 

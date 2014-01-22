@@ -543,7 +543,7 @@ BlendState* Renderer::BlendLightPass()
 	m_pBlendLightPass = new BlendState();
 	RenderTargetBlendParams rtBlendParams;
 	rtBlendParams.Init(true, D3D11_BLEND_ONE, D3D11_BLEND_ONE, D3D11_BLEND_OP_ADD,
-		D3D11_BLEND_ONE, D3D11_BLEND_ZERO, D3D11_BLEND_OP_ADD, 0x0f);
+		D3D11_BLEND_ONE, D3D11_BLEND_ONE, D3D11_BLEND_OP_ADD, 0x0f);
 	BlendStateParams params;
 	params.Init(false, false, &rtBlendParams, 1);
 
