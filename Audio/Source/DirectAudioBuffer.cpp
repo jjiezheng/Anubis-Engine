@@ -85,6 +85,23 @@ ABOOL DirectSoundAudioBuffer::VPlay(AINT32 volume, ABOOL looping)
 	return (S_OK == pDSB->Play(0, 0, u32Flags));
 }
 
+//
+bool DirectSoundAudioBuffer::VPause()
+{
+	LPDIRECTSOUNDBUFFER pDSB = (LPDIRECTSOUNDBUFFER)VGet();
+
+	if(!g_pAudio->VActive())
+		return false;
+
+	if( pDSB )
+	return false;
+
+	m_bPaused=true;
+	pDSB->Stop();
+	pDSB->SetCurrentPosition(0);    // rewinds buffer to beginning.
+	return true;
+}
+
 ABOOL DirectSoundAudioBuffer::VStop()
 {
 	if (!g_pAudio->VActive())

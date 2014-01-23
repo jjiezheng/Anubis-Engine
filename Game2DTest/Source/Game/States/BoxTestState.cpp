@@ -4,6 +4,9 @@
 #include "Application\Engine.h"
 #include "Entities\EntityResource.h"
 
+#include "AudioBuffer.h"
+#include "DirectAudioBuffer.h"
+
 using namespace Anubis;
 
 //Initialize game state
@@ -120,6 +123,13 @@ AVOID BoxTestState::VInitialize( Game * pGame, AUINTPTR uptrData)
 	//spotLight_params.VCreateRepresentation(m_pScene, m_pLight); 
 
 	m_lightVelocity = Vector(0.0f, -0.05f, 0.0f, 1.0f);
+
+	Resource beepResource("beep.wav");
+	shared_ptr<ResHandle> pBeep = Anubis::SafeGetHandle(&beepResource);
+	std::shared_ptr<SoundResourceExtraData> pData = static_pointer_cast<SoundResourceExtraData>(pBeep->GetExtra());
+
+	IAudioBuffer* buffer = g_pEngine->GetAudio()->VInitAudioBuffer(pBeep);
+	buffer->VPlay(100, true);
 }
 
 //Destroy the state

@@ -9,6 +9,7 @@
 #include "Messenger.h"
 #include "Scene.h"
 #include "DirectAudio.h"
+#include "Resources\WAVE.h"
 #include "..\..\ResourceManager\Source\ResourceCache.h"
 #include "..\..\ResourceManager\Source\ResourceFile.h"
 #include "..\..\ResourceManager\Source\ResourceLoader.h"
@@ -20,6 +21,7 @@
 using namespace Anubis;
 
 Anubis::Engine* Anubis::g_pEngine = NULL;
+Anubis::IAudio* Anubis::g_pAudio = NULL;
 
 ////////////////////////////////////
 //Entry point for the application
@@ -53,7 +55,7 @@ int WINAPI wWinMain(	HINSTANCE hInstance,
 	   ============================== */
 
 	//Allocate memory for engine subsystems!
-	//g_pAudio				= new DirectSoundAudio();
+	Anubis::g_pAudio	= new DirectSoundAudio();
 	//Renderer*	g_pRenderer = new DeferredRenderer();
 	Renderer2D* g_pRenderer = new Renderer2D();
 	IPhysics*	g_pPhysics = CreateHavokPhysics();
@@ -68,10 +70,12 @@ int WINAPI wWinMain(	HINSTANCE hInstance,
 
 	//add resource loaders
 	IResourceLoader* pObjLoader = new ObjResourceLoader();
+	IResourceLoader* pWaveLoader = new WaveResourceLoader();
 	g_pCache->RegisterLoader(shared_ptr<IResourceLoader>(pObjLoader));
+	g_pCache->RegisterLoader(shared_ptr<IResourceLoader>(pWaveLoader));
 
 	/* === Initialize main engine components === */
-	g_pEngine->InitializeComponents(nullptr, g_pRenderer, g_pPhysics, g_pMessenger, g_pCache);
+	g_pEngine->InitializeComponents(g_pAudio, g_pRenderer, g_pPhysics, g_pMessenger, g_pCache);
 
 	// **************************** //
 	// ===						=== //

@@ -63,7 +63,7 @@
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>..\..\ThirdParty\Assimp\lib\assimp_release-dll_win32;..\..\ThirdParty\havok\Lib\win32_vs2010\debug_multithreaded;D:\Program Files %28x86%29\Microsoft DirectX SDK %28June 2010%29\Lib\x86;$(SolutionDir)Lib\$(Configuration)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;Audio.lib;Definitions.lib;Engine.lib;Game.lib;Math.lib;Messenger.lib;Renderer.lib;Physics.lib;ResourceManager.lib;Scene.lib;Graphics.lib;FileStream.lib;d3d11.lib;d3dx11d.lib;d3dcompiler.lib;assimp.lib;hkBase.lib;hkCompat.lib;hkSceneData.lib;hkSerialize.lib;hkInternal.lib;hkGeometryUtilities.lib;hkVisualize.lib;hkcdInternal.lib;hkcdCollide.lib;hkpCollide.lib;hkpConstraintSolver.lib;hkpDynamics.lib;hkpInternal.lib;hkpUtilities.lib;hkpVehicle.lib;hctCommon.lib</AdditionalDependencies>
+      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;Audio.lib;Definitions.lib;Engine.lib;Game.lib;Math.lib;Messenger.lib;Renderer.lib;Physics.lib;ResourceManager.lib;Scene.lib;Graphics.lib;FileStream.lib;d3d11.lib;d3dx11d.lib;d3dcompiler.lib;assimp.lib;hkBase.lib;hkCompat.lib;hkSceneData.lib;hkSerialize.lib;hkInternal.lib;hkGeometryUtilities.lib;hkVisualize.lib;hkcdInternal.lib;hkcdCollide.lib;hkpCollide.lib;hkpConstraintSolver.lib;hkpDynamics.lib;hkpInternal.lib;hkpUtilities.lib;hkpVehicle.lib;hctCommon.lib;dxerr.lib;dsound.lib;dxguid.lib;winmm.lib</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">

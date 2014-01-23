@@ -16,7 +16,7 @@
 		<Material>Bricks</Material>
 	</BoxComponent>  -->
     <PointLightComponent range="670" >
-		<Color r="1.0" g="1.0" b="1.0" />
+		<Color r="0.5" g="0.5" b="0.7" />
 	</PointLightComponent> 
 	<!--<SpotLightComponent range="60" innerAngle="30" outerAngle="70" >
 		<Color r="1.0" g="1.0" b="1.0" />
