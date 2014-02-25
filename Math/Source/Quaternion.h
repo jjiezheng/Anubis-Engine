@@ -68,39 +68,31 @@ namespace Anubis
 		
 		Quaternion();
 		Quaternion(const AREAL x, const AREAL y, const AREAL z, const AREAL w);
+		Quaternion(const Quaternion & other);
+		Quaternion(Quaternion && other);
 		Quaternion(const Vec & v);
 
 		// ==================
 		//	Operators
 		// ==================
-		Quaternion & operator+(const Quaternion & q) const;
-		Quaternion & operator-(const Quaternion & q) const;
+		const Quaternion operator+(const Quaternion & q) const;
+		const Quaternion operator-(const Quaternion & q) const;
 		//Quaternion operator*(const Quaternion & q) const; 
-		Quaternion & operator*(const AREAL s) const
-		{
-			Quaternion res = *this;
-			res.m_q = res.m_q * s;
+		const Quaternion operator*(const AREAL s) const;
+		const Quaternion operator/(const AREAL s) const;
 
-			return res;
-		}
-
-		Quaternion & operator/(const AREAL s) const
-		{
-			Quaternion res = *this;
-			res.m_q = res.m_q / s;
-
-			return res;
-		}
+		Quaternion & operator=(const Quaternion & other);
+		Quaternion & operator=(Quaternion && other);
 
 		// ==================
 		//  Accessors
 		// ==================
-		AREAL GetX() const { return m_q.x; }
-		AREAL GetY() const { return m_q.y; }
-		AREAL GetZ() const { return m_q.z; }
-		AREAL GetW() const { return m_q.w; }
-		Vec & GetAxis() const { return Vector(m_q.x, m_q.y, m_q.z, 0.0f); }
-		AREAL GetAngle() const { return m_q.w; }
+		AREAL	GetX() const { return m_q.x; }
+		AREAL	GetY() const { return m_q.y; }
+		AREAL	GetZ() const { return m_q.z; }
+		AREAL	GetW() const { return m_q.w; }
+		Vec		GetAxis() const { return Vector(m_q.x, m_q.y, m_q.z, 0.0f); }
+		AREAL	GetAngle() const { return m_q.w; }
 
 		// ==================
 		//  Methods

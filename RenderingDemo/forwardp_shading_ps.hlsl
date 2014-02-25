@@ -211,7 +211,7 @@ float4 shading_ps(ps_input input) : SV_TARGET
 	//if (tileIdx == 3599) return float4(1.0f, 0.0f, 0.0f, 1.0f);
 	//else return float4(0.0f, 1.0f, 0.0f, 1.0f);
 	//float numtiles = 1;
-	//return float4(numtiles / 100.0f, numtiles / 100.0f, numtiles / 100.0f, 1.0f);
+	//return float4(numtiles / 256.0f, numtiles / 256.0f, numtiles / 256.0f, 1.0f);
 
 	float3 finalColor = float3(0.0f, 0.0f, 0.0f);
 	//for (uint lightListIdx = startIdx; lightListIdx <= endIdx; lightListIdx++)

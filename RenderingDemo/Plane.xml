@@ -5,14 +5,14 @@
     <Orientation axisx="1" axisy="0" axisz="0" degrees="0.0" />
   </Transform>
   <PhysicsComponent>
-    <PlaneComponent x="120" y="0" z="120" mass="0">
+    <PlaneComponent x="600" y="0" z="600" mass="0">
 		<Density>aluminum</Density>
 		<Material>Normal</Material>
 		<Type>Static</Type>
 	</PlaneComponent>
   </PhysicsComponent>
   <GraphicsComponent>
-    <PlaneComponent x="120" y="0" z="120">
+    <PlaneComponent x="600" y="0" z="600">
 		<Material>paint</Material>
 	</PlaneComponent>
   </GraphicsComponent>

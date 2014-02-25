@@ -89,11 +89,43 @@ namespace Anubis
 			memcpy(&w, &_w, sizeof(AREAL));
 		};
 
-		Vec operator=(const Vec & v)
+		/*Vec(const Vec & v)
 		{
-			memcpy(xyzw, v.xyzw, 4 * sizeof(AREAL));
+			x = v.x;
+			y = v.y;
+			z = v.z;
+			w = v.z;
+		} 
+		*/
+		Vec(Vec && v) : x(0), y(0), z(0), w(0)
+		{
+			x = v.x;
+			y = v.y;
+			z = v.z;
+			w = v.w;
+		}
+
+		Vec & operator=(const Vec & v)
+		{
+			if (this != &v)
+			{
+				memcpy(xyzw, v.xyzw, 4 * sizeof(AREAL));
+			}
 			return *this;
 		};
+
+		Vec & operator=(const Vec && v)
+		{
+			if (this != &v)
+			{
+				x = v.x;
+				y = v.y;
+				z = v.z;
+				w = v.w;
+			}
+
+			return *this;
+		} 
 	};
 #endif
 
@@ -124,6 +156,41 @@ namespace Anubis
 			memcpy(&x, &_x, sizeof(AREAL));
 			memcpy(&y, &_y, sizeof(AREAL));
 		};
+
+		float2(const float2 & other)
+		{
+			x = other.x;
+			y = other.y;
+		}
+
+		float2(float2 && other)
+		{
+			x = other.x;
+			y = other.y;
+		}
+
+		float2 & operator=(const float2 & other)
+		{
+			if (this != &other)
+			{
+				x = other.x;
+				y = other.y;
+			}
+
+			return *this;
+		}
+
+		float2 & operator=(const float2 && other)
+		{
+			if (this != &other)
+			{
+				x = other.x;
+				y = other.y;
+			}
+
+			return *this;
+		}
+
 	} float2, *pfloat2;
 
 	/***
@@ -156,14 +223,28 @@ namespace Anubis
 			memcpy(&z, &_z, sizeof(AREAL));
 		};
 
-		float3(const Vec & v)
+		float3(const float3 & other)
+		{
+			x = other.x;
+			y = other.y;
+			z = other.z;
+		}
+
+		float3(float3 && other)
+		{
+			x = other.x;
+			y = other.y;
+			z = other.z;
+		}
+
+		explicit float3(const Vec & v)
 		{
 			x = v.x;
 			y = v.y;
 			z = v.z;
 		}
 
-		float3 operator=(Vec v)
+		float3 & operator=(const Vec & v)
 		{
 			#ifdef SIMD_MATH_ENABLED
 				//_mm_store_ps(xyzw, v);
@@ -173,6 +254,30 @@ namespace Anubis
 				z = v.z;
 			#endif
 		};
+
+		float3 & operator=(const float3 & other)
+		{
+			if (this != &other)
+			{
+				x = other.x;
+				y = other.y;
+				z = other.z;
+			}
+
+			return *this;
+		}
+
+		float3 & operator=(float3 && other)
+		{
+			if (this != &other)
+			{
+				x = other.x;
+				y = other.y;
+				z = other.z;
+			}
+
+			return *this;
+		}
 
 	} float3, *pfloat3;
 
@@ -209,6 +314,48 @@ namespace Anubis
 			memcpy(&z, &_z, sizeof(AREAL));
 			memcpy(&w, &_w, sizeof(AREAL));
 		};
+
+		float4(const float4 & other)
+		{
+			x = other.x;
+			y = other.y;
+			z = other.z;
+			w = other.w;
+		}
+
+		float4(float4 && other)
+		{
+			x = other.x;
+			y = other.y;
+			z = other.z;
+			w = other.w;
+		}
+
+		float4 & operator=(const float4 & other)
+		{
+			if (this != &other)
+			{
+				x = other.x;
+				y = other.y;
+				z = other.z;
+				w = other.w;
+			}
+
+			return *this;
+		}
+
+		float4 & operator=(float4 && other)
+		{
+			if (this != &other)
+			{
+				x = other.x;
+				y = other.y;
+				z = other.z;
+				w = other.w;
+			}
+
+			return *this;
+		}
 
 		float4 operator=(Vec v)
 		{

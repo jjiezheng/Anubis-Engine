@@ -124,6 +124,12 @@ namespace Anubis
 		AQUEUE<SystemMessage*>	m_messageQueue; 
 
 	protected:
+
+		/* Timing */
+		Timer*		m_pTimer;
+		AREAL64		m_r64LastUpdate;
+		AREAL64		m_r64TimeStep;
+
 		/* Application data */
 		
 		HWND		m_hwnd;
@@ -136,11 +142,6 @@ namespace Anubis
 
 		/* Shutdown */
 		ABOOL		m_bQuitting;
-
-		/* Timing */
-		Timer*		m_pTimer;
-		AREAL64		m_r64LastUpdate;
-		AREAL64		m_r64TimeStep;
 
 	public:
 		/* Engine subsystems */

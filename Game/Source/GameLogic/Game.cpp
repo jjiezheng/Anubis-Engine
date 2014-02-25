@@ -73,7 +73,7 @@ ABOOL Game::VInitialize()
 
 LRESULT	Game::VMsgProc(SystemMessage * msg)
 {
-	for (Views::iterator iter = m_views.begin(); iter != m_views.end(); iter++)
+	for (auto iter = begin(m_views); iter != end(m_views); ++iter)
 	{
 		if ((*iter)->VMsgProc(msg)) 
 		{
@@ -84,7 +84,7 @@ LRESULT	Game::VMsgProc(SystemMessage * msg)
 	return 0;
 }
 
-AVOID Game::VUpdate(const AREAL64 r64Time, const AREAL64 r64ElapsedTime)
+AVOID Game::VUpdate(AREAL64 r64Time, AREAL64 r64ElapsedTime)
 {
 	//change game state if needed
 	if (m_ngsState.m_bSetState)
@@ -97,7 +97,7 @@ AVOID Game::VUpdate(const AREAL64 r64Time, const AREAL64 r64ElapsedTime)
 	m_pStateMachine->VUpdate(this, r64Time, r64ElapsedTime);
 
 	const AUINT32 deltaMilliseconds = AUINT32(r64ElapsedTime * 1000.0f);
-	for (Views::iterator iter = m_views.begin(); iter != m_views.end(); iter++)
+	for (auto iter = begin(m_views); iter != end(m_views); ++iter)
 		(*iter)->VUpdate(deltaMilliseconds);
 
 	//update entities
@@ -113,17 +113,17 @@ EntityPtr Game::VAddEntity(EntityPtr pEntity)
 	return pEntity;
 }
 
-EntityPtr Game::VGetEntity(const EntityId id)
+EntityPtr Game::VGetEntity(EntityId id)
 {
 	return m_pEntityManager->VGetEntity(id);
 }
 
-ABOOL Game::VRemoveEntity(const EntityId id)
+ABOOL Game::VRemoveEntity(EntityId id)
 {
 	return m_pEntityManager->VRemoveEntity(id);
 }
 
-AVOID Game::VUpdateEntity(const EntityId id, Mat4x4 const & transform, AREAL64 r64CurrentTime)
+AVOID Game::VUpdateEntity(EntityId id, Mat4x4 const & transform, AREAL64 r64CurrentTime)
 {
 	m_pEntityManager->VUpdateEntity(id, transform, r64CurrentTime);
 }
@@ -170,7 +170,7 @@ AVOID Game::AddPlayerView(shared_ptr<PlayerView> pView)
 	m_playerViews.push_back(pView);
 }
 
-PlayerViewPtr Game::GetPlayerView(const AINT32 player)
+PlayerViewPtr Game::GetPlayerView(AINT32 player)
 {
 	return m_playerViews[player];
 }
@@ -185,7 +185,7 @@ AVOID Game::VRenderDebug()
 AVOID Game::VRender(Renderer * pRenderer, AREAL64 r64Time, AREAL64 r64ElapsedTime)
 {
 	//render current game state
-	for (Views::iterator iter = m_views.begin(); iter != m_views.end(); iter++)
+	for (auto iter = begin(m_views); iter != end(m_views); ++iter)
 		(*iter)->VRender(pRenderer, r64Time, r64ElapsedTime);
 
 	//render a game state

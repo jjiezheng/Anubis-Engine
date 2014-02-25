@@ -55,7 +55,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(SolutionDir)ResourceManager\Source;..\..\ThirdParty\havok\Lib\win32_vs2010\release_multithreaded;..\..\ThirdParty\havok\Source;..\..\ThirdParty\include\;$(SolutionDir)Memory\Source;$(SolutionDir)Definitions\Source;$(SolutionDir)Messenger\Source;$(SolutionDir)Graphics\Source;D:\Program Files %28x86%29\Microsoft DirectX SDK %28June 2010%29\Include;$(SolutionDir)Scene\Source\;$(SolutionDir)Physics\Source\;$(SolutionDir)Renderer\Source\;$(SolutionDir)Audio\Source\;$(SolutionDir)Game\Source\;$(SolutionDir)Engine\Source\;$(SolutionDir)FileStream\Source;$(SolutionDir)Input\Source;%(AdditionalIncludeDirectories);$(SolutionDir)Audio\Source;..\..\ThirdParty\Assimp\source;..\..\ThirdParty\Assimp\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)ResourceManager\Source;..\..\ThirdParty\havok\Lib\win32_vs2010\release_multithreaded;..\..\ThirdParty\havok\Source;..\..\ThirdParty\include\;$(SolutionDir)Memory\Source;$(SolutionDir)Definitions\Source;$(SolutionDir)Messenger\Source;$(SolutionDir)Graphics\Source;D:\Program Files %28x86%29\Microsoft DirectX SDK %28June 2010%29\Include;$(SolutionDir)Scene\Source\;$(SolutionDir)Physics\Source\;$(SolutionDir)Renderer\Source\;$(SolutionDir)Audio\Source\;$(SolutionDir)Game\Source\;$(SolutionDir)Engine\Source\;$(SolutionDir)FileStream\Source;$(SolutionDir)Input\Source;%(AdditionalIncludeDirectories);$(SolutionDir)Audio\Source;..\..\ThirdParty\Assimp\source;..\..\ThirdParty\Assimp\include;..\..\ThirdParty\freetype-2.5.2\include</AdditionalIncludeDirectories>
       <PrecompiledHeaderFile>RenderingDemo_pch.h</PrecompiledHeaderFile>
       <PrecompiledHeaderOutputFile>RenderingDemo_pch.pch</PrecompiledHeaderOutputFile>
       <BasicRuntimeChecks>Default</BasicRuntimeChecks>
@@ -63,8 +63,8 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>..\..\ThirdParty\Assimp\lib\assimp_release-dll_win32;..\..\ThirdParty\havok\Lib\win32_vs2010\debug_multithreaded;D:\Program Files %28x86%29\Microsoft DirectX SDK %28June 2010%29\Lib\x86;$(SolutionDir)Lib\$(Configuration)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;Audio.lib;Definitions.lib;Engine.lib;Game.lib;Math.lib;Messenger.lib;Renderer.lib;Physics.lib;ResourceManager.lib;Scene.lib;Graphics.lib;FileStream.lib;d3d11.lib;d3dx11d.lib;d3dcompiler.lib;assimp.lib;hkBase.lib;hkCompat.lib;hkSceneData.lib;hkSerialize.lib;hkInternal.lib;hkGeometryUtilities.lib;hkVisualize.lib;hkcdInternal.lib;hkcdCollide.lib;hkpCollide.lib;hkpConstraintSolver.lib;hkpDynamics.lib;hkpInternal.lib;hkpUtilities.lib;hkpVehicle.lib;hctCommon.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>..\..\ThirdParty\freetype-2.5.2\objs\win32\vc2010;..\..\ThirdParty\Assimp\lib\assimp_release-dll_win32;..\..\ThirdParty\havok\Lib\win32_vs2010\debug_multithreaded;D:\Program Files %28x86%29\Microsoft DirectX SDK %28June 2010%29\Lib\x86;$(SolutionDir)Lib\$(Configuration)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;Audio.lib;Definitions.lib;Engine.lib;Game.lib;Math.lib;Messenger.lib;Renderer.lib;Physics.lib;ResourceManager.lib;Scene.lib;Graphics.lib;FileStream.lib;d3d11.lib;d3dx11d.lib;d3dcompiler.lib;assimp.lib;hkBase.lib;hkCompat.lib;hkSceneData.lib;hkSerialize.lib;hkInternal.lib;hkGeometryUtilities.lib;hkVisualize.lib;hkcdInternal.lib;hkcdCollide.lib;hkpCollide.lib;hkpConstraintSolver.lib;hkpDynamics.lib;hkpInternal.lib;hkpUtilities.lib;hkpVehicle.lib;hctCommon.lib;freetype252_D.lib</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -75,7 +75,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(SolutionDir)ResourceManager\Source;..\..\ThirdParty\havok\Lib\win32_vs2010\release_multithreaded;..\..\ThirdParty\havok\Source;..\..\ThirdParty\include\;$(SolutionDir)Memory\Source;$(SolutionDir)Definitions\Source;$(SolutionDir)Messenger\Source;$(SolutionDir)Graphics\Source;D:\Program Files %28x86%29\Microsoft DirectX SDK %28June 2010%29\Include;$(SolutionDir)Scene\Source\;$(SolutionDir)Physics\Source\;$(SolutionDir)Renderer\Source\;$(SolutionDir)Audio\Source\;$(SolutionDir)Game\Source\;$(SolutionDir)Engine\Source\;$(SolutionDir)FileStream\Source;$(SolutionDir)Input\Source;%(AdditionalIncludeDirectories);$(SolutionDir)Audio\Source;..\..\ThirdParty\Assimp\source;..\..\ThirdParty\Assimp\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)ResourceManager\Source;..\..\ThirdParty\havok\Lib\win32_vs2010\release_multithreaded;..\..\ThirdParty\havok\Source;..\..\ThirdParty\include\;$(SolutionDir)Memory\Source;$(SolutionDir)Definitions\Source;$(SolutionDir)Messenger\Source;$(SolutionDir)Graphics\Source;D:\Program Files %28x86%29\Microsoft DirectX SDK %28June 2010%29\Include;$(SolutionDir)Scene\Source\;$(SolutionDir)Physics\Source\;$(SolutionDir)Renderer\Source\;$(SolutionDir)Audio\Source\;$(SolutionDir)Game\Source\;$(SolutionDir)Engine\Source\;$(SolutionDir)FileStream\Source;$(SolutionDir)Input\Source;%(AdditionalIncludeDirectories);$(SolutionDir)Audio\Source;..\..\ThirdParty\Assimp\source;..\..\ThirdParty\Assimp\include;..\..\ThirdParty\freetype-2.5.2\include</AdditionalIncludeDirectories>
       <PrecompiledHeaderFile>RenderingDemo_pch.h</PrecompiledHeaderFile>
       <PrecompiledHeaderOutputFile>RenderingDemo_pch.pch</PrecompiledHeaderOutputFile>
     </ClCompile>
@@ -109,6 +109,7 @@
     <None Include="forwardp_shading_vs.hlsl" />
     <None Include="LightCulling.hlsl" />
     <None Include="Resources\Entities\BoxEntity.xml" />
+    <None Include="Resources\Shaders\TextVertex.hlsl" />
     <None Include="Shaders\Atmosphere\Common.hlsli" />
     <None Include="Shaders\Atmosphere\SkyFromAtmosphere_ps.hlsl" />
     <None Include="Shaders\Atmosphere\SkyFromAtmosphere_vs.hlsl" />
@@ -116,6 +117,7 @@
     <None Include="Shaders\CubeShadowMap_PS.hlsl" />
     <None Include="Shaders\CubeShadowMap_VS.hlsl" />
     <None Include="Shaders\FXAA.hlsl" />
+    <None Include="Source\Shaders\TextPixel.hlsl" />
     <None Include="Source\Shaders\SkyBox.hlsl" />
     <None Include="ZPrepass.hlsl" />
   </ItemGroup>

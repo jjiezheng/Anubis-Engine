@@ -50,12 +50,22 @@ using namespace Anubis;
 
 Quaternion::Quaternion()
 {
-	m_q = Vector(0, 0, 0, 1);
+	m_q = std::move(Vector(0, 0, 0, 1));
 }
 
 Quaternion::Quaternion(const AREAL x, const AREAL y, const AREAL z, const AREAL w)
 {
-	m_q = Vector(x, y, z, w);
+	m_q = std::move(Vector(x, y, z, w));
+}
+
+Quaternion::Quaternion(const Quaternion & other)
+{
+	m_q = other.m_q;
+}
+
+Quaternion::Quaternion(Quaternion && other)
+{
+	m_q = std::move(other.m_q);
 }
 
 Quaternion::Quaternion(const Vec & v)
@@ -66,17 +76,46 @@ Quaternion::Quaternion(const Vec & v)
 //----------------------------------------------------
 //Operators
 //----------------------------------------------------
-Quaternion & operator+(Quaternion & q1, Quaternion & q2)
+Quaternion & Quaternion::operator=(const Quaternion & other)
+{
+	if (this != &other)
+	{
+		m_q = other.m_q;
+	}
+
+	return *this;
+}
+
+Quaternion & Quaternion::operator=(Quaternion && other)
+{
+	if (this != &other)
+	{
+		m_q = std::move(other.m_q);
+	}
+
+	return *this;
+}
+
+const Quaternion Quaternion::operator+(const Quaternion & q) const
 {
 	//return _mm_add_ps(v1, v2);
-	return Quaternion(q1.m_q + q2.m_q);
+	return Quaternion(m_q + q.m_q);
 }
 
-Quaternion & operator-(Quaternion & q1, Quaternion & q2)
+const Quaternion Quaternion::operator-(const Quaternion & q) const
 {
-	return Quaternion(q1.m_q - q2.m_q);
+	return Quaternion(m_q - q.m_q);
 }
 
+const Quaternion Quaternion::operator*(const AREAL s) const
+{
+	return Quaternion(m_q.x*s, m_q.y*s, m_q.z*s, m_q.w*s);
+}
+
+const Quaternion Quaternion::operator/(const AREAL s) const
+{
+	return Quaternion(m_q.x/s, m_q.y/s, m_q.z/s, m_q.w/s);
+}
 
 //----------------------------------------------------
 //Methods

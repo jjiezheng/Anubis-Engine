@@ -85,5 +85,11 @@
     <None Include="ZPrepass.hlsl">
       <Filter>Shaders</Filter>
     </None>
+    <None Include="Resources\Shaders\TextVertex.hlsl">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="Source\Shaders\TextPixel.hlsl">
+      <Filter>Shaders</Filter>
+    </None>
   </ItemGroup>
 </Project>

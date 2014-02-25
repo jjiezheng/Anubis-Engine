@@ -125,7 +125,7 @@ namespace Anubis
 					};
 
 		//Create translation matrix
-		Mat4x4 CreateTranslation(const Vec & vec);
+		Mat4x4 & CreateTranslation(const Vec & vec);
 
 		//Create rotation matrix
 		Mat4x4 CreateRotationX(AREAL angleInRadians);
@@ -135,8 +135,8 @@ namespace Anubis
 		Mat4x4 CreateRollPitchYaw(AREAL rollInRadians, AREAL pitchInRadians, AREAL yawInRadians);
 
 		//create scaling matrix
-		Mat4x4 CreateScaling(Vec & scale);
-		Mat4x4 CreateScaling(AREAL x, AREAL y, AREAL z); //more effective
+		Mat4x4 & CreateScaling(Vec & scale);
+		Mat4x4 & CreateScaling(AREAL x, AREAL y, AREAL z); //more effective
 
 		AREAL  GetElement(const AUINT8 row, const AUINT8 col) const;
 		Vec	   GetPosition() const;

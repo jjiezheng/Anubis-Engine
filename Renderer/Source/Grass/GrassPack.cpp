@@ -89,18 +89,18 @@ GrassPack::GrassPack(	const Vec & center, const AREAL r32HalfWidth, const AREAL 
 	Vec rightTopVec		= Vector(size_x, size_y, 0.0f, 0.0f);
 	Vec leftBottomVec	= Vector(-size_x, -size_y, 0.0f, 0.0f);
 	Vec rightBottomVec	= Vector(size_x, -size_y, 0.0f, 0.0f);
-	float3 leftTop1		= leftTopVec;
-	float3 rightTop1	= rightTopVec;
-	float3 leftBottom1	= leftBottomVec;
-	float3 rightBottom1	= rightBottomVec;
-	float3 leftTop2		= leftTopVec * rotCW;
-	float3 rightTop2	= rightTopVec * rotCW;
-	float3 leftBottom2	= leftBottomVec * rotCW;
-	float3 rightBottom2 = rightBottomVec * rotCW;
-	float3 leftTop3		= leftTopVec * rotCCW;
-	float3 rightTop3	= rightTopVec * rotCCW;
-	float3 leftBottom3	= leftBottomVec * rotCCW;
-	float3 rightBottom3 = rightBottomVec * rotCCW;
+	float3 leftTop1		= float3(leftTopVec);
+	float3 rightTop1	= float3(rightTopVec);
+	float3 leftBottom1	= float3(leftBottomVec);
+	float3 rightBottom1	= float3(rightBottomVec);
+	float3 leftTop2		= float3(leftTopVec * rotCW);
+	float3 rightTop2	= float3(rightTopVec * rotCW);
+	float3 leftBottom2	= float3(leftBottomVec * rotCW);
+	float3 rightBottom2 = float3(rightBottomVec * rotCW);
+	float3 leftTop3		= float3(leftTopVec * rotCCW);
+	float3 rightTop3	= float3(rightTopVec * rotCCW);
+	float3 leftBottom3	= float3(leftBottomVec * rotCCW);
+	float3 rightBottom3 = float3(rightBottomVec * rotCCW);
 
 	float3 normal = leftTop1 - leftBottom1;
 

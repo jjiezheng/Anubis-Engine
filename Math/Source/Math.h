@@ -88,18 +88,18 @@ namespace Anubis
 					Matrices
 	========================================= */
 	Mat4x4 CreateViewMatrixLH(const Vec & pos, const Vec & lookDir, const Vec & up);
-	Mat4x4 CreatePerspectiveProjectionLH(	const AREAL fov,	const AREAL aspect,
-											const AREAL nearZ,	const AREAL farZ );
-	Mat4x4 CreateOrthoProjectionLH(	const AREAL width,	const AREAL height,
-									const AREAL nearZ,	const AREAL farZ);
+	Mat4x4 CreatePerspectiveProjectionLH(	AREAL fov,	AREAL aspect,
+											AREAL nearZ,	AREAL farZ );
+	Mat4x4 CreateOrthoProjectionLH(	AREAL width,	AREAL height,
+									AREAL nearZ,	AREAL farZ);
 
 	/* ======================================
 				Random Number Generator
 	========================================= */
-	AREAL Random(const AREAL min, const AREAL max);
+	AREAL Random(AREAL min, AREAL max);
 
 	/* ======================================
 						Other
 	========================================= */
-	AREAL Clamp(const AREAL value, const AREAL min, const AREAL max);
+	AREAL Clamp(AREAL value, AREAL min, AREAL max);
 };

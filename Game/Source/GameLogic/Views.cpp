@@ -114,7 +114,7 @@ AVOID PlayerView::VUpdate(AUINT32 const deltaMilliseconds)
 
 			m_pCamera->VUpdate(deltaMilliseconds);
 
-			//m_pController->VSetTargetDirection(m_pCamera->GetDir());
+			m_pController->VSetTargetDirection(m_pCamera->GetDir());
 		}
 		else
 		{

@@ -56,16 +56,6 @@
 
 namespace Anubis
 {
-	//Struct for storing OS message data
-/*#ifdef WIN32
-	struct AppMsg
-	{
-		HWND	m_hWnd;
-		UINT	m_uMsg;
-		WPARAM	m_wParam;
-		LPARAM	m_lParam;
-	};
-#endif //WIN32 */
 	enum SystemMessageType
 	{
 		SMT_Quit,
@@ -85,7 +75,7 @@ namespace Anubis
 
 	struct QuitMessage : public SystemMessage
 	{
-		explicit QuitMessage()
+		QuitMessage()
 		{
 			m_type = SMT_Quit;
 		}
@@ -95,7 +85,7 @@ namespace Anubis
 	{
 		ACHAR m_key;
 
-		KeyboardMessage(const CHAR key)
+		KeyboardMessage(CHAR key)
 		{
 			m_key = key;
 		}
@@ -103,7 +93,7 @@ namespace Anubis
 
 	struct KeyDownMessage : public KeyboardMessage
 	{
-		explicit KeyDownMessage(const ACHAR key) : KeyboardMessage(key)
+		explicit KeyDownMessage(ACHAR key) : KeyboardMessage(key)
 		{
 			m_type = SMT_KeyDown;
 		}
@@ -111,7 +101,7 @@ namespace Anubis
 
 	struct KeyUpMessage : public KeyboardMessage
 	{
-		explicit KeyUpMessage(const ACHAR key) : KeyboardMessage(key)
+		explicit KeyUpMessage(ACHAR key) : KeyboardMessage(key)
 		{
 			m_type = SMT_KeyUp;
 		}
@@ -122,7 +112,7 @@ namespace Anubis
 		AREAL	m_posx;
 		AREAL	m_posy;
 
-		MouseMessage(const AREAL x, const AREAL y) 
+		MouseMessage(AREAL x, AREAL y) 
 		{
 			m_posx = x;
 			m_posy = y;
@@ -131,7 +121,7 @@ namespace Anubis
 
 	struct LMouseDownMessage : public MouseMessage
 	{
-		explicit LMouseDownMessage(const AREAL x, const AREAL y) : MouseMessage(x, y)
+		LMouseDownMessage(AREAL x, AREAL y) : MouseMessage(x, y)
 		{
 			m_type =	SMT_LMouseDown;
 		}
@@ -139,7 +129,7 @@ namespace Anubis
 
 	struct LMouseUpMessage : public MouseMessage
 	{
-		explicit LMouseUpMessage(const AREAL x, const AREAL y) : MouseMessage(x, y)
+		LMouseUpMessage(AREAL x, AREAL y) : MouseMessage(x, y)
 		{
 			m_type =	SMT_LMouseUp;
 		}
@@ -147,7 +137,7 @@ namespace Anubis
 
 	struct RMouseDownMessage : public MouseMessage
 	{
-		explicit RMouseDownMessage(const AREAL x, const AREAL y) : MouseMessage(x, y)
+		RMouseDownMessage(AREAL x, AREAL y) : MouseMessage(x, y)
 		{
 			m_type =	SMT_RMouseDown;
 		}
@@ -155,7 +145,7 @@ namespace Anubis
 
 	struct RMouseUpMessage : public MouseMessage
 	{
-		explicit RMouseUpMessage(const AREAL x, const AREAL y) : MouseMessage(x, y)
+		RMouseUpMessage(AREAL x, AREAL y) : MouseMessage(x, y)
 		{
 			m_type =	SMT_RMouseUp;
 		}
@@ -163,13 +153,10 @@ namespace Anubis
 
 	struct MouseMoveMessage : public MouseMessage
 	{
-		explicit MouseMoveMessage(const AREAL x, const AREAL y) : MouseMessage(x, y)
+		MouseMoveMessage(AREAL x, AREAL y) : MouseMessage(x, y)
 		{
 			m_type =	SMT_MouseMove;
 		}
 	};
 
 }; //Anubis
-
-//#define SCREEN_WIDTH 1920
-//#define SCREEN_HEIGHT 1080

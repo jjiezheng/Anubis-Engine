@@ -35,13 +35,13 @@ ABOOL RenderingDemo::VInitialize()
 	shared_ptr<FreeCameraController> m_pFreeCameraController = make_shared<FreeCameraController>(FreeCameraController());
 	shared_ptr<PlayerWASDController> m_pPlayerController = make_shared<PlayerWASDController>(PlayerWASDController());
 
-	//pView->SetMouseHandler(m_pFreeCameraController);
-	//pView->SetKeyboardHandler(m_pFreeCameraController);
-	//pView->SetController(m_pFreeCameraController);
+	pView->SetMouseHandler(m_pFreeCameraController);
+	pView->SetKeyboardHandler(m_pFreeCameraController);
+	pView->SetController(m_pFreeCameraController);
 
-	pView->SetMouseHandler(m_pPlayerController);
-	pView->SetKeyboardHandler(m_pPlayerController);
-	pView->SetController(m_pPlayerController);
+	//pView->SetMouseHandler(m_pPlayerController);
+	//pView->SetKeyboardHandler(m_pPlayerController);
+	//pView->SetController(m_pPlayerController);
 
 	//call base class initialization
 	return Game::VInitialize();

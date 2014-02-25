@@ -37,6 +37,15 @@
     <Filter Include="2D\Shaders">
       <UniqueIdentifier>{482ba229-cb24-4ec6-bc06-8c87183af0ee}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Text">
+      <UniqueIdentifier>{71c0c2da-b66e-4e24-8588-814d62a8cfa4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Terrain">
+      <UniqueIdentifier>{118da94f-d410-424b-b9d1-772caeb48b61}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Water">
+      <UniqueIdentifier>{d0e004e0-83ad-49d8-ba12-0451db6897c2}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\Renderer.h" />
@@ -102,6 +111,9 @@
     <ClInclude Include="Source\2D\GBuffer2D.h">
       <Filter>2D</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Text\TextResource.h">
+      <Filter>Text</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Renderer.cpp" />
@@ -164,6 +176,9 @@
     <ClCompile Include="Source\2D\GBuffer2D.cpp">
       <Filter>2D</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Text\TextResource.cpp">
+      <Filter>Text</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Source\Shaders\GBufferShader.hlsl">
@@ -197,6 +212,9 @@
     </None>
     <None Include="Source\2D\light_2d_pixel.hlsl">
       <Filter>2D\Shaders</Filter>
+    </None>
+    <None Include="..\RenderingDemo\Reduce_SH_coeff.hlsl">
+      <Filter>Shaders</Filter>
     </None>
   </ItemGroup>
 </Project>

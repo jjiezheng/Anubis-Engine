@@ -4,6 +4,8 @@
 #include "Application\Engine.h"
 #include "Entities\EntityResource.h"
 
+#include "Text\TextResource.h"
+
 using namespace Anubis;
 
 //Initialize game state
@@ -11,7 +13,7 @@ AVOID BoxTestState::VInitialize( Game * pGame, AUINTPTR uptrData)
 {
 	m_pScene->VInitialize();
 
-	EntityResource & box_resource = EntityResource("BoxEntity.xml");
+	/*EntityResource & box_resource = EntityResource("BoxEntity.xml");
 	EntityPtr pBox = pGame->VAddEntity(box_resource.VCreateEntity(pGame));
 	box_resource.VCreateRepresentation(m_pScene, pBox);
 	box_resource.VCreatePhysicalBody(g_pEngine->GetPhysics(), pBox);
@@ -25,13 +27,13 @@ AVOID BoxTestState::VInitialize( Game * pGame, AUINTPTR uptrData)
 	EntityPtr pPlane = pGame->VAddEntity(plane_resource.VCreateEntity(pGame));
 	plane_resource.VCreateRepresentation(m_pScene, pPlane);
 	plane_resource.VCreatePhysicalBody(g_pEngine->GetPhysics(), pPlane);
+	*/
+	//EntityResource & projector_resource = EntityResource("Light.xml");
+	//EntityPtr pProjector = pGame->VAddEntity(projector_resource.VCreateEntity(pGame));
+	//projector_resource.VCreateRepresentation(m_pScene, pProjector);
+	//projector_resource.VCreatePhysicalBody(g_pEngine->GetPhysics(), pProjector); 
 
-	EntityResource & projector_resource = EntityResource("Light.xml");
-	EntityPtr pProjector = pGame->VAddEntity(projector_resource.VCreateEntity(pGame));
-	projector_resource.VCreateRepresentation(m_pScene, pProjector);
-	projector_resource.VCreatePhysicalBody(g_pEngine->GetPhysics(), pProjector); 
-
-
+	/*
 	EntityResource & sphere_resource = EntityResource("StaticSphere.xml");
 	EntityPtr pSphere1 = pGame->VAddEntity(sphere_resource.VCreateEntity(pGame));
 	sphere_resource.VCreateRepresentation(m_pScene, pSphere1);
@@ -40,7 +42,7 @@ AVOID BoxTestState::VInitialize( Game * pGame, AUINTPTR uptrData)
 	EntityResource & logo_resource = EntityResource("StaticObstacle.xml");
 	EntityPtr pLogo = pGame->VAddEntity(logo_resource.VCreateEntity(pGame));
 	logo_resource.VCreateRepresentation(m_pScene, pLogo);
-	logo_resource.VCreatePhysicalBody(g_pEngine->GetPhysics(), pLogo); 
+	logo_resource.VCreatePhysicalBody(g_pEngine->GetPhysics(), pLogo); */
 
 	EntityResource & statue_resource = EntityResource("StaticObstacleTwo.xml");
 	EntityPtr pStatue = pGame->VAddEntity(statue_resource.VCreateEntity(pGame));
@@ -68,9 +70,9 @@ AVOID BoxTestState::VInitialize( Game * pGame, AUINTPTR uptrData)
 	m_lights.push_back(pProjector2);
 	m_lights.push_back(pProjector3); */
 	//m_lights.push_back(pProjectorex);
-	for (int i =1; i < 256; i++)
+	//for (int i =1; i < 256; i++)
 		//for (int j =0; j < 9; j++)
-	{
+	/*{
 		int n = i / 16;
 		int m = i % 16;
 		//m_pLightGeometryData[i].posANDrang = Vector(-50 + n*8, -12, -45 + m*8, 10);
@@ -82,10 +84,10 @@ AVOID BoxTestState::VInitialize( Game * pGame, AUINTPTR uptrData)
 
 		m_lights.push_back(pProjectorNew);
 	}
-	
-	EntityResource & player_resource = EntityResource("Player.xml");
+	*/
+	/*EntityResource & player_resource = EntityResource("Player.xml");
 	EntityPtr pPlayer = pGame->VAddEntity(player_resource.VCreateEntity(pGame));
-	player_resource.VCreateRepresentation(m_pScene, pPlayer); 
+	player_resource.VCreateRepresentation(m_pScene, pPlayer); */
 	//player_resource.VCreatePhysicalBody(g_pEngine->GetPhysics(), pPlayer); 
 
 	//pPlayer->SetController(pGame->GetPlayerView(0)->GetController());
@@ -109,6 +111,11 @@ AVOID BoxTestState::VInitialize( Game * pGame, AUINTPTR uptrData)
 	//	(AREAL)Pi / 8, (AREAL)Pi / 4, 30.0f);
 	//m_pLight = pGame->VAddEntity(spotLight_params.VCreateEntity(pGame));
 	//spotLight_params.VCreateRepresentation(m_pScene, m_pLight); 
+
+	Resource meshResource("times.ttf");
+	shared_ptr<ResHandle> pMeshes = Anubis::SafeGetHandle(&meshResource);
+	std::shared_ptr<TextResourceExtraData> pData = static_pointer_cast<TextResourceExtraData>(pMeshes->GetExtra());
+
 
 	m_lightVelocity = Vector(0.0f, -0.05f, 0.0f, 1.0f);
 }

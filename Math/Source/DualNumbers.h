@@ -44,8 +44,46 @@
 //
 //====================================================================================
 
-#include <math.h>
+#include <cmath>
+
+using namespace std;
 
 namespace Anubis
 {
+	template<typename T>
+	class Dual
+	{
+	public:
+		T real() const { return m_real; }
+		T dual() const { return m_dual; }
+
+		template<typename T>
+		Dual(T re = T(), T du = T()) : m_real(re), m_dual(du) 
+		{
+		}
+
+		template<typename T>
+		Dual(const Dual<T> & other)
+		{
+			m_real = other.real();
+			m_dual = other.dual();
+		}
+
+		template<typename T>
+		Dual(Dual<T> && other)
+		{
+			m_real = std::move(other.m_real);
+			m_dual = std::move(other.m_dual);
+		}
+
+	private:
+		T m_real;
+		T m_dual;
+	};
+
+	template<typename T>
+	Dual<T> operator*(const Dual<T> & a, const Dual<T> & b)
+	{
+		return Dual<T>(a.real() * b.real(), a.real() * b.dual() + a.dual() * b.real());
+	}
 }; //Anubis

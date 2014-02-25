@@ -212,7 +212,7 @@ ABOOL Renderer::VInitialize(HWND hWnd, AUINT32 width, AUINT32 height)
 	if (!m_pDepthDisableStencilDisable->Create(&depthStencilParams))		return false;
 
 	Texture2DParams dParams;
-	dParams.Init(SCREEN_WIDTH, SCREEN_HEIGHT, 1, DXGI_FORMAT_D24_UNORM_S8_UINT, false, false, false, true, 1, 0,
+	dParams.Init(SCREEN_WIDTH, SCREEN_HEIGHT, 1, DXGI_FORMAT_D24_UNORM_S8_UINT, false, false, false, true, 8, 1,
 				1, true, false, false);
 	if (!m_pDepthTexture->Create(&dParams))	return false;
 

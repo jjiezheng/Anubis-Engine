@@ -18,7 +18,7 @@ RWStructuredBuffer<float3> SH_Coeff;
 groupshared float partial_sum[threads_in_block][threads_in_block];
 
 [numthreads(threads_in_block, threads_in_block, 1)]
-void irradiance_map_SH(	uint3 groupId			: SV_GroupID,
+void irradiance_map_SH(			uint3 groupId			: SV_GroupID,
 								uint3 groupThreadId		: SV_GroupThreadID,
 								uint  groupIndex		: SV_GroupIndex,
 								uint3 dispatchThreadId	: SV_DispatchThreadID  )

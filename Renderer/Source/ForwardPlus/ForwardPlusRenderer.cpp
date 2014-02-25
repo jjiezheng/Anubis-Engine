@@ -309,7 +309,7 @@ ABOOL ForwardPlusRenderer::VInitialize(HWND hWnd, AUINT32 width, AUINT32 height)
 	tex2DParams.InitCubeTexture(512, 512, 1, TEX_R8G8B8A8_UNORM, true, false, false, false, 1, 0,
 		1, true, false, false);
 	//m_pSkyTexture->CreateFromFile(L"church_cubemap.dds");
-	m_pSkyTexture->CreateFromFile(L"test_cubemap_512.dds");
+	m_pSkyTexture->CreateFromFile(L"beach_cubemap_512.dds");
 
 	ShaderResourceViewParams srvSkyParams;
 	srvSkyParams.InitForCubeTexture(TEX_R8G8B8A8_UNORM, 1, 0);
@@ -566,7 +566,7 @@ AVOID ForwardPlusRenderer::VRenderSky(CameraPtr pCamera, const Mat4x4 & viewproj
 	SetRenderTargetView();
 
 	m_pSkyShaders->VBind();
-	//m_pAtmoShaders->VBind();
+	//m_pAtmoShaders->VBind(); 
 
 	Mat4x4 trans;
 	trans.CreateTranslation(pCamera->GetPosition());

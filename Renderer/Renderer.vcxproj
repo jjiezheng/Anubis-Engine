@@ -34,6 +34,7 @@
     <ClInclude Include="Source\RenderQueue.h" />
     <ClInclude Include="Source\Resources\MeshResource.h" />
     <ClInclude Include="Source\Resources\ShaderResource.h" />
+    <ClInclude Include="Source\Text\TextResource.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\2D\GBuffer2D.cpp" />
@@ -64,6 +65,7 @@
     </ClCompile>
     <ClCompile Include="Source\RenderQueue.cpp" />
     <ClCompile Include="Source\Resources\MeshResource.cpp" />
+    <ClCompile Include="Source\Text\TextResource.cpp" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="Source\Shaders\GBufferShader.hlsl">
@@ -87,6 +89,7 @@
   <ItemGroup>
     <None Include="..\RenderingDemo\Cubemap_SH_coeff.hlsl" />
     <None Include="..\RenderingDemo\IrradianceMap_FromSH.hlsl" />
+    <None Include="..\RenderingDemo\Reduce_SH_coeff.hlsl" />
     <None Include="Source\2D\gbuffer_2d_pixel.hlsl" />
     <None Include="Source\2D\light_2d_pixel.hlsl" />
     <None Include="Source\2D\Shaders\gbuffer_2d_vertex.hlsl" />
@@ -142,7 +145,7 @@
       <SDLCheck>true</SDLCheck>
       <PrecompiledHeaderFile>Renderer_pch.h</PrecompiledHeaderFile>
       <PrecompiledHeaderOutputFile>Renderer_pch.pch</PrecompiledHeaderOutputFile>
-      <AdditionalIncludeDirectories>$(SolutionDir)Scene\Source;D:\Program Files %28x86%29\Microsoft DirectX SDK %28June 2010%29\Include;$(SolutionDir)Definitions\Source;$(SolutionDir)Graphics\Source;../../ThirdParty/Assimp/include;$(SolutionDir)Renderer\Source;$(SolutionDir)ResourceManager\Source</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)Scene\Source;D:\Program Files %28x86%29\Microsoft DirectX SDK %28June 2010%29\Include;$(SolutionDir)Definitions\Source;$(SolutionDir)Graphics\Source;../../ThirdParty/freetype-2.5.2/include;../../ThirdParty/Assimp/include;$(SolutionDir)Renderer\Source;$(SolutionDir)ResourceManager\Source</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -165,7 +168,7 @@
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;RENDERER_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeaderFile>Renderer_pch.h</PrecompiledHeaderFile>
       <PrecompiledHeaderOutputFile>Renderer_pch.pch</PrecompiledHeaderOutputFile>
-      <AdditionalIncludeDirectories>$(SolutionDir)Scene\Source;D:\Program Files %28x86%29\Microsoft DirectX SDK %28June 2010%29\Include;$(SolutionDir)Definitions\Source;$(SolutionDir)Graphics\Source;../../ThirdParty/Assimp/include;$(SolutionDir)Renderer\Source;$(SolutionDir)ResourceManager\Source</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)Scene\Source;D:\Program Files %28x86%29\Microsoft DirectX SDK %28June 2010%29\Include;$(SolutionDir)Definitions\Source;$(SolutionDir)Graphics\Source;../../ThirdParty/freetype-2.5.2/include;../../ThirdParty/Assimp/include;$(SolutionDir)Renderer\Source;$(SolutionDir)ResourceManager\Source</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>

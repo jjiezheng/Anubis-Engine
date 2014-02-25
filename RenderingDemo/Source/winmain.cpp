@@ -15,6 +15,9 @@
 #include "Game\DemoStateFactory.h"
 #include "Game\States\BoxTestState.h"
 #include "Resources\MeshResource.h"
+#include "Text\TextResource.h"
+
+#include "../../Math/Source/DualNumbers.h"
 
 using namespace Anubis;
 
@@ -67,7 +70,9 @@ int WINAPI wWinMain(	HINSTANCE hInstance,
 
 	//add resource loaders
 	IResourceLoader* pObjLoader = new ObjResourceLoader();
+	IResourceLoader* pTtfLoader = new TextResourceLoader();
 	g_pCache->RegisterLoader(shared_ptr<IResourceLoader>(pObjLoader));
+	g_pCache->RegisterLoader(shared_ptr<IResourceLoader>(pTtfLoader));
 
 	/* === Initialize main engine components === */
 	g_pEngine->InitializeComponents(nullptr, g_pRenderer, g_pPhysics, g_pMessenger, g_pCache);

@@ -147,8 +147,8 @@ AVOID Mesh::VPreRender(Renderer *pRenderer, const Mat4x4 & view, const Mat4x4 & 
 		m_pNormals->Set(2, 0);
 
 	//set material
-	//m_pMaterial->Set(5);
-	m_pMaterial->Set(0);
+	m_pMaterial->Set(5);
+	//m_pMaterial->Set(0);
 
 	//set shaders
 	//if (m_pShaders)
@@ -162,7 +162,7 @@ AVOID Mesh::VRender(Renderer * pRenderer)
 
 AVOID Mesh::VPostRender(Renderer * pRenderer)
 {
-	//m_pMaterial->Unbind();
+	m_pMaterial->Unbind();
 }
 
 AVOID Mesh::SetPositionBuffer()
@@ -183,6 +183,46 @@ AVOID Mesh::SetNormalsBuffer()
 AVOID Mesh::SetMaterial()
 {
 	m_pMaterial->Set(0);
+}
+
+//////////////////////////////////////////////
+//Text Mesh
+TextMesh::~TextMesh()
+{
+	SAFE_DELETE(m_pInside);
+	SAFE_DELETE(m_pConvex);
+	SAFE_DELETE(m_pConcave);
+
+	SAFE_DELETE(m_pVS);
+	SAFE_DELETE(m_pInsidePS);
+	SAFE_DELETE(m_pConvexPS);
+	SAFE_DELETE(m_pConcavePS);
+}
+
+AVOID TextMesh::VPreRender(Renderer *pRenderer, const Mat4x4 & view, const Mat4x4 & viewprojection)
+{
+	Mesh::VPreRender(pRenderer, view, viewprojection);
+
+	m_pVS->Set();
+}
+
+AVOID TextMesh::VRender(Renderer* pRenderer)
+{
+	m_pInside->Set(0);
+	m_pInsidePS->Set();
+	DrawIndexed(m_pInside->Count(), 0, 0);
+
+	m_pConvex->Set(0);
+	m_pConvexPS->Set();
+	DrawIndexed(m_pConvex->Count(), 0, 0);
+
+	m_pConcave->Set(0);
+	m_pConcavePS->Set();
+	DrawIndexed(m_pConcave->Count(), 0, 0);
+}
+
+AVOID TextMesh::VRenderZPass(Renderer* pRenderer, const Mat4x4 & view, const Mat4x4 & viewProj)
+{
 }
 
 //////////////////////////////////////////////

@@ -108,7 +108,7 @@ namespace Anubis
 		/*==
 		//Updating methods
 		==*/
-		AVIRTUAL AVOID		VUpdate(const AREAL64 r64Time, const AREAL64 r64ElapsedTime);
+		AVIRTUAL AVOID		VUpdate(AREAL64 r64Time, AREAL64 r64ElapsedTime);
 
 		/*==
 		//Rendering methods
@@ -122,11 +122,11 @@ namespace Anubis
 		//Entities management
 		==*/
 		AVIRTUAL EntityPtr	VAddEntity(EntityPtr pEntity);
-		AVIRTUAL EntityPtr	VGetEntity(const EntityId id);
-		AVIRTUAL ABOOL		VRemoveEntity(const EntityId id);
+		AVIRTUAL EntityPtr	VGetEntity(EntityId id);
+		AVIRTUAL ABOOL		VRemoveEntity(EntityId id);
 
 		//Update entity transform matrix
-		AVIRTUAL AVOID		VUpdateEntity(const EntityId id, Mat4x4 const & transform, AREAL64 r64CurrentTime);
+		AVIRTUAL AVOID		VUpdateEntity(EntityId id, Mat4x4 const & transform, AREAL64 r64CurrentTime);
 		AINLINE  EntityId	GetNewEntityId() { return ++m_lastEntityId; }
 
 		/*==
@@ -142,6 +142,6 @@ namespace Anubis
 		const	 Views *	 GetViews() const { return &m_views; }
 
 		AVOID		  AddPlayerView(shared_ptr<PlayerView> pView);
-		PlayerViewPtr GetPlayerView(const AINT32 player);
+		PlayerViewPtr GetPlayerView(AINT32 player);
 	};
 }; //Anubis

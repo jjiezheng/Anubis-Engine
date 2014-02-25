@@ -109,7 +109,7 @@ using namespace Anubis;
 	return mat;
 } */
 
-Mat4x4 Mat4x4::CreateTranslation(const Vec & vec)
+Mat4x4 & Mat4x4::CreateTranslation(const Vec & vec)
 {
 	rows[0] = Vector(1, 0, 0, 0);
 	rows[1] = Vector(0, 1, 0, 0);
@@ -149,7 +149,7 @@ Mat4x4 Mat4x4::CreateRotationZ(AREAL angleInRadians)
 	return *this;
 }
 
-Mat4x4 Mat4x4::CreateScaling(Vec & scale)
+Mat4x4 & Mat4x4::CreateScaling(Vec & scale)
 {
 	rows[0] = Vector(getx(scale), 0, 0, 0);
 	rows[1] = Vector(0, gety(scale), 0, 0);
@@ -159,7 +159,7 @@ Mat4x4 Mat4x4::CreateScaling(Vec & scale)
 	return *this;
 }
 
-Mat4x4 Mat4x4::CreateScaling(AREAL x, AREAL y, AREAL z)
+Mat4x4 & Mat4x4::CreateScaling(AREAL x, AREAL y, AREAL z)
 {
 	rows[0] = Vector(x, 0, 0, 0);
 	rows[1] = Vector(0, y, 0, 0);

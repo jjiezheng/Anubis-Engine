@@ -172,7 +172,7 @@ AVOID Engine::InitializeComponents(IAudio* pAudio, Renderer* pRenderer, IPhysics
 	//Add cameras to the renderer
 
 	const Views * pViews = m_pGame->GetViews();
-	for (auto it = pViews->begin(); it != pViews->end(); it++)
+	for (auto it = begin(*pViews); it != end(*pViews); ++it)
 	{
 		if ((*it)->VHasCamera())
 		{

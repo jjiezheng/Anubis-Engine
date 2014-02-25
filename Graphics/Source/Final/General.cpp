@@ -79,8 +79,8 @@ ABOOL Anubis::InitializeGraphics(HWND hwnd, AUINT32 width, AUINT32 height)
 	ZeroMemory(&swapChainDesc, sizeof(DXGI_SWAP_CHAIN_DESC)); //zero memory for the structure
 
 	swapChainDesc.BufferDesc = bufferDesc; //set created back buffer
-	swapChainDesc.SampleDesc.Count = 1;
-	swapChainDesc.SampleDesc.Quality = 0;
+	swapChainDesc.SampleDesc.Count = 8;
+	swapChainDesc.SampleDesc.Quality = 1;
 	swapChainDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT; //use back buffer as render target
 	swapChainDesc.BufferCount = 1;
 	swapChainDesc.OutputWindow = hwnd; 
@@ -90,8 +90,8 @@ ABOOL Anubis::InitializeGraphics(HWND hwnd, AUINT32 width, AUINT32 height)
 
 	//=============================
 	//Create swap chain
-	//D3D_FEATURE_LEVEL pLevel = D3D_FEATURE_LEVEL_11_0; //set feature desired feature level
-	D3D_FEATURE_LEVEL pLevel = D3D_FEATURE_LEVEL_10_0;
+	D3D_FEATURE_LEVEL pLevel = D3D_FEATURE_LEVEL_11_0; //set feature desired feature level
+	//D3D_FEATURE_LEVEL pLevel = D3D_FEATURE_LEVEL_10_0;
 	//D3D11_CREATE_DEVICE_DEBUG
 	HRESULT hr = D3D11CreateDeviceAndSwapChain(NULL, D3D_DRIVER_TYPE_HARDWARE, NULL, D3D11_CREATE_DEVICE_DEBUG, &pLevel, 1,
 		D3D11_SDK_VERSION, &swapChainDesc, &g_SwapChain, &g_d3d11Device, NULL, &g_d3d11DeviceContext);

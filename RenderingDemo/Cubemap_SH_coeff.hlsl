@@ -6,13 +6,6 @@ Texture2D<float4> cubemap_negy	:	register( t3 );
 Texture2D<float4> cubemap_posz	:	register( t4 );
 Texture2D<float4> cubemap_negz	:	register( t5 );
 
-//RWTexture2D<float4> irradiance_posx	:	register( u0 );
-//RWTexture2D<float4> irradiance_negx	:	register( u1 );
-//RWTexture2D<float4> irradiance_posy	:	register( u2 );
-//RWTexture2D<float4> irradiance_negy	:	register( u3 );
-//RWTexture2D<float4> irradiance_posz	:	register( u4 );
-//RWTexture2D<float4> irradiance_negz	:	register( u5 );
-
 #define cube_size 512
 
 #define Pi 3.14159265359
@@ -28,18 +21,18 @@ groupshared float partial_sum[threads_in_block][threads_in_block];
 
 float calc_SH_value(in uint index, in float phi, in float theta)
 {
-	if      (index == 0) return 0.282095;
-	else if (index == 1) return 0.488603*sin(theta)*sin(phi);
-	else if (index == 2) return 0.488603*cos(theta);
-	else if (index == 3) return 0.488603*sin(theta)*cos(phi);
-	else if (index == 4) return 1.092548*sin(theta)*sin(theta)*cos(phi)*sin(phi);
-	else if (index == 5) return 1.092548*sin(theta)*sin(phi)*cos(phi);
-	else if (index == 6) return 0.315392*(3*cos(theta)*cos(theta)-1);
-	else if (index == 7) return 1.092548*sin(theta)*cos(theta)*cos(phi);
-	else if (index == 8) return 0.546274*sin(theta)*sin(theta)*(cos(phi)*cos(phi)-sin(phi)*sin(phi));
+	if      (index == 0) return 0.282095; //Y0_0
+	else if (index == 1) return 0.488603*sin(theta)*sin(phi); //Y1_-1
+	else if (index == 2) return 0.488603*cos(theta); //Y1_0
+	else if (index == 3) return 0.488603*sin(theta)*cos(phi); //Y1_1
+	else if (index == 4) return 1.092548*sin(theta)*sin(theta)*cos(phi)*sin(phi); //Y2_-2
+	else if (index == 5) return 1.092548*sin(theta)*sin(phi)*cos(phi); //Y2_-1
+	else if (index == 6) return 0.315392*(3*cos(theta)*cos(theta)-1); //Y2_0
+	else if (index == 7) return 1.092548*sin(theta)*cos(theta)*cos(phi); //Y2_1
+	else if (index == 8) return 0.546274*sin(theta)*sin(theta)*(cos(phi)*cos(phi)-sin(phi)*sin(phi)); //Y2_2
 }
 
-[numthreads(threads_in_block, threads_in_block, 1)]
+[numthreads(threads_in_block, threads_in_block, 9)]
 void generate_spherical_coeff(	uint3 groupId			: SV_GroupID,
 								uint3 groupThreadId		: SV_GroupThreadID,
 								uint  groupIndex		: SV_GroupIndex,
@@ -50,8 +43,9 @@ void generate_spherical_coeff(	uint3 groupId			: SV_GroupID,
 	   --------------------------------------------------- */
 	uint index_x = groupThreadId.x;
 	uint index_y = groupThreadId.y;
+	uint sh_index = groupThreadId.z;
 
-	//Calculate all partial sums and wroite thrm to shared memory
+	//Calculate all partial sums and write them to shared memory
 	partial_sum[index_x][index_y] = (float3)0;
 	uint num_blocks = cube_size / threads_in_block;
 	for (uint i = 0; i < num_blocks; i += threads_in_block)
@@ -68,11 +62,11 @@ void generate_spherical_coeff(	uint3 groupId			: SV_GroupID,
 
 			//get radiance value from each face of cubemap
 			float3 pos_x = cubemap_posx.Load(uint3(cube_index_x, cube_index_y, 0)).xyz;
-			float3 neg_x = cubemap_posx.Load(uint3(cube_index_x, cube_index_y, 0)).xyz;
-			float3 pos_y = cubemap_posx.Load(uint3(cube_index_x, cube_index_y, 0)).xyz;
-			float3 neg_y = cubemap_posx.Load(uint3(cube_index_x, cube_index_y, 0)).xyz;
-			float3 pos_z = cubemap_posx.Load(uint3(cube_index_x, cube_index_y, 0)).xyz;
-			float3 neg_z = cubemap_posx.Load(uint3(cube_index_x, cube_index_y, 0)).xyz;
+			float3 neg_x = cubemap_negx.Load(uint3(cube_index_x, cube_index_y, 0)).xyz;
+			float3 pos_y = cubemap_posy.Load(uint3(cube_index_x, cube_index_y, 0)).xyz;
+			float3 neg_y = cubemap_negy.Load(uint3(cube_index_x, cube_index_y, 0)).xyz;
+			float3 pos_z = cubemap_posz.Load(uint3(cube_index_x, cube_index_y, 0)).xyz;
+			float3 neg_z = cubemap_negz.Load(uint3(cube_index_x, cube_index_y, 0)).xyz;
 
 			//calculate angles value
 			float pos_x_phi; 
@@ -118,8 +112,7 @@ void generate_spherical_coeff(	uint3 groupId			: SV_GroupID,
 			float neg_z_phi = lerp(7*Pi_over_4, 5*Pi_over_4, coeff_phi);
 			float neg_z_theta = lerp(Pi_over_4, 3*Pi_over_4, coeff_theta);
 
-			//calulate spherica harmonics coefficients
-			uint sh_index = groupId.z;
+			//calulate spherical harmonics coefficients
 			float SH_value_posx = calc_SH_value(sh_index, pos_x_phi, pos_x_theta);
 			float SH_value_negx = calc_SH_value(sh_index, neg_x_phi, neg_x_theta);
 			float SH_value_posy = calc_SH_value(sh_index, pos_y_phi, pos_y_theta);
@@ -137,15 +130,19 @@ void generate_spherical_coeff(	uint3 groupId			: SV_GroupID,
 		}
 	}
 
+	//synchronize
+	GroupMemoryBarrierWithGroupSync();
+
 	//Let one thread to sum up all results in the group
 	if (index_x == 0 && index_y == 0)
 	{
-		SH_Coeff[groupIndex] = 0;
+		uint index = groupIndex*num_coeff + sh_index;
+		SH_Coeff[index] = 0;
 		for (uint i = 0; i < threads_in_block; i++)  
 		{
 			for (uint j = 0; j < threads_in_block; j++)
 			{
-				SH_Coeff[groupIndex] += partial_sum[i][j];
+				SH_Coeff[index] += partial_sum[i][j];
 			}
 		}
 	}

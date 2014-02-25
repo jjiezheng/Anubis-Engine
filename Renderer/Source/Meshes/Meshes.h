@@ -120,6 +120,59 @@ namespace Anubis
 	typedef shared_ptr<Mesh> MeshPtr;
 	typedef vector<MeshPtr> Meshes;
 
+	class TextMesh : public Mesh
+	{
+		friend class TextResourceLoader;
+
+	protected:
+		IndexBuffer*	m_pInside;
+		IndexBuffer*	m_pConvex;
+		IndexBuffer*	m_pConcave;
+
+		VertexShader*	m_pVS;
+		PixelShader*	m_pInsidePS;
+		PixelShader*	m_pConvexPS;
+		PixelShader*	m_pConcavePS;
+
+	public:
+		TextMesh() : Mesh()
+		{
+			m_pInside = nullptr;
+			m_pConvex = nullptr;
+			m_pConcave = nullptr;
+
+			//initialize input layout 
+			INPUT_LAYOUT layout[] =
+			{
+				{ "POSITION", 0, TEX_R32G32B32_FLOAT, 0, 0,  IA_PER_VERTEX_DATA, 0},
+				{ "TEXCOORDS", 0, TEX_R32G32_FLOAT,	  1, 0,  IA_PER_VERTEX_DATA, 0},
+				{ "NORMAL",   0, TEX_R32G32B32_FLOAT, 2, 0,  IA_PER_VERTEX_DATA, 0},
+				{ "TANGENT", 0, TEX_R32G32B32_FLOAT, 2, 12, IA_PER_VERTEX_DATA, 0},
+				{ "BINORMAL",  0, TEX_R32G32B32_FLOAT, 2, 24, IA_PER_VERTEX_DATA, 0},
+			};
+
+			//Initialize shaders
+			m_pInside = new IndexBuffer();
+			m_pConvex = new IndexBuffer();
+			m_pConcave = new IndexBuffer();
+
+			m_pVS = new VertexShader();
+			m_pInsidePS = new PixelShader();
+			m_pConvexPS = new PixelShader();
+			m_pConcavePS = new PixelShader();
+		}
+		virtual ~TextMesh();
+
+		/** Rendering methods **/
+		AVOID VPreRender(Renderer *pRenderer, const Mat4x4 & view, const Mat4x4 & viewprojection);		//change pipeline state if needed
+		AVOID VRender(Renderer * pRenderer);		//render the mesh
+
+		//AVOID SetIndexBuffer();
+	
+		AVOID VRenderZPass(Renderer* pRenderer, const Mat4x4 & view, const Mat4x4 & viewProj);
+		AVOID GenerateShadowMap();
+	};
+
 	class IndexedMesh : public Mesh
 	{
 		friend class ObjResourceLoader;
@@ -144,8 +197,8 @@ namespace Anubis
 
 			//Initialize shaders
 			m_pShaders = new ShaderBunch();
-			m_pShaders->VSetVertexShader(L"Shaders//gbuffer_2d_vertex.hlsl", "VS", layout, 5, TOPOLOGY_TRIANGLELIST, "vs_4_0_level_9_3");
-			m_pShaders->VSetPixelShader(L"Shaders//gbuffer_2d_pixel.hlsl", "PS", "ps_4_0_level_9_3");
+//			m_pShaders->VSetVertexShader(L"Shaders//gbuffer_2d_vertex.hlsl", "VS", layout, 5, TOPOLOGY_TRIANGLELIST, "vs_4_0_level_9_3");
+	//		m_pShaders->VSetPixelShader(L"Shaders//gbuffer_2d_pixel.hlsl", "PS", "ps_4_0_level_9_3");
 		}
 		virtual ~IndexedMesh();
 
