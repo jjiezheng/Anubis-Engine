@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Actor>
   <Transform>
-    <Position x="-70" y="-6" z="70" />
+    <Position x="0" y="700" z="-500" />
     <Orientation axisx="0" axisy="1" axisz="0" degrees="0" />
   </Transform>
   <PhysicsComponent>
@@ -12,11 +12,11 @@
 	</BoxComponent> -->
   </PhysicsComponent> 
   <GraphicsComponent>
-	<!--<BoxComponent x="0.5" y="0.5" z="0.5">
+	<!--<BoxComponent x="60" y="60" z="60">
 		<Material>Bricks</Material>
 	</BoxComponent>  -->
-    <PointLightComponent range="40" >
-		<Color r="0.9" g="0.9" b="1.0" />
+    <PointLightComponent range="500" >
+		<Color r="1.0" g="1.0" b="1.0" />
 	</PointLightComponent> 
 	<!--<SpotLightComponent range="60" innerAngle="30" outerAngle="70" >
 		<Color r="1.0" g="1.0" b="1.0" />

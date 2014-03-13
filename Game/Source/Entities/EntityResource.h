@@ -48,10 +48,12 @@
 #include "../../../Math/Source/Quaternion.h"
 
 #include "../GameLogic/Game.h"
-#include "PhysicsInterface.h"
-#include "Havok\Havok.h"
+#include "../../Physics/Source/PhysicsInterface.h"
+//#include "PhysicsInterface.h"
+#include "../../Physics/Source/Havok\Havok.h"
 #include "Representations\Representation.h"
-#include "Data\XML\tinyxml.h"
+//#include "Data\XML\tinyxml.h"
+#include "../../FileStream/Source\Data\XML\tinyxml.h"
 
 namespace Anubis
 {

@@ -49,6 +49,8 @@
 #include "../Cameras/Camera.h"
 #include "../RenderQueue.h"
 
+#define VOXEL_GRID_SIZE 32
+
 namespace Anubis
 {
 	class ForwardPlusRenderer : public Renderer
@@ -144,6 +146,26 @@ namespace Anubis
 		//RenderTargetView*	m_pIrradianceRTV;
 		RenderTargetView* m_pIrradianceRTV[6];
 
+		////////////////////////////////////
+		//Voxelized global illumination
+		unique_ptr<StructuredBuffer> m_voxelGrid;
+		unique_ptr<ShaderResourceView> m_voxelGridSRV;
+		unique_ptr<UnorderedAccessView> m_voxelGridUAV;
+
+		unique_ptr<Texture2D> m_voxelTexture;
+		unique_ptr<RenderTargetView> m_voxelTextureRTV;
+
+		unique_ptr<Texture2D> m_redVoxelSH;
+		unique_ptr<Texture2D> m_greenVoxelSH;
+		unique_ptr<Texture2D> m_blueVoxelSH;
+
+		INPUT_LAYOUT*	m_pVoxelizationLayout;
+		unique_ptr<ShaderBunchVGP> m_voxelizationShaders;
+		unique_ptr<ShaderBunch> m_voxelRenderingShaders;
+		Viewport m_voxelViewport;
+
+		Viewport m_viewport;
+
 	public:
 		/***		=====		***
 		 Constructor and Destructor
@@ -160,6 +182,10 @@ namespace Anubis
 
 		/***	Update Render State		***/
 		AVOID VUpdate(const AUINT32 deltaMilliseconds);
+
+		/**		Voxelization Pass ***/
+		AVOID Voxelize(const Mat4x4 & viewproj);
+		AVOID RenderGrid(const Mat4x4 & viewproj);
 
 		/***	Render Scene	***
 		**************************/

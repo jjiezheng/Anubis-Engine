@@ -44,6 +44,9 @@
     <Filter Include="Shaders\Atmosphere">
       <UniqueIdentifier>{f54d1d43-aebd-4cdb-a4cf-13516b4a8270}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Shaders\Voxelized GI">
+      <UniqueIdentifier>{0f25c4a6-010a-48f8-a50d-fef62ab0114c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\Entities\BoxEntity.xml">
@@ -90,6 +93,24 @@
     </None>
     <None Include="Source\Shaders\TextPixel.hlsl">
       <Filter>Shaders</Filter>
+    </None>
+    <None Include="Shaders\GlobalIllumination.hlsli">
+      <Filter>Shaders\Voxelized GI</Filter>
+    </None>
+    <None Include="Shaders\VoxelGridGS.hlsl">
+      <Filter>Shaders\Voxelized GI</Filter>
+    </None>
+    <None Include="Shaders\VoxelGridPS.hlsl">
+      <Filter>Shaders\Voxelized GI</Filter>
+    </None>
+    <None Include="Shaders\VoxelGridRenderingPS.hlsl">
+      <Filter>Shaders\Voxelized GI</Filter>
+    </None>
+    <None Include="Shaders\VoxelGridRenderingVS.hlsl">
+      <Filter>Shaders\Voxelized GI</Filter>
+    </None>
+    <None Include="Shaders\VoxelGridVS.hlsl">
+      <Filter>Shaders\Voxelized GI</Filter>
     </None>
   </ItemGroup>
 </Project>

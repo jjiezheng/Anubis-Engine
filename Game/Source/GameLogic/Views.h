@@ -45,7 +45,7 @@
 //====================================================================================
 
 #include "Renderer.h"
-#include "Messenger.h"
+//#include "Messenger.h"
 #include "Widget.h"
 
 #include "../../Input/Source/Devices.h"

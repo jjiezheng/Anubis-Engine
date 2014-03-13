@@ -84,6 +84,12 @@ ABOOL RenderTargetViewParamsDX11::InitForTexture2DArray( AUINT32 arraySize,
 /** ==
 	RenderTargetViewDX11
 == **/
+AVOID RenderTargetViewDX11::SetWithUAV(AUINT32 uavStartSlot, AUINT32 uavNum,
+									   ID3D11UnorderedAccessView * const * ppUnorderedAccessViews, const AUINT32 * pUAVInitialCounts)
+{
+	D3D11DeviceContext()->OMSetRenderTargetsAndUnorderedAccessViews(1, &m_pView, nullptr, uavStartSlot, uavNum, ppUnorderedAccessViews, pUAVInitialCounts);
+}
+
 AVOID RenderTargetViewDX11::Set(const DepthStencilViewDX11 & depthview) const
 {
 	D3D11DeviceContext()->OMSetRenderTargets(1, &m_pView, depthview.m_pView);

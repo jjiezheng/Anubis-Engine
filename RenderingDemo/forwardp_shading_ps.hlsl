@@ -186,6 +186,7 @@ float4 shading_ps(ps_input input) : SV_TARGET
 	//depth		=	depthTexture.Load(sampleCoords).x;
 	//float3 diffuse	=	diffuseMap.Load(input.texCoords).xyz;
 	float3 diffuse = diffuseMap.Sample(anisotropicSampler, input.texCoords).xyz;
+		//return float4(diffuse, 1.0f);
 	//float3 diffuse	= float3(1.0f, 1.0f, 1.0f);
 
 	//float4 specular	=	specularMap.Load(input.texCoords);

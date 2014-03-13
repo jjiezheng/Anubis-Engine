@@ -650,7 +650,7 @@ AVOID Renderer2D::PrepareForLightPass(CameraPtr pCamera)
 	Mat4x4 rot;
 	rot = rot.CreateRollPitchYaw(pCamera->GetRoll(), pCamera->GetPitch(), pCamera->GetYaw());
 
-	Mat4x4 WVP = rot * trans * pCamera->GetView() * CreateOrthoProjectionLH(SCREEN_WIDTH, SCREEN_HEIGHT, 1.0f, 500.0f);
+	Mat4x4 WVP = rot * trans * pCamera->GetView() * CreateOrthoProjectionLH(SCREEN_WIDTH, SCREEN_HEIGHT, 1.0f, 10000.0f);
 	WVP.Transpose();
 	m_pMatrixBuffer->UpdateSubresource(0, NULL, &WVP, 0, 0);
 	m_pMatrixBuffer->Set(0, ST_Vertex);

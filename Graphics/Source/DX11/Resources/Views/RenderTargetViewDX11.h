@@ -73,6 +73,7 @@ namespace Anubis
 
 		~RenderTargetViewDX11() { SAFE_RELEASE(m_pView); }
 
+		AVOID SetWithUAV(AUINT32 uavStartSlot, AUINT32 uavNum, ID3D11UnorderedAccessView * const *, const AUINT32 *);
 		AVOID Set(const DepthStencilViewDX11 & depthview) const;
 		AVOID Set(const DepthStencilViewDX11* pDepthStencilView) const;
 		AVOID Set() const;

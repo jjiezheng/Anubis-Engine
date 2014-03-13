@@ -69,6 +69,7 @@ namespace Anubis
 		//Vertex buffers
 		VertexBuffer*	m_pVertices;
 		VertexBuffer*	m_pTexCoords;
+		VertexBuffer*	m_pSimpleNormals;
 		VertexBuffer*	m_pNormals;
 
 		Material*		m_pMaterial;
@@ -114,6 +115,9 @@ namespace Anubis
 		AVOID GenerateShadowMap();
 		AVIRTUAL AVOID VRenderZPass(Renderer* pRenderer, const Mat4x4 & view, const Mat4x4 & viewProj);
 		AVIRTUAL AVOID VGenerateEnvironmentalMap() {}
+
+		AVIRTUAL AVOID VRenderGrid(Renderer* pRenderer, const Mat4x4 & viewProj);
+		AVIRTUAL AVOID VVoxelize(Renderer* pRenderer, const Mat4x4 viewProj);
 	};
 
 	//useful typedefs
@@ -210,6 +214,9 @@ namespace Anubis
 	
 		AVOID VRenderZPass(Renderer* pRenderer, const Mat4x4 & view, const Mat4x4 & viewProj);
 		AVOID GenerateShadowMap();
+
+		AVOID VRenderGrid(Renderer* pRenderer, const Mat4x4 & viewProj);
+		AVOID VVoxelize(Renderer* pRenderer, const Mat4x4 viewProj);
 	};
 
 	class ReflectiveMesh : public IndexedMesh

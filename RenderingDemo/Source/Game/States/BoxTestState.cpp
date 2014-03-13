@@ -28,10 +28,10 @@ AVOID BoxTestState::VInitialize( Game * pGame, AUINTPTR uptrData)
 	plane_resource.VCreateRepresentation(m_pScene, pPlane);
 	plane_resource.VCreatePhysicalBody(g_pEngine->GetPhysics(), pPlane);
 	*/
-	//EntityResource & projector_resource = EntityResource("Light.xml");
-	//EntityPtr pProjector = pGame->VAddEntity(projector_resource.VCreateEntity(pGame));
-	//projector_resource.VCreateRepresentation(m_pScene, pProjector);
-	//projector_resource.VCreatePhysicalBody(g_pEngine->GetPhysics(), pProjector); 
+	EntityResource & projector_resource = EntityResource("Light.xml");
+	EntityPtr pProjector = pGame->VAddEntity(projector_resource.VCreateEntity(pGame));
+	projector_resource.VCreateRepresentation(m_pScene, pProjector);
+	projector_resource.VCreatePhysicalBody(g_pEngine->GetPhysics(), pProjector); 
 
 	/*
 	EntityResource & sphere_resource = EntityResource("StaticSphere.xml");
@@ -44,10 +44,24 @@ AVOID BoxTestState::VInitialize( Game * pGame, AUINTPTR uptrData)
 	logo_resource.VCreateRepresentation(m_pScene, pLogo);
 	logo_resource.VCreatePhysicalBody(g_pEngine->GetPhysics(), pLogo); */
 
-	EntityResource & statue_resource = EntityResource("StaticObstacleTwo.xml");
+	EntityResource & plane_resource = EntityResource("Plane.xml");
+	EntityPtr pPlane = pGame->VAddEntity(plane_resource.VCreateEntity(pGame));
+	plane_resource.VCreateRepresentation(m_pScene, pPlane);
+	plane_resource.VCreatePhysicalBody(g_pEngine->GetPhysics(), pPlane);
+
+	/*EntityResource & statue_resource = EntityResource("StaticObstacleTwo.xml");
 	EntityPtr pStatue = pGame->VAddEntity(statue_resource.VCreateEntity(pGame));
 	statue_resource.VCreateRepresentation(m_pScene, pStatue);
-	statue_resource.VCreatePhysicalBody(g_pEngine->GetPhysics(), pStatue); 
+	statue_resource.VCreatePhysicalBody(g_pEngine->GetPhysics(), pStatue);  */
+
+	EntityResource & sponza_resource = EntityResource("Sponza.xml");
+	EntityPtr pSponza = pGame->VAddEntity(sponza_resource.VCreateEntity(pGame));
+	sponza_resource.VCreateRepresentation(m_pScene, pSponza);
+	sponza_resource.VCreatePhysicalBody(g_pEngine->GetPhysics(), pSponza); 
+
+	Mat4x4 transform;
+	transform.CreateScaling(0.7f, 0.7f, 0.7f);
+	pSponza->SetCurrentTransform(transform, g_pEngine->GameTimeInSeconds());
 	
 
 	/*projector_resource.m_vOffset = projector_resource.m_vOffset - Vector(0, 0, 20, 0);
@@ -70,21 +84,21 @@ AVOID BoxTestState::VInitialize( Game * pGame, AUINTPTR uptrData)
 	m_lights.push_back(pProjector2);
 	m_lights.push_back(pProjector3); */
 	//m_lights.push_back(pProjectorex);
-	//for (int i =1; i < 256; i++)
-		//for (int j =0; j < 9; j++)
-	/*{
-		int n = i / 16;
-		int m = i % 16;
+	for (int i = 0; i < 5; i++)
+		for (int j =0; j < 5; j++)
+	{
+		int n = i;// / 16;
+		int m = j;// % 16;
 		//m_pLightGeometryData[i].posANDrang = Vector(-50 + n*8, -12, -45 + m*8, 10);
 
-		projector_resource.m_vOffset = Vector(n*22, 0.0, -m*22, 0.0f);
+		projector_resource.m_vOffset = Vector(0.0f, -m*230, n*200, 0.0f);
 		EntityPtr pProjectorNew = pGame->VAddEntity(projector_resource.VCreateEntity(pGame));
 		projector_resource.VCreateRepresentation(m_pScene, pProjectorNew);
 		projector_resource.VCreatePhysicalBody(g_pEngine->GetPhysics(), pProjectorNew); 
 
-		m_lights.push_back(pProjectorNew);
+		//m_lights.push_back(pProjectorNew);
 	}
-	*/
+	
 	/*EntityResource & player_resource = EntityResource("Player.xml");
 	EntityPtr pPlayer = pGame->VAddEntity(player_resource.VCreateEntity(pGame));
 	player_resource.VCreateRepresentation(m_pScene, pPlayer); */

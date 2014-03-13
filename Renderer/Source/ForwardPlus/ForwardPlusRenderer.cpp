@@ -8,6 +8,8 @@
 #include "ResourceCache.h"
 #include "../Resources/MeshResource.h"
 
+#include "../../Engine/Source/Application/Engine.h"
+
 using namespace Anubis;
 
 ForwardPlusRenderer::ForwardPlusRenderer()
@@ -54,6 +56,20 @@ ForwardPlusRenderer::ForwardPlusRenderer()
 	m_pIrradianceMap = new TextureCube();
 	m_pIrradianceSRV = new ShaderResourceView();
 	//m_pIrradianceRTV = new RenderTargetView();
+
+	m_voxelGrid = unique_ptr<StructuredBuffer>(new StructuredBuffer());
+	m_voxelGridSRV = unique_ptr<ShaderResourceView>(new ShaderResourceView());
+	m_voxelGridUAV = unique_ptr<UnorderedAccessView>(new UnorderedAccessView());
+
+	m_voxelTexture = unique_ptr<Texture2D>(new Texture2D());
+	m_voxelTextureRTV = unique_ptr<RenderTargetView>(new RenderTargetView());
+
+	m_redVoxelSH = unique_ptr<Texture2D>(new Texture2D());
+	m_greenVoxelSH = unique_ptr<Texture2D>(new Texture2D());;
+	m_blueVoxelSH = unique_ptr<Texture2D>(new Texture2D());;
+
+	m_voxelizationShaders = unique_ptr<ShaderBunchVGP>(new ShaderBunchVGP());
+	m_voxelRenderingShaders = unique_ptr<ShaderBunch>(new ShaderBunch());
 }
 
 ForwardPlusRenderer::~ForwardPlusRenderer()
@@ -97,13 +113,15 @@ ForwardPlusRenderer::~ForwardPlusRenderer()
 	SAFE_DELETE(m_pSkyTexture); 
 	SAFE_DELETE(m_pSkyShaders);
 	SAFE_DELETE(m_pAtmoShaders);
-	SAFE_DELETE(m_pSkyLayout);
+	SAFE_DELETE_ARRAY(m_pSkyLayout);
 
 	//SAFE_DELETE_ARRAY(m_pIrradianceRTV);
 	SAFE_DELETE(m_pIrradianceSRV);
 	SAFE_DELETE(m_pIrradianceMap);
 	SAFE_DELETE(m_pSphericalCoeffShader);
 	SAFE_DELETE(m_pIrradianceMapShader);
+
+	SAFE_DELETE_ARRAY(m_pVoxelizationLayout);
 }
 
 ABOOL ForwardPlusRenderer::VInitialize(HWND hWnd, AUINT32 width, AUINT32 height)
@@ -301,6 +319,58 @@ ABOOL ForwardPlusRenderer::VInitialize(HWND hWnd, AUINT32 width, AUINT32 height)
 	if (!m_pcbCullingData->Create(pcb_params, NULL)) return false;
 
 	delete pcb_params;
+	
+	///////////////////////////////////////////////
+	//Initialize voxelization resources
+	m_pVoxelizationLayout = new INPUT_LAYOUT[5];
+
+	m_pVoxelizationLayout[0].SemanticName			= "POSITION";			m_pVoxelizationLayout[1].SemanticName			= "TEXCOORDS";
+	m_pVoxelizationLayout[0].SemanticIndex			= 0;					m_pVoxelizationLayout[1].SemanticIndex			= 0;
+	m_pVoxelizationLayout[0].Format					= TEX_R32G32B32_FLOAT;	m_pVoxelizationLayout[1].Format					= TEX_R32G32_FLOAT;
+	m_pVoxelizationLayout[0].InputSlot				= 0;					m_pVoxelizationLayout[1].InputSlot				= 1;
+	m_pVoxelizationLayout[0].AlignedByteOffset		= 0;					m_pVoxelizationLayout[1].AlignedByteOffset		= 0;
+	m_pVoxelizationLayout[0].InputSlotClass			= IA_PER_VERTEX_DATA;	m_pVoxelizationLayout[1].InputSlotClass			= IA_PER_VERTEX_DATA;
+	m_pVoxelizationLayout[0].InstanceDataStepRate	= 0;					m_pVoxelizationLayout[1].InstanceDataStepRate	= 0;
+
+	m_pVoxelizationLayout[2].SemanticName			= "NORMAL";
+	m_pVoxelizationLayout[2].SemanticIndex			= 0;
+	m_pVoxelizationLayout[2].Format					= TEX_R32G32B32_FLOAT;
+	m_pVoxelizationLayout[2].InputSlot				= 2;
+	m_pVoxelizationLayout[2].AlignedByteOffset		= 0;
+	m_pVoxelizationLayout[2].InputSlotClass			= IA_PER_VERTEX_DATA;
+	m_pVoxelizationLayout[2].InstanceDataStepRate	= 0;
+
+	params.FillStructredBufferParams(24, VOXEL_GRID_SIZE*VOXEL_GRID_SIZE*VOXEL_GRID_SIZE, false, true);
+	m_voxelGrid->Create(&params, nullptr);
+
+	srvParams.InitForBuffer(TEX_UNKNOWN, 0, VOXEL_GRID_SIZE*VOXEL_GRID_SIZE*VOXEL_GRID_SIZE);
+	m_voxelGrid->CreateShaderResourceView(&m_voxelGridSRV->m_pView, &srvParams);
+
+	uavParams.InitForStructuredBuffer(TEX_UNKNOWN, 0, VOXEL_GRID_SIZE*VOXEL_GRID_SIZE*VOXEL_GRID_SIZE, D3D11_BUFFER_UAV_FLAG_COUNTER);
+	m_voxelGrid->CreateUnorderedAccessView(&m_voxelGridUAV->m_pView, &uavParams);
+
+	//texParams.Init(64, 64, 1, TEX_R32_UINT, false, false, true, false, 1, 0, 1, true, false, false);
+	//m_voxelTexture->Create(&texParams);
+
+	//rtvParams.InitForTexture2D(TEX_R32_UINT, 0, false);
+	//m_voxelTexture->CreateRenderTargetView(&m_voxelTextureRTV->m_pView, &rtvParams);
+
+	AUINT32 voxelTextureSize = 64;
+	texParams.Init(voxelTextureSize, voxelTextureSize, 1, TEX_R32G32B32A32_FLOAT, false, false, true, false, 1, 0, 1, true, false, false);
+	m_voxelTexture->Create(&texParams);
+
+	rtvParams.InitForTexture2D(texParams.Format, 0, false);
+	m_voxelTexture->CreateRenderTargetView(&m_voxelTextureRTV->m_pView, &rtvParams);
+
+	m_voxelizationShaders->VSetVertexShader(L"Shaders\\VoxelGridVS.hlsl", "voxelgrid_vs", m_pVoxelizationLayout, 3, TOPOLOGY_TRIANGLELIST, "vs_5_0");
+	m_voxelizationShaders->VSetGeometryShader(L"Shaders\\VoxelGridGS.hlsl", "voxelgrid_gs", "gs_5_0");
+	m_voxelizationShaders->VSetPixelShader(L"Shaders\\VoxelGridPS.hlsl", "voxelgrid_ps", "ps_5_0");
+
+	m_voxelRenderingShaders->VSetVertexShader(L"Shaders\\VoxelGridRenderingVS.hlsl", "showgrid_vs", m_pZPrepassLayout, 1, TOPOLOGY_TRIANGLELIST, "vs_5_0");
+	m_voxelRenderingShaders->VSetPixelShader(L"Shaders\\VoxelGridRenderingPS.hlsl", "showgrid_ps", "ps_5_0");
+
+	m_voxelViewport.Init(0, 0, voxelTextureSize, voxelTextureSize, 0.0f, 1.0f);
+	m_viewport.Init(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, 0.0f, 1.0f);
 
 	///////////////////////////////////////////////
 	//Initialize sky resources
@@ -362,11 +432,18 @@ ABOOL ForwardPlusRenderer::VInitialize(HWND hWnd, AUINT32 width, AUINT32 height)
 	m_pAtmoShaders->VSetVertexShader(L"Shaders\\Atmosphere\\SkyFromAtmosphere_vs.hlsl", "SkyFromAtmosphere_vs", m_pSkyLayout, 1, TOPOLOGY_TRIANGLELIST, "vs_5_0");
 	m_pAtmoShaders->VSetPixelShader(L"Shaders\\Atmosphere\\SkyFromAtmosphere_ps.hlsl", "SkyFromAtmosphere_ps", "ps_5_0");
 
-	Resource meshResource("sphere.obj");
+	/*Resource meshResource("sphere.obj");
 	shared_ptr<ResHandle> pMeshes = Anubis::SafeGetHandle(&meshResource);
 	std::shared_ptr<MeshResourceExtraData> pData = static_pointer_cast<MeshResourceExtraData>(pMeshes->GetExtra());
 
-	m_pSphereMesh = pData->m_pMeshes[0];
+	m_pSphereMesh = pData->m_pMeshes[0]; */
+
+	struct ThreeMatrices
+	{
+		Mat4x4 orthos[3];
+	} buffer;
+
+	m_pcbWorldPlusWorldViewPlusWVP->UpdateSubresource(0, nullptr, &buffer, 0, 0);
 
 	return true;
 }
@@ -423,7 +500,7 @@ AVOID ForwardPlusRenderer::LightCulling(CameraPtr pCamera)
 	data.ViewProj.Transpose();
 	data.posANDfov = pCamera->GetPosition();
 	data.posANDfov.w = pCamera->GetFrustum().GetFOV();
-	data.camersFar = 500;
+	data.camersFar = 10000;
 	data.cameraNear = 1.0f;
 	data.viewWidth = SCREEN_WIDTH;
 	data.viewHeight = SCREEN_HEIGHT;
@@ -464,9 +541,13 @@ AVOID ForwardPlusRenderer::LightCulling(CameraPtr pCamera)
 
 AVOID ForwardPlusRenderer::PrepareForShadingPass(CameraPtr pCamera)
 {
+	ClearDepthStencilView(true, false, 1.0f, 0xFF, m_pDepthDSV);
 	m_pDepthEnableStencilDisableStandard->Set(0xFF);
+	//m_pDepthDisableStencilDisable->Set(0);
 	//SetDepthStencilView(m_pDepthDSV);
+	//AllEnabledBackCullingRasterizer()->Set();
 	AllDisabledBackCullingRasterizer()->Set();
+	//NoCullingStandardRasterizer()->Set();
 
 	//SetRenderTargetView();
 	SetRenderTargetView(m_pDepthDSV);
@@ -497,7 +578,7 @@ AVOID ForwardPlusRenderer::VRender()
 		// ===================================================== //
 		//						Z Prepass						 //
 		// ===================================================== //
-		PrepareForZPrepass(pCamera);
+	/*	PrepareForZPrepass(pCamera);
 		//m_pDepthEnableStencilDisableStandard->Set(1);
 		Mesh * pMesh;
 		m_queue.Reset();
@@ -505,19 +586,27 @@ AVOID ForwardPlusRenderer::VRender()
 		{
 			pMesh->VRenderZPass(this, view, viewProj);
 		} ;
-		ClearDepthStencilView(true, false, 1.0f, 0xFF, m_pDepthDSV);
-		UnbindRenderTargetViews(1);
+		//ClearDepthStencilView(true, false, 1.0f, 0xFF, m_pDepthDSV);
+		UnbindRenderTargetViews(1); 
+		*/
+		///////////////////////////////////////////////////////////
+		//Voxelization
+		if (g_pEngine->GameTimeInSeconds() < 7)
+		{
+			Voxelize(viewProj);
+		}
+		RenderGrid(viewProj);
 
 		// ===================================================== //
 		//						Light Culling					 //
 		// ===================================================== //
-		UpdateLightBuffers();
+	/*	UpdateLightBuffers();
 		LightCulling(pCamera);
 
 		// ===================================================== //
 		//						Final Shading Pass				 //
 		// ===================================================== //
-		VRenderSky(pCamera, viewProj);
+		//VRenderSky(pCamera, viewProj);
 
 		PrepareForShadingPass(pCamera);
 		m_queue.Reset();
@@ -548,8 +637,9 @@ AVOID ForwardPlusRenderer::VRender()
 		{
 			m_lights.pop_back();
 		}
-
-		VFinishPass();
+		*/
+		m_queue.Clear();
+		VFinishPass(); 
 	}
 }
 
@@ -607,6 +697,7 @@ AVOID ForwardPlusRenderer::VRenderSky(CameraPtr pCamera, const Mat4x4 & viewproj
 AVOID ForwardPlusRenderer::VFinishPass()
 {
 	m_pLinearZRTV->Clear();
+	m_voxelTextureRTV->Clear();
 	NullLightCounter();
 }
 
@@ -650,4 +741,91 @@ AVOID ForwardPlusRenderer::UpdateLightBuffers()
 
 	//m_psbLightGeometry->UpdateSubresource(0, nullptr, m_pLightGeometryData, 0, 0);
 	//m_psbLights->UpdateSubresource(0, nullptr, m_pLightParams, 0, 0);
+}
+
+AVOID ForwardPlusRenderer::Voxelize(const Mat4x4 & viewproj)
+{
+	m_voxelizationShaders->VBind();
+	//UnbindGeometryShader();
+	//this->m_pLinearLessEqualSampler->Set(0, ST_Pixel);
+	this->m_pDepthDisableStencilDisable->Set(0);
+	NoCullingStandardRasterizer()->Set();
+
+	struct ThreeMatrices
+	{
+		Mat4x4 orthos[3];
+	} buffer;
+
+	Mat4x4 world;
+	world = Mat4x4::Identity();
+
+	//buffer.orthos[0] =	viewproj;
+	//buffer.orthos[0].Transpose();
+
+	//buffer.orthos[1] =	viewproj;
+	//buffer.orthos[1].Transpose();
+
+	//buffer.orthos[2] =	viewproj;
+	//buffer.orthos[2].Transpose();
+
+	float orthosize = 3200.0f;
+	buffer.orthos[0] =	CreateViewMatrixLH(Vec(-5000, 500, 0, 1.0f), Vec(1.0f, 0.0f, 0.0f, 0.0f), Vec(0.0f, 1.0f, 0.0f, 0.0f)) * 
+						CreateOrthoProjectionLH(orthosize, orthosize, 0.1f, 10000.0f);
+	buffer.orthos[0].Transpose();
+
+	buffer.orthos[1] =	CreateViewMatrixLH(Vec(0, -5000, 0, 1.0f), Vec(0.0f, 1.0f, 0.0f, 0.0f), Vec(0.0f, 0.0f, -1.0f, 0.0f)) * 
+						CreateOrthoProjectionLH(orthosize, orthosize, 0.1f, 10000.0f);
+	buffer.orthos[1].Transpose();
+
+	buffer.orthos[2] =	CreateViewMatrixLH(Vec(0, 500, -5000, 1.0f), Vec(0.0f, 0.0f, 1.0f, 0.0f), Vec(0.0f, 1.0f, 0.0f, 0.0f)) * 
+						CreateOrthoProjectionLH(orthosize, orthosize, 0.1f, 10000.0f);
+	buffer.orthos[2].Transpose(); 
+
+	m_pcbWorldPlusWorldViewPlusWVP->UpdateSubresource(0, nullptr, &buffer, 0, 0);
+
+	m_pcbWorldPlusWorldViewPlusWVP->Set(0, ST_Geometry); 
+	//m_pcbWorldPlusWorldViewPlusWVP->Set(0, ST_Pixel);
+	this->NoCullingStandardRasterizer()->Set();
+	//m_voxelGridUAV->Set(1, nullptr, ST_Pixel);
+	//m_voxelTextureRTV->Set();
+	m_voxelTextureRTV->SetWithUAV(1, 1, &m_voxelGridUAV->m_pView, nullptr);
+	m_voxelViewport.Set();
+
+	Mesh * pMesh;
+	m_queue.Reset();
+
+	while (pMesh = m_queue.Next())
+	{
+		pMesh->VVoxelize(this, viewproj);
+	} ;
+
+	UnbindGeometryShader();
+	UnbindUnorderedAccessViews(1, 1);
+	UnbindRenderTargetViews(1);
+	UnbindShaderResourceViews(0, 1, ST_Pixel);
+}
+
+AVOID ForwardPlusRenderer::RenderGrid(const Mat4x4 & viewproj)
+{
+	ClearDepthStencilView(true, false, 1.0f, 0xFF, m_pDepthDSV);
+	m_pDepthEnableStencilDisableStandard->Set(0xFF);
+
+	m_voxelRenderingShaders->VBind();
+	this->m_pDepthEnableStencilDisableStandard->Set(0);
+	//this->m_pDepthDisableStencilDisable->Set(0);
+
+	m_voxelGridSRV->Set(0, ST_Pixel);
+	m_viewport.Set();
+	SetRenderTargetView(m_pDepthDSV);
+
+	Mesh * pMesh;
+	m_queue.Reset();
+
+	while (pMesh = m_queue.Next())
+	{
+		pMesh->VRenderGrid(this, viewproj);
+	} ;
+
+	UnbindShaderResourceViews(0, 1, ST_Pixel);
+	UnbindRenderTargetViews(1);
 }

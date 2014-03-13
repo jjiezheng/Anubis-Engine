@@ -117,6 +117,12 @@
     <None Include="Shaders\CubeShadowMap_PS.hlsl" />
     <None Include="Shaders\CubeShadowMap_VS.hlsl" />
     <None Include="Shaders\FXAA.hlsl" />
+    <None Include="Shaders\GlobalIllumination.hlsli" />
+    <None Include="Shaders\VoxelGridGS.hlsl" />
+    <None Include="Shaders\VoxelGridPS.hlsl" />
+    <None Include="Shaders\VoxelGridRenderingPS.hlsl" />
+    <None Include="Shaders\VoxelGridRenderingVS.hlsl" />
+    <None Include="Shaders\VoxelGridVS.hlsl" />
     <None Include="Source\Shaders\TextPixel.hlsl" />
     <None Include="Source\Shaders\SkyBox.hlsl" />
     <None Include="ZPrepass.hlsl" />

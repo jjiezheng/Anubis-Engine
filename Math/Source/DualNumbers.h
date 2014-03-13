@@ -84,6 +84,15 @@ namespace Anubis
 	template<typename T>
 	Dual<T> operator*(const Dual<T> & a, const Dual<T> & b)
 	{
-		return Dual<T>(a.real() * b.real(), a.real() * b.dual() + a.dual() * b.real());
+		return Dual<T>{a.real() * b.real(), a.real() * b.dual() + a.dual() * b.real()};
 	}
+
+	template<typename T>
+	Dual<T> sqrt(Dual<T> & d)
+	{
+		T x = sqrt(d.real());
+		return Dual<T>{x, d.dual()*T(0.5)/x};
+	}
+
+
 }; //Anubis

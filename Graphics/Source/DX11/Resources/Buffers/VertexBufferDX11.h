@@ -56,7 +56,8 @@ namespace Anubis
 
 	public:
 		ABOOL Create(const D3D11_BUFFER_DESC * desc, const SubresourceDataDX11 * pData, AUINT32 numElements, AUINT32 elementSize);
-		AVOID Set(AUINT16 startSlot, const AUINT32 offset) const;
+		AVOID Set(AUINT16 startSlot, AUINT32 offset) const;
+		AVOID Set(AUINT16 startSlot, AUINT32 offset, AUINT32 vertexSize) const;
 		AUINT32 Count() const { return m_vertexCount; }
 	};
 }; //Anubis

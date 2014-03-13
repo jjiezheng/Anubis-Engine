@@ -49,9 +49,14 @@
 
 using namespace Anubis;
 
-AVOID VertexBufferDX11::Set(AUINT16 startSlot, const AUINT32 offset) const
+AVOID VertexBufferDX11::Set(AUINT16 startSlot, AUINT32 offset) const
 {
 	D3D11DeviceContext()->IASetVertexBuffers(startSlot, 1, &m_pBuffer, &m_vertexSize, &offset);
+}
+
+AVOID VertexBufferDX11::Set(AUINT16 startSlot, AUINT32 offset, AUINT32 vertexSize) const
+{
+	D3D11DeviceContext()->IASetVertexBuffers(startSlot, 1, &m_pBuffer, &vertexSize, &offset);
 }
 
 

@@ -158,6 +158,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Game2DTest", "Game2DTest\Ga
 		{E03C2CA3-E6DB-4790-9D40-6F5B01004E00} = {E03C2CA3-E6DB-4790-9D40-6F5B01004E00}
 	EndProjectSection
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GITest", "GITest\GITest.vcxproj", "{B4903650-3951-4FE1-B1CA-355D42975E0D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -414,6 +416,15 @@ Global
 		{543D29B8-ABDE-40E9-BDC8-7255A33E9A5A}.Release|Win32.ActiveCfg = Release|Win32
 		{543D29B8-ABDE-40E9-BDC8-7255A33E9A5A}.Release|Win32.Build.0 = Release|Win32
 		{543D29B8-ABDE-40E9-BDC8-7255A33E9A5A}.Release|x64.ActiveCfg = Release|Win32
+		{B4903650-3951-4FE1-B1CA-355D42975E0D}.Debug|Win32.ActiveCfg = Debug|Win32
+		{B4903650-3951-4FE1-B1CA-355D42975E0D}.Debug|Win32.Build.0 = Debug|Win32
+		{B4903650-3951-4FE1-B1CA-355D42975E0D}.Debug|x64.ActiveCfg = Debug|Win32
+		{B4903650-3951-4FE1-B1CA-355D42975E0D}.Profile|Win32.ActiveCfg = Release|Win32
+		{B4903650-3951-4FE1-B1CA-355D42975E0D}.Profile|Win32.Build.0 = Release|Win32
+		{B4903650-3951-4FE1-B1CA-355D42975E0D}.Profile|x64.ActiveCfg = Release|Win32
+		{B4903650-3951-4FE1-B1CA-355D42975E0D}.Release|Win32.ActiveCfg = Release|Win32
+		{B4903650-3951-4FE1-B1CA-355D42975E0D}.Release|Win32.Build.0 = Release|Win32
+		{B4903650-3951-4FE1-B1CA-355D42975E0D}.Release|x64.ActiveCfg = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

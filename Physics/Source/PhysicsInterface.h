@@ -44,7 +44,8 @@
 //
 //====================================================================================
 
-#include "Entities\Entity.h"
+//#include "Entities\Entity.h"
+#include "../../Game/Source/Entities/Entity.h"
 #include "../../Math/Source/Vectors.h"
 #include "../../Math/Source/Mat4x4.h"
 

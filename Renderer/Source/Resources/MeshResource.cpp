@@ -941,7 +941,7 @@ ABOOL ObjResourceLoader::ParseObj(ACHAR *pObjStream, size_t bufferLength, shared
 		//	pMat->SetNormalTexture(normals);
 		//}
 		//load normal map
-		char* ending = "_n.png";
+		char* ending = "_n.dds";
 		const char* beg = name.C_Str();
 		const char* pSep = strchr(beg, '_');
 		if (pSep)
@@ -954,7 +954,7 @@ ABOOL ObjResourceLoader::ParseObj(ACHAR *pObjStream, size_t bufferLength, shared
 		}
 
 		//load height map
-		ending = "_h.png";
+		ending = "_h.dds";
 		beg = name.C_Str();
 		pSep = strchr(beg, '_');
 		if (pSep)
@@ -967,7 +967,7 @@ ABOOL ObjResourceLoader::ParseObj(ACHAR *pObjStream, size_t bufferLength, shared
 		}
 
 		//load specular map
-		ending = "_s.png";
+		ending = "_s.dds";
 		beg = name.C_Str();
 		pSep = strchr(beg, '_');
 		if (pSep)
@@ -980,7 +980,7 @@ ABOOL ObjResourceLoader::ParseObj(ACHAR *pObjStream, size_t bufferLength, shared
 		}
 
 		//load glossiness map
-		ending = "_g.png";
+		ending = "_g.dds";
 		beg = name.C_Str();
 		pSep = strchr(beg, '_');
 		if (pSep)

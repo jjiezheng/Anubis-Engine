@@ -205,7 +205,7 @@ ABOOL Renderer::VInitialize(HWND hWnd, AUINT32 width, AUINT32 height)
 		==	Create Depth Stencil States  ==
 		=================================== */
 	DepthStencilParams depthStencilParams;
-	depthStencilParams.Init(false, D3D11_COMPARISON_LESS, false, 0, 0);
+	depthStencilParams.Init(true, D3D11_COMPARISON_LESS, false, 0, 0);
 	if (!m_pDepthEnableStencilDisableStandard->Create(&depthStencilParams))	return false;
 
 	depthStencilParams.Init(false, D3D11_COMPARISON_LESS, false, 0, 0);
@@ -482,7 +482,8 @@ RasterizerState* Renderer::AllEnabledBackCullingRasterizer()
 	//not created yet
 	m_pAllEnabledBackCulling = new RasterizerState();
 	RasterizerParams params;
-	params.Init(false, false, false, true, 0.0f, 0.0f, 0.0f, true, true, true, true);
+	//params.Init(false, false, false, true, 0.0f, 0.0f, 0.0f, true, true, true, true);
+	params.Init(false, false, true, true, 0.0f, 0.0f, 0.0f, true, true, true, true); 
 	m_pAllEnabledBackCulling->Create(&params);
 
 	return m_pAllEnabledBackCulling;
@@ -495,7 +496,7 @@ RasterizerState* Renderer::AllDisabledBackCullingRasterizer()
 	//not created yet
 	m_pAllDisabledBackCulling = new RasterizerState();
 	RasterizerParams params;
-	params.Init(false, true, false, true, 0.0f, 0.0f, 0.0f, false, false, false, false);
+	params.Init(false, false, false, true, 0.0f, 0.0f, 0.0f, false, false, true, true);
 	m_pAllDisabledBackCulling->Create(&params);
 
 	return m_pAllDisabledBackCulling;

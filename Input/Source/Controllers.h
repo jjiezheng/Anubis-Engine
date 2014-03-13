@@ -295,7 +295,7 @@ namespace Anubis
 
 				m_vTargetDirection = Vector(0.0f, 0.0f, 1.0f, 0.0f);
 
-				m_r32TargetSpeed = 1.0f;
+				m_r32TargetSpeed = 5.0f;
 				m_vTargetVelocity = Vector(0.0f, 0.0f, 0.0f, 0.0f);
 			}
 

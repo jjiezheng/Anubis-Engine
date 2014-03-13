@@ -76,7 +76,9 @@ AVOID UnorderedAccessViewDX11::Set(AUINT16 slot, const AUINT32 * pUAVInitialCoun
 	switch (type)
 	{
 	case ST_Pixel:
-		//m_pDevCon->PSSetUnorderedAccessViews(slot, 1, &view.m_pView);
+		//D3D11DeviceContext()->PSSetUnorderedAccessViews(slot, 1, &view.m_pView);
+		ID3D11RenderTargetView* pNullRTV;
+		D3D11DeviceContext()->OMSetRenderTargetsAndUnorderedAccessViews(0, &pNullRTV, nullptr, 0, 1, &m_pView, pUAVInitialCounts);
 		break;
 	case ST_Compute:
 		D3D11DeviceContext()->CSSetUnorderedAccessViews(slot, 1, &m_pView, pUAVInitialCounts);

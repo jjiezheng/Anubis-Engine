@@ -32,4 +32,4 @@ using namespace Anubis;
 #define GS_BOXTEST  1
 #define GS_HOMETEST 2
 
-#define VIEW_DISTANCE 500.0f
+#define VIEW_DISTANCE 10000.0f

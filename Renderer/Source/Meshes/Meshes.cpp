@@ -98,13 +98,13 @@ AVOID Mesh::VRenderZPass(Renderer* pRenderer, const Mat4x4 & view, const Mat4x4 
 {
 	struct Buffer 
 	{
-		Mat4x4 worldView;
+		Mat4x4 world;
 		Mat4x4 WVP;
 	};
 	Buffer buffer;
-	buffer.worldView = m_worldTransform * view;
+	buffer.world = m_worldTransform * view;
 	buffer.WVP = m_worldTransform * viewProj;
-	buffer.worldView.Transpose();
+	buffer.world.Transpose();
 	buffer.WVP.Transpose();
 
 	pRenderer->m_pcbWorldPlusWVP->UpdateSubresource(0, nullptr, &buffer, 0, 0);
@@ -112,6 +112,51 @@ AVOID Mesh::VRenderZPass(Renderer* pRenderer, const Mat4x4 & view, const Mat4x4 
 
 	m_pVertices->Set(0, 0);
 	Draw(m_pVertices->Count(), 0);
+}
+
+AVOID Mesh::VRenderGrid(Renderer* pRenderer, const Mat4x4 & viewProj)
+{
+	struct Buffer 
+	{
+		Mat4x4 world;
+		Mat4x4 WVP;
+	};
+	Buffer buffer;
+	buffer.world= m_worldTransform;
+	buffer.WVP = m_worldTransform * viewProj;
+	buffer.world.Transpose();
+	buffer.WVP.Transpose();
+
+	pRenderer->m_pcbWorldPlusWVP->UpdateSubresource(0, nullptr, &buffer, 0, 0);
+	pRenderer->m_pcbWorldPlusWVP->Set(0, ST_Vertex);
+
+	m_pVertices->Set(0, 0);
+	Draw(m_pVertices->Count(), 0);
+}
+
+AVOID Mesh::VVoxelize(Renderer* pRenderer, const Mat4x4 viewProj)
+{
+	struct Buffer 
+	{
+		Mat4x4 world;
+	};
+	Buffer buffer;
+	buffer.world= m_worldTransform;
+	buffer.world.Transpose();
+
+	pRenderer->m_pcbView->UpdateSubresource(0, nullptr, &buffer, 0, 0);
+	pRenderer->m_pcbView->Set(0, ST_Vertex);
+	//pRenderer->m_pcbView->Set(0, ST_Geometry);
+
+	m_pVertices->Set(0, 0);
+	m_pTexCoords->Set(1, 0);
+	m_pNormals->Set(2, 0, sizeof(NormalData));
+
+	m_pMaterial->BindDiffuse(0);
+
+	Draw(m_pVertices->Count(), 0);
+
+	m_pMaterial->UnbindDiffuse(0);
 }
 
 AVOID Mesh::VPreRender(Renderer *pRenderer, const Mat4x4 & view, const Mat4x4 & viewprojection)
@@ -278,6 +323,53 @@ AVOID IndexedMesh::VRenderZPass(Renderer* pRenderer, const Mat4x4 & view, const 
 	m_pIndexBuffer->Set(0);
 
 	DrawIndexed(m_pIndexBuffer->Count(), 0, 0);
+}
+
+AVOID IndexedMesh::VRenderGrid(Renderer* pRenderer, const Mat4x4 & viewProj)
+{
+	struct Buffer 
+	{
+		Mat4x4 world;
+		Mat4x4 WVP;
+	};
+	Buffer buffer;
+	buffer.world = m_worldTransform;
+	buffer.WVP = m_worldTransform * viewProj;
+	buffer.world.Transpose();
+	buffer.WVP.Transpose();
+
+	pRenderer->m_pcbWorldPlusWVP->UpdateSubresource(0, nullptr, &buffer, 0, 0);
+	pRenderer->m_pcbWorldPlusWVP->Set(0, ST_Vertex);
+
+	m_pVertices->Set(0, 0);
+	m_pIndexBuffer->Set(0);
+
+	DrawIndexed(m_pIndexBuffer->Count(), 0, 0);
+}
+
+AVOID IndexedMesh::VVoxelize(Renderer* pRenderer, const Mat4x4 viewProj)
+{
+	struct Buffer 
+	{
+		Mat4x4 world;
+	};
+	Buffer buffer;
+	buffer.world= m_worldTransform;
+	buffer.world.Transpose();
+
+	pRenderer->m_pcbView->UpdateSubresource(0, nullptr, &buffer, 0, 0);
+	pRenderer->m_pcbView->Set(0, ST_Vertex);
+	
+	m_pVertices->Set(0, 0);
+	m_pTexCoords->Set(1, 0);
+	m_pNormals->Set(2, 0, sizeof(NormalData));
+	m_pIndexBuffer->Set(0);
+
+	m_pMaterial->BindDiffuse(0);
+
+	DrawIndexed(m_pIndexBuffer->Count(), 0, 0);
+
+	m_pMaterial->UnbindDiffuse(0);
 }
 
 //////////////////////////////////////////////

@@ -160,8 +160,8 @@ Mat4x4 Anubis::CreateViewMatrixLH(const Vec & pos, const Vec & lookDir, const Ve
 	return mat;
 }
 
-Mat4x4 Anubis::CreatePerspectiveProjectionLH(	const AREAL fov,   const AREAL aspect,
-												const AREAL nearZ, const AREAL farZ )
+Mat4x4 Anubis::CreatePerspectiveProjectionLH(AREAL fov, AREAL aspect,
+											 AREAL nearZ, AREAL farZ )
 {
 	Mat4x4 mat;
 
@@ -182,8 +182,8 @@ Mat4x4 Anubis::CreatePerspectiveProjectionLH(	const AREAL fov,   const AREAL asp
 	return mat;
 }
 
-Mat4x4 Anubis::CreateOrthoProjectionLH(	const AREAL width, const AREAL height,
-										const AREAL nearZ,	const AREAL farZ)
+Mat4x4 Anubis::CreateOrthoProjectionLH(	AREAL width, AREAL height,
+										AREAL nearZ, AREAL farZ)
 {
 	Mat4x4 mat;
 
@@ -195,7 +195,7 @@ Mat4x4 Anubis::CreateOrthoProjectionLH(	const AREAL width, const AREAL height,
 	return mat;
 }
 
-AREAL Anubis::Random(const AREAL min, const AREAL max)
+AREAL Anubis::Random(AREAL min, AREAL max)
 {
 	srand(0);
 
@@ -203,7 +203,7 @@ AREAL Anubis::Random(const AREAL min, const AREAL max)
 	return (rand() % diff) + min;
 }
 
-AREAL Anubis::Clamp(const AREAL value, const AREAL min, const AREAL max)
+AREAL Anubis::Clamp(AREAL value, AREAL min, AREAL max)
 {
 	if (value <= min) return min;
 	if (value >= max) return max;
