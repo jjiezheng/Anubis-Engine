@@ -112,5 +112,20 @@
     <None Include="Shaders\VoxelGridVS.hlsl">
       <Filter>Shaders\Voxelized GI</Filter>
     </None>
+    <None Include="Shaders\pointLightGridVS.hlsl">
+      <Filter>Shaders\Voxelized GI</Filter>
+    </None>
+    <None Include="Shaders\pointLightGridGS.hlsl">
+      <Filter>Shaders\Voxelized GI</Filter>
+    </None>
+    <None Include="Shaders\pointLightGridPS.hlsl">
+      <Filter>Shaders\Voxelized GI</Filter>
+    </None>
+    <None Include="Shaders\dirLightGridPS.hlsl">
+      <Filter>Shaders\Voxelized GI</Filter>
+    </None>
+    <None Include="Shaders\VoxelGridClearCS.hlsl">
+      <Filter>Shaders\Voxelized GI</Filter>
+    </None>
   </ItemGroup>
 </Project>

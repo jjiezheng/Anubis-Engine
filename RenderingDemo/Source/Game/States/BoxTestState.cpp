@@ -60,7 +60,7 @@ AVOID BoxTestState::VInitialize( Game * pGame, AUINTPTR uptrData)
 	sponza_resource.VCreatePhysicalBody(g_pEngine->GetPhysics(), pSponza); 
 
 	Mat4x4 transform;
-	transform.CreateScaling(0.7f, 0.7f, 0.7f);
+	transform.CreateScaling(1.0f, 1.0f, 1.0f);
 	pSponza->SetCurrentTransform(transform, g_pEngine->GameTimeInSeconds());
 	
 

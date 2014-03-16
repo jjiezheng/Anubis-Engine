@@ -68,7 +68,12 @@ ForwardPlusRenderer::ForwardPlusRenderer()
 	m_greenVoxelSH = unique_ptr<Texture2D>(new Texture2D());;
 	m_blueVoxelSH = unique_ptr<Texture2D>(new Texture2D());;
 
+	m_redVoxelSHRTV = unique_ptr<RenderTargetView>(new RenderTargetView());
+	m_greenVoxelSHRTV = unique_ptr<RenderTargetView>(new RenderTargetView());
+	m_blueVoxelSHRTV = unique_ptr<RenderTargetView>(new RenderTargetView());
+
 	m_voxelizationShaders = unique_ptr<ShaderBunchVGP>(new ShaderBunchVGP());
+	m_pointLightGridShaders = unique_ptr<ShaderBunchVGP>(new ShaderBunchVGP());
 	m_voxelRenderingShaders = unique_ptr<ShaderBunch>(new ShaderBunch());
 }
 
@@ -356,7 +361,7 @@ ABOOL ForwardPlusRenderer::VInitialize(HWND hWnd, AUINT32 width, AUINT32 height)
 	//m_voxelTexture->CreateRenderTargetView(&m_voxelTextureRTV->m_pView, &rtvParams);
 
 	AUINT32 voxelTextureSize = 64;
-	texParams.Init(voxelTextureSize, voxelTextureSize, 1, TEX_R32G32B32A32_FLOAT, false, false, true, false, 1, 0, 1, true, false, false);
+	texParams.Init(voxelTextureSize, voxelTextureSize, 1, TEX_R8G8B8A8_SNORM, false, false, true, false, 1, 0, 1, true, false, false);
 	m_voxelTexture->Create(&texParams);
 
 	rtvParams.InitForTexture2D(texParams.Format, 0, false);
@@ -365,6 +370,33 @@ ABOOL ForwardPlusRenderer::VInitialize(HWND hWnd, AUINT32 width, AUINT32 height)
 	m_voxelizationShaders->VSetVertexShader(L"Shaders\\VoxelGridVS.hlsl", "voxelgrid_vs", m_pVoxelizationLayout, 3, TOPOLOGY_TRIANGLELIST, "vs_5_0");
 	m_voxelizationShaders->VSetGeometryShader(L"Shaders\\VoxelGridGS.hlsl", "voxelgrid_gs", "gs_5_0");
 	m_voxelizationShaders->VSetPixelShader(L"Shaders\\VoxelGridPS.hlsl", "voxelgrid_ps", "ps_5_0");
+
+	m_pLightGridLayout = new INPUT_LAYOUT[5];
+
+	m_pLightGridLayout[0].SemanticName			= "POSITION";
+	m_pLightGridLayout[0].SemanticIndex			= 0;
+	m_pLightGridLayout[0].Format				= TEX_R32G32B32_FLOAT;
+	m_pLightGridLayout[0].InputSlot				= 0;
+	m_pLightGridLayout[0].AlignedByteOffset		= 0;
+	m_pLightGridLayout[0].InputSlotClass		= IA_PER_VERTEX_DATA;
+	m_pLightGridLayout[0].InstanceDataStepRate	= 0;
+
+	m_pointLightGridShaders->VSetVertexShader(L"Shaders\\pointLightGridVS.hlsl", "point_light_gridVS", m_pLightGridLayout, 1, TOPOLOGY_LINELIST, "vs_5_0");
+	m_pointLightGridShaders->VSetGeometryShader(L"Shaders\\pointLightGridGS.hlsl", "point_light_gridGS", "gs_5_0");
+	m_pointLightGridShaders->VSetPixelShader(L"Shaders\\pointLightGridPS.hlsl", "point_light_gridPS", "ps_5_0");
+
+	Texture2DParams shTexParams;
+	shTexParams.Init(64, 64, 64, TEX_R16G16B16A16_FLOAT, true, false, true, false, 1, 0, 1, true, false, false);
+	m_redVoxelSH->Create(&shTexParams);
+	m_greenVoxelSH->Create(&shTexParams);
+	m_blueVoxelSH->Create(&shTexParams);
+
+	RenderTargetViewParams shRTVParams;
+	shRTVParams.InitForTexture2DArray(64, shTexParams.Format, 0, 0);
+
+	m_redVoxelSH->CreateRenderTargetView(&m_redVoxelSHRTV->m_pView, &shRTVParams);
+	m_greenVoxelSH->CreateRenderTargetView(&m_greenVoxelSHRTV->m_pView, &shRTVParams);
+	m_blueVoxelSH->CreateRenderTargetView(&m_blueVoxelSHRTV->m_pView, &shRTVParams);
 
 	m_voxelRenderingShaders->VSetVertexShader(L"Shaders\\VoxelGridRenderingVS.hlsl", "showgrid_vs", m_pZPrepassLayout, 1, TOPOLOGY_TRIANGLELIST, "vs_5_0");
 	m_voxelRenderingShaders->VSetPixelShader(L"Shaders\\VoxelGridRenderingPS.hlsl", "showgrid_ps", "ps_5_0");
@@ -803,6 +835,10 @@ AVOID ForwardPlusRenderer::Voxelize(const Mat4x4 & viewproj)
 	UnbindUnorderedAccessViews(1, 1);
 	UnbindRenderTargetViews(1);
 	UnbindShaderResourceViews(0, 1, ST_Pixel);
+}
+
+AVOID ForwardPlusRenderer::InjectVPLs()
+{
 }
 
 AVOID ForwardPlusRenderer::RenderGrid(const Mat4x4 & viewproj)

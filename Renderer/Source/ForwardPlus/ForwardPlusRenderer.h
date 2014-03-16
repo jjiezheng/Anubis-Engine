@@ -49,7 +49,7 @@
 #include "../Cameras/Camera.h"
 #include "../RenderQueue.h"
 
-#define VOXEL_GRID_SIZE 32
+#define VOXEL_GRID_SIZE 64
 
 namespace Anubis
 {
@@ -155,12 +155,17 @@ namespace Anubis
 		unique_ptr<Texture2D> m_voxelTexture;
 		unique_ptr<RenderTargetView> m_voxelTextureRTV;
 
+		INPUT_LAYOUT* m_pLightGridLayout;
 		unique_ptr<Texture2D> m_redVoxelSH;
 		unique_ptr<Texture2D> m_greenVoxelSH;
 		unique_ptr<Texture2D> m_blueVoxelSH;
+		unique_ptr<RenderTargetView> m_redVoxelSHRTV;
+		unique_ptr<RenderTargetView> m_greenVoxelSHRTV;
+		unique_ptr<RenderTargetView> m_blueVoxelSHRTV;
 
 		INPUT_LAYOUT*	m_pVoxelizationLayout;
 		unique_ptr<ShaderBunchVGP> m_voxelizationShaders;
+		unique_ptr<ShaderBunchVGP> m_pointLightGridShaders;
 		unique_ptr<ShaderBunch> m_voxelRenderingShaders;
 		Viewport m_voxelViewport;
 
@@ -185,6 +190,7 @@ namespace Anubis
 
 		/**		Voxelization Pass ***/
 		AVOID Voxelize(const Mat4x4 & viewproj);
+		AVOID InjectVPLs();
 		AVOID RenderGrid(const Mat4x4 & viewproj);
 
 		/***	Render Scene	***

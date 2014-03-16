@@ -49,3 +49,34 @@ float3 DecodeNormal(in uint encoded)
 
 	return normal;
 }
+
+//get SH-coeffs for specific direction
+float SH(in float3 dir)
+{
+	float4 result;
+
+	result.x = 0.2820947918f;			// 1 / (2*sqrt(PI))
+	result.y = -0.4886025119f * dir.y;	// -sqrt(3/(4*PI))*y
+	result.z = 0.4886025119f * dir.z;	// sqrt(3/(4*PI))*z
+	result.w = -0.4886025119f * dir.x;	// -sqrt(3/(4*PI))*x
+
+	return result;
+}
+
+float4 ClampedCosineCoeffs(in float3 dir)
+{
+	float4 coeffs;
+	coeffs.x = 0.8862269262f;			// PI/(2*sqrt(PI))
+	coeffs.y = -1.0233267079f*dir.y;	// -sqrt(Pi/3)
+	coeffs.z = 1.0233267079f*dir.z;		// sqrt(Pi/3)
+	coeffs.w = -1.0233267079f*dir.x;	// -1sqrt(Pi/3)
+
+	return coeffs;
+}
+
+struct VOXEL
+{
+	uint color; //encoded color
+	uint4 normalMasks; //encoded normal
+	uint occlusion; //containes geometry only if occlusion > 0
+};

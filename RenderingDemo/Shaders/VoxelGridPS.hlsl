@@ -16,13 +16,6 @@ struct vs_output
 	float3 normal : NORMAL;
 };
 
-struct VOXEL
-{
-	uint color; //encoded color
-	uint4 normalMasks; //encoded normal
-	uint occlusion; //containes geometry only if occlusion > 0
-};
-
 SamplerState samplerState : register( s0 );
 Texture2D<float4> diffuseAlbedo : register ( t0 );
 RWStructuredBuffer<VOXEL> voxelGrid : register( u1 );
@@ -65,10 +58,10 @@ int GetNormalIndex(in float3 normal, float dotProduct)
 	return index;
 }
 
-float4 voxelgrid_ps(gs_output input) : SV_Target
+void voxelgrid_ps(gs_output input)
 {
 	float3 gridCenter = float3(0.0f, 500.0f, 0.0f);
-	float  invCellSize = 1.0f / 70.5f;
+	float  invCellSize = 1.0f / 60.5f;
 
 	
 
@@ -86,7 +79,7 @@ float4 voxelgrid_ps(gs_output input) : SV_Target
 	offset = round(offset);
 
 	//offset = float3(0.0f, 0.0f, 0.0f);
-	int3 gridPos = int3(16,16,16) + int3(offset);
+	int3 gridPos = int3(32,32,32) + int3(offset);
 	//gridPos = int3(0, 1, 0);
 	//voxelGrid[0].color = asuint(1.0f);
 	float x = gridPos.x;
@@ -115,17 +108,14 @@ float4 voxelgrid_ps(gs_output input) : SV_Target
 	colorMask |= iContrast << 24;
 	
 
-	if ( (gridPos.x > -1) && (gridPos.x < 32) &&
-		 (gridPos.y > -1) && (gridPos.y < 32) &&
-		 (gridPos.z > -1) && (gridPos.z < 32) )
+	if ( (gridPos.x > -1) && (gridPos.x < 64) &&
+		 (gridPos.y > -1) && (gridPos.y < 64) &&
+		 (gridPos.z > -1) && (gridPos.z < 64) )
 	{
-		uint gridIndex = gridPos.z * 1024 + gridPos.y * 32 + gridPos.x;
+		uint gridIndex = gridPos.z * 4096 + gridPos.y * 64 + gridPos.x;
 
 		InterlockedMax(voxelGrid[gridIndex].color, colorMask);
 		InterlockedMax(voxelGrid[gridIndex].normalMasks[normalIndex], normalMask);
 		InterlockedMax(voxelGrid[gridIndex].occlusion, 1);
 	}
-	
-	return float4(0.0f, 1.0f, 1.0f, 1.0f);
-	//return 1.0f;
 }
